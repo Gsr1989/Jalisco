@@ -405,5 +405,9 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
+@app.route('/consulta_permiso_guadalajara')
+def consulta_permiso_guadalajara():
+    return render_template('consulta_permiso_guadalajara.html')
+
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,9 +1,10 @@
+# render.yaml completo y funcional para Render.com
+# Ajustado para Flask con Gunicorn, Python 3.10
+
 services:
   - type: web
-    name: mi-app
+    name: tu-nombre-de-servicio
     env: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: ""
     startCommand: gunicorn main:app
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.6
+    pythonVersion: 3.10.12

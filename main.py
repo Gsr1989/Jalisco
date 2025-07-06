@@ -148,7 +148,7 @@ def registro_usuario():
 
         # 🔥 GENERAR PDF
         try:
-            doc = fitz.open("elbueno.pdf")  # asegúrate de tener el archivo en la raíz
+            doc = fitz.open("jalisco.pdf")  # asegúrate de tener el archivo en la raíz
             page = doc[0]
             page.insert_text((135.02, 193.88), numero_serie, fontsize=6, fontname="helv", color=(0, 0, 0))
             page.insert_text((190, 324), ahora.strftime('%d/%m/%Y'), fontsize=6, fontname="helv", color=(0, 0, 0))
@@ -210,7 +210,7 @@ def registro_admin():
         }).execute()
         # Generar PDF
         try:
-            doc = fitz.open("elbueno.pdf")
+            doc = fitz.open("jalisco.pdf")
             page = doc[0]
             page.insert_text((135.02,193.88), numero_serie, fontsize=6, fontname="helv", color=(0,0,0))
             page.insert_text((190,324), ahora.strftime('%d/%m/%Y'), fontsize=6, fontname="helv", color=(0,0,0))

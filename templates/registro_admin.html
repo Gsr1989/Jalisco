@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registro de Folio (Admin)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      background-color: #ffffff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 30px;
+    }
+    header img {
+      height: 80px;
+    }
+    .titulo {
+      text-align: center;
+      font-size: 28px;
+      margin-top: 30px;
+      font-weight: bold;
+      color: #222;
+    }
+    .formulario {
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      text-transform: uppercase;
+    }
+    .btn {
+      background-color: #800000;
+      color: white;
+      border: none;
+      padding: 14px 22px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 100%;
+      margin-top: 15px;
+    }
+    .btn:hover {
+      background-color: #a00000;
+    }
+    footer {
+      margin-top: 40px;
+      width: 100%;
+    }
+    footer img {
+      width: 100%;
+      display: block;
+    }
+    .flash-message {
+      padding: 10px;
+      margin: 15px auto;
+      width: 90%;
+      max-width: 600px;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+      text-align: center;
+    }
+    .success { background-color: green; }
+    .error { background-color: red; }
+
+    @media (max-width: 600px) {
+      header img { height: 60px; }
+      .titulo { font-size: 24px; margin-top: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+  <img src="{{ url_for('static', filename='sub_logo.png') }}" alt="Sub Logo">
+</header>
+
+<div class="titulo">Secretaría de Movilidad</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="flash-message {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<form method="POST" class="formulario">
+  <input type="hidden" name="entidad" value="cdmx">
+  <input type="hidden" name="telefono" value="0">
+  <input type="hidden" name="vigencia" value="30">
+
+  <input type="text" name="folio" id="folio" placeholder="Folio" required>
+  <input type="text" name="marca" id="marca" placeholder="Marca" required>
+  <input type="text" name="linea" id="linea" placeholder="Línea" required>
+  <input type="number" name="anio" id="anio" placeholder="Año" required>
+  <input type="text" name="serie" id="serie" placeholder="Número de Serie" required>
+  <input type="text" name="motor" id="motor" placeholder="Número de Motor" required>
+
+  <label><input type="checkbox" id="modoAuto" checked> Activar detección automática</label>
+  <textarea id="autotexto" rows="6" placeholder="Pega aquí la descripción completa..."></textarea>
+
+  <button type="submit" class="btn">Registrar Folio</button>
+
+  <div style="margin-top: 30px; display: flex; flex-direction: column; gap: 10px;">
+    <a href="{{ url_for('admin') }}"><button type="button" class="btn">Volver al Panel</button></a>
+    <a href="{{ url_for('consulta_folio') }}"><button type="button" class="btn">Consultar Folio</button></a>
+    <a href="{{ url_for('logout') }}"><button type="button" class="btn">Cerrar Sesión</button></a>
+  </div>
+</form>
+
+<footer>
+  <img src="{{ url_for('static', filename='footer.png') }}" alt="Footer">
+</footer>
+
+<script>
+async function decodificarVIN(vin) {
+  if (!vin || vin.length < 11) return;
+  const url = `https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/${vin}?format=json`;
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    const result = data.Results[0];
+    if (result.Make)      document.getElementById("marca").value = result.Make.toUpperCase();
+    if (result.Model)     document.getElementById("linea").value = result.Model.toUpperCase();
+    if (result.ModelYear) document.getElementById("anio").value = result.ModelYear;
+  } catch (err) {
+    console.log("Error al decodificar VIN:", err);
+  }
+}
+
+const campo = document.getElementById("autotexto");
+const auto = document.getElementById("modoAuto");
+
+campo.addEventListener("input", () => {
+  if (!auto.checked) return;
+
+  const texto = campo.value.toUpperCase();
+  const limpiar = txt => txt.replace(/(FOLIO|MARCA|L[ÍI]NEA|MODELO|AÑO|N[ÚU]MERO DE SERIE|SERIE|MOTOR|:)/g, '').trim();
+
+  const folio = texto.match(/FOLIO\s+[A-Z0-9]{3,}/);
+  if (folio) document.getElementById("folio").value = limpiar(folio[0]);
+
+  const marca = texto.match(/MARCA\s+[A-Z0-9\s]+/);
+  if (marca) document.getElementById("marca").value = limpiar(marca[0]);
+
+  const linea = texto.match(/L[ÍI]NEA\s+[A-Z0-9\s]+/);
+  if (linea) document.getElementById("linea").value = limpiar(linea[0]);
+
+  const anio = texto.match(/\b(19[5-9][0-9]|20[0-4][0-9]|[1-4][0-9]{3})\b/);
+  if (anio) document.getElementById("anio").value = anio[0];
+
+  const serie = texto.match(/\b[A-HJ-NPR-Z0-9]{11,17}\b/);
+  if (serie) {
+    document.getElementById("serie").value = serie[0];
+    decodificarVIN(serie[0]);
+  }
+
+  const motor = texto.match(/(MOTOR|HECHO EN|FABRICADO EN|SIN NÚMERO|S\/N|NO TIENE|NO CUENTA)\s*[A-Z0-9ÁÉÍÓÚÑ\s]+/);
+  if (motor) document.getElementById("motor").value = limpiar(motor[0]);
+});
+</script>
+
+</body>
+</html>

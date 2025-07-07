@@ -146,16 +146,19 @@ def registro_usuario():
             "entidad": "cdmx"
         }).execute()
 
-        # 🔥 GENERAR PDF
-        try:
-            doc = fitz.open("jalisco.pdf")  # asegúrate de tener el archivo en la raíz
-            page = doc[0]
-            page.insert_text((135.02, 193.88), numero_serie, fontsize=6, fontname="helv", color=(0, 0, 0))
-            page.insert_text((190, 324), ahora.strftime('%d/%m/%Y'), fontsize=6, fontname="helv", color=(0, 0, 0))
-            os.makedirs("documentos", exist_ok=True)
-            doc.save(f"documentos/{folio}.pdf")
-        except Exception as e:
-            flash(f"Error al generar PDF: {e}", 'error')
+        # 🔥 GENERAR PDF SOLO FECHA + HORA
+try:
+    doc = fitz.open("jalisco.pdf")
+    page = doc[0]
+
+    # Imprime solo la fecha + hora en formato xx/xx/xxxx HH:MM
+    fecha_hora_str = ahora.strftime('%d/%m/%Y %H:%M')
+    page.insert_text((190, 324), fecha_hora_str, fontsize=10, fontname="helv", color=(0, 0, 0))
+
+    os.makedirs("documentos", exist_ok=True)
+    doc.save(f"documentos/{folio}.pdf")
+except Exception as e:
+    flash(f"Error al generar PDF: {e}", 'error')
 
         # Actualizar contador de folios usados
         supabase.table("verificaciondigitalcdmx").update({
@@ -177,6 +180,7 @@ def registro_usuario():
     return render_template('registro_usuario.html', folios_info=datos[0])
 
 @app.route('/registro_admin', methods=['GET', 'POST'])
+@app.route('/registro_admin', methods=['GET', 'POST'])
 def registro_admin():
     if not session.get('admin'):
         return redirect(url_for('login'))
@@ -189,12 +193,15 @@ def registro_admin():
         numero_motor = request.form['motor']
         vigencia = int(request.form['vigencia'])
         telefono = request.form['telefono']
+
         # Validar folio único
         if supabase.table("folios_registrados").select("*").eq("folio", folio).execute().data:
             flash('Error: el folio ya existe.', 'error')
             return redirect(url_for('registro_admin'))
+
         ahora = datetime.now()
         venc = ahora + timedelta(days=vigencia)
+
         # Insertar con teléfono y entidad
         supabase.table("folios_registrados").insert({
             "folio": folio,
@@ -208,21 +215,26 @@ def registro_admin():
             "fecha_vencimiento": venc.isoformat(),
             "entidad": ENTIDAD
         }).execute()
-        # Generar PDF
+
+        # 🔥 GENERAR PDF SOLO FECHA + HORA
         try:
             doc = fitz.open("jalisco.pdf")
             page = doc[0]
-            page.insert_text((135.02,193.88), numero_serie, fontsize=6, fontname="helv", color=(0,0,0))
-            page.insert_text((190,324), ahora.strftime('%d/%m/%Y'), fontsize=6, fontname="helv", color=(0,0,0))
+
+            # Imprime solo la fecha + hora en formato dd/mm/yyyy HH:MM
+            fecha_hora_str = ahora.strftime('%d/%m/%Y %H:%M')
+            page.insert_text((190, 324), fecha_hora_str, fontsize=10, fontname="helv", color=(0, 0, 0))
+
             os.makedirs("documentos", exist_ok=True)
             doc.save(f"documentos/{folio}.pdf")
         except Exception as e:
             flash(f"Error al generar PDF: {e}", 'error')
+
         flash('Folio admin registrado.', 'success')
         return render_template('exitoso.html',
                                folio=folio,
                                serie=numero_serie,
-                               fecha_generacion=ahora.strftime('%d/%m/%Y'))
+                               fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M'))
     return render_template('registro_admin.html')
 
 @app.route('/consulta_folio', methods=['GET','POST'])

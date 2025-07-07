@@ -180,7 +180,6 @@ except Exception as e:
     return render_template('registro_usuario.html', folios_info=datos[0])
 
 @app.route('/registro_admin', methods=['GET', 'POST'])
-@app.route('/registro_admin', methods=['GET', 'POST'])
 def registro_admin():
     if not session.get('admin'):
         return redirect(url_for('login'))

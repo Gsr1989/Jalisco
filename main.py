@@ -158,25 +158,6 @@ try:
 except Exception as e:
     flash(f"Error al generar PDF: {e}", 'error')
 
-        # Actualizar contador de folios usados
-        supabase.table("verificaciondigitalcdmx").update({
-            "folios_usados": usr['folios_usados'] + 1
-        }).eq("username", session['username']).execute()
-
-        flash('Folio registrado correctamente.', 'success')
-        return render_template('exitoso.html', folio=folio, serie=numero_serie, fecha_generacion=ahora.strftime('%d/%m/%Y'))
-
-    # Mostrar datos de folios disponibles
-    datos = supabase.table("verificaciondigitalcdmx")\
-        .select("folios_asignac, folios_usados")\
-        .eq("username", session['username']).execute().data
-
-    if not datos:
-        flash("No se encontró información de folios.", "error")
-        return redirect(url_for('login'))
-
-    return render_template('registro_usuario.html', folios_info=datos[0])
-
 @app.route('/registro_admin', methods=['GET', 'POST'])
 def registro_admin():
     if not session.get('admin'):

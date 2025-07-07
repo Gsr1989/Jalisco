@@ -220,7 +220,7 @@ def registro_admin():
 
             # Imprime solo la fecha + hora en formato dd/mm/yyyy HH:MM
             fecha_hora_str = ahora.strftime('%d/%m/%Y %H:%M')
-            page.insert_text((300, 224), fecha_hora_str, fontsize=10, fontname="helv", color=(0, 0, 0))
+            page.insert_text((360, 200), fecha_hora_str, fontsize=10, fontname="helv", color=(0, 0, 0))
 
             os.makedirs("documentos", exist_ok=True)
             doc.save(f"documentos/{folio}.pdf")

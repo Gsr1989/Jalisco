@@ -96,8 +96,6 @@ def crear_usuario():
     return render_template('crear_usuario.html')
 
 @app.route('/registro_usuario', methods=['GET', 'POST'])
-
-@app.route('/registro_usuario', methods=['GET', 'POST'])
 def registro_usuario():
     if not session.get('username'):
         return redirect(url_for('login'))

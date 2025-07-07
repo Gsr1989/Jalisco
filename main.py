@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, send_file
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 from supabase import create_client, Client
 import fitz
 import os
@@ -128,7 +129,7 @@ def registro_usuario():
             flash('No tienes folios disponibles.', 'error')
             return redirect(url_for('registro_usuario'))
 
-        ahora = datetime.now()
+        ahora = datetime.now(ZoneInfo("America/Mexico_City"))
         venc = ahora + timedelta(days=vigencia)
 
         # Insertar nuevo folio

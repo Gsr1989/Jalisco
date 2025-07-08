@@ -197,7 +197,7 @@ def registro_admin():
             flash('Error: el folio ya existe.', 'error')
             return redirect(url_for('registro_admin'))
 
-        ahora = datetime.now()
+        ahora = datetime.now(ZoneInfo("America/Mexico_City"))
         venc = ahora + timedelta(days=vigencia)
 
         # Insertar con teléfono y entidad

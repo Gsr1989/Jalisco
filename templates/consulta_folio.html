@@ -11,13 +11,11 @@
             background-color: #fff;
         }
         header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 30px;
+            width: 100%;
         }
         header img {
-            height: 80px;
+            width: 100%;
+            display: block;
         }
         h1 {
             text-align: center;
@@ -59,9 +57,6 @@
             display: block;
         }
         @media (max-width: 600px) {
-            header img {
-                height: 60px;
-            }
             h1 {
                 font-size: 24px;
                 margin-top: 20px;
@@ -75,7 +70,6 @@
 <body>
     <header>
         <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
-        <img src="{{ url_for('static', filename='sub_logo.png') }}" alt="Sub Logo">
     </header>
 
     <h1>Secretaría de Movilidad</h1>

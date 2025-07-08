@@ -12,13 +12,11 @@
             padding: 0;
         }
         header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 30px;
+            width: 100%;
         }
         header img {
-            height: 80px;
+            width: 100%;
+            display: block;
         }
         .titulo {
             text-align: center;
@@ -106,7 +104,6 @@
             display: block;
         }
         @media (max-width: 600px) {
-            header img { height: 60px; }
             .titulo    { font-size: 20px; }
             .estado    { font-size: 20px; }
         }
@@ -116,7 +113,6 @@
 
     <header>
         <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
-        <img src="{{ url_for('static', filename='sub_logo.png') }}" alt="Sub Logo">
     </header>
 
     <div class="titulo">Secretaría de Movilidad</div>

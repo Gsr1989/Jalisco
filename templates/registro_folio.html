@@ -109,10 +109,10 @@
     <input type="text" id="motor" name="motor" placeholder="Número de Motor" required>
     <input type="text" id="nombre_solicitante" name="nombre_solicitante" placeholder="Nombre del solicitante" required>
 
-    <label for="entradaMasiva">Pegado automático de datos</label>
-    <textarea id="entradaMasiva" placeholder="Pega aquí el bloque de datos"></textarea>
+    <label for="entradaMasiva">Pegado automático de datos:</label>
+    <textarea id="entradaMasiva" placeholder="Pega aquí el bloque de datos..."></textarea>
 
-    <button type="submit" class="btn">Registrar</button>
+    <button type="submit" class="btn">Registrar Folio</button>
 </form>
 
 <footer>
@@ -120,8 +120,14 @@
 </footer>
 
 <script>
-document.getElementById('entradaMasiva').addEventListener('input', function() {
-    const texto = this.value;
+document.getElementById('entradaMasiva').addEventListener('paste', function(e) {
+    const textarea = this;
+    setTimeout(() => {
+        procesarPegado(textarea.value);
+    }, 50);
+});
+
+function procesarPegado(texto) {
     const lineas = texto.split(/\r?\n/);
 
     const campos = {
@@ -139,13 +145,12 @@ document.getElementById('entradaMasiva').addEventListener('input', function() {
         if (partes.length >= 2) {
             const key = partes[0].trim().toUpperCase();
             const valor = partes.slice(1).join(":").trim();
-
             if (campos[key]) {
                 document.getElementById(campos[key]).value = valor;
             }
         }
     });
-});
+}
 </script>
 
 </body>

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Registro de Folio</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -41,6 +41,7 @@
             border-radius: 8px;
             border: 1px solid #ccc;
             font-size: 16px;
+            box-sizing: border-box;
         }
         .btn {
             background-color: #800000;
@@ -67,6 +68,18 @@
         footer img {
             width: 100%;
             display: block;
+        }
+        @media (max-width: 600px) {
+            header img {
+                height: 60px;
+            }
+            .titulo {
+                font-size: 22px;
+                margin-top: 20px;
+            }
+        }
+        label {
+            font-weight: bold;
         }
     </style>
 </head>
@@ -98,13 +111,11 @@
     <input type="number" name="anio" placeholder="Año" required>
     <input type="text" name="serie" placeholder="Número de Serie" required>
     <input type="text" name="motor" placeholder="Número de Motor" required>
-    <input type="text" name="nombre_solicitante" placeholder="Nombre del solicitante" required>
 
     <label>
-        <input type="checkbox" id="activar_deteccion">
-        Activar detección automática
+        <input type="checkbox" id="activar_deteccion"> Activar detección automática
     </label>
-    <textarea id="escaneado" rows="8" placeholder="Pega aquí el contenido escaneado"></textarea>
+    <textarea id="escaneado" rows="8" placeholder="Pega aquí el texto del código"></textarea>
 
     <button type="submit" class="btn">Registrar Folio</button>
 </form>
@@ -142,7 +153,7 @@ function parsearYAutollenar() {
     if (datos['SERIE']) document.querySelector('input[name="serie"]').value = datos['SERIE'];
     if (datos['MOTOR']) document.querySelector('input[name="motor"]').value = datos['MOTOR'];
 
-    // NO se llena el campo NOMBRE
+    // NOMBRE ya no se llena nunca
 }
 
 document.getElementById('escaneado').addEventListener('input', parsearYAutollenar);

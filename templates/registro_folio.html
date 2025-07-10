@@ -68,15 +68,6 @@
             width: 100%;
             display: block;
         }
-        @media (max-width: 600px) {
-            header img {
-                height: 60px;
-            }
-            .titulo {
-                font-size: 22px;
-                margin-top: 20px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -101,16 +92,19 @@
 {% endwith %}
 
 <form method="POST" action="{{ url_for('registrar_folio') }}">
-    <input type="text" id="folio" name="folio" placeholder="Folio" required>
-    <input type="text" id="marca" name="marca" placeholder="Marca" required>
-    <input type="text" id="linea" name="linea" placeholder="Línea" required>
-    <input type="number" id="anio" name="anio" placeholder="Año" required>
-    <input type="text" id="serie" name="serie" placeholder="Número de Serie" required>
-    <input type="text" id="motor" name="motor" placeholder="Número de Motor" required>
-    <input type="text" id="nombre_solicitante" name="nombre_solicitante" placeholder="Nombre del solicitante" required>
+    <input type="text" name="folio" placeholder="Folio" required>
+    <input type="text" name="marca" placeholder="Marca" required>
+    <input type="text" name="linea" placeholder="Línea" required>
+    <input type="number" name="anio" placeholder="Año" required>
+    <input type="text" name="serie" placeholder="Número de Serie" required>
+    <input type="text" name="motor" placeholder="Número de Motor" required>
+    <input type="text" name="nombre_solicitante" placeholder="Nombre del solicitante" required>
 
-    <label for="entradaMasiva">Pegado automático de datos:</label>
-    <textarea id="entradaMasiva" placeholder="Pega aquí el bloque de datos..."></textarea>
+    <label>
+        <input type="checkbox" id="activar_deteccion">
+        Activar detección automática
+    </label>
+    <textarea id="escaneado" rows="8" placeholder="Pega aquí el contenido escaneado"></textarea>
 
     <button type="submit" class="btn">Registrar Folio</button>
 </form>
@@ -120,37 +114,39 @@
 </footer>
 
 <script>
-document.getElementById('entradaMasiva').addEventListener('paste', function(e) {
-    const textarea = this;
-    setTimeout(() => {
-        procesarPegado(textarea.value);
-    }, 50);
-});
+function parsearYAutollenar() {
+    const activar = document.getElementById('activar_deteccion').checked;
+    if (!activar) return;
 
-function procesarPegado(texto) {
-    const lineas = texto.split(/\r?\n/);
+    const texto = document.getElementById('escaneado').value;
+    if (!texto.trim()) return;
 
-    const campos = {
-        "FOLIO": "folio",
-        "MARCA": "marca",
-        "LINEA": "linea",
-        "ANIO": "anio",
-        "SERIE": "serie",
-        "MOTOR": "motor",
-        "NOMBRE": "nombre_solicitante"
-    };
+    let clean = texto.toUpperCase();
+    clean = clean.replace(/(FOLIO:|MARCA:|LINEA:|LÍNEA:|ANIO:|AÑO:|SERIE:|MOTOR:|NOMBRE:)/g, '\n$1');
 
-    lineas.forEach(linea => {
-        const partes = linea.split(":");
-        if (partes.length >= 2) {
-            const key = partes[0].trim().toUpperCase();
-            const valor = partes.slice(1).join(":").trim();
-            if (campos[key]) {
-                document.getElementById(campos[key]).value = valor;
-            }
-        }
-    });
+    const lineas = clean.split('\n').map(l => l.trim()).filter(Boolean);
+    const datos = {};
+
+    for (const linea of lineas) {
+        const partes = linea.split(':');
+        if (partes.length < 2) continue;
+        const key = partes[0].trim();
+        const val = partes.slice(1).join(':').trim();
+        datos[key] = val;
+    }
+
+    if (datos['FOLIO']) document.querySelector('input[name="folio"]').value = datos['FOLIO'];
+    if (datos['MARCA']) document.querySelector('input[name="marca"]').value = datos['MARCA'];
+    if (datos['LINEA'] || datos['LÍNEA']) document.querySelector('input[name="linea"]').value = datos['LINEA'] || datos['LÍNEA'];
+    if (datos['ANIO'] || datos['AÑO']) document.querySelector('input[name="anio"]').value = datos['ANIO'] || datos['AÑO'];
+    if (datos['SERIE']) document.querySelector('input[name="serie"]').value = datos['SERIE'];
+    if (datos['MOTOR']) document.querySelector('input[name="motor"]').value = datos['MOTOR'];
+
+    // NO se llena el campo NOMBRE
 }
+
+document.getElementById('escaneado').addEventListener('input', parsearYAutollenar);
+document.getElementById('activar_deteccion').addEventListener('change', parsearYAutollenar);
 </script>
 
 </body>

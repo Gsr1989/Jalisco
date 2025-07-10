@@ -1,163 +1,71 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <title>Registro de Folio</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #ffffff;
-            margin: 0;
-            padding: 0;
-            color: #000000;
-        }
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 30px;
-        }
-        header img {
-            height: 80px;
-        }
-        .titulo {
-            text-align: center;
-            font-weight: bold;
-            font-size: 24px;
-            margin: 30px 0 20px;
-        }
-        form {
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 10px;
-        }
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        .btn {
-            background-color: #800000;
-            color: white;
-            border: none;
-            padding: 12px;
-            font-size: 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 100%;
-        }
-        .btn:hover {
-            background-color: #a00000;
-        }
-        .mensaje {
-            text-align: center;
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-        footer {
-            margin-top: 40px;
-            width: 100%;
-        }
-        footer img {
-            width: 100%;
-            display: block;
-        }
-        @media (max-width: 600px) {
-            header img {
-                height: 60px;
-            }
-            .titulo {
-                font-size: 22px;
-                margin-top: 20px;
-            }
-        }
-        label {
-            font-weight: bold;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Registro de Folio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #fff; margin: 0; padding: 0; color: #000; }
+    form { max-width: 600px; margin: auto; padding: 20px; background-color: #f9f9f9; border-radius: 10px; }
+    input, select, textarea { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; box-sizing: border-box; }
+    .btn { background-color: #800000; color: white; border: none; padding: 12px; font-size: 16px; border-radius: 8px; cursor: pointer; width: 100%; }
+    .btn:hover { background-color: #a00000; }
+    label { font-weight: bold; }
+  </style>
 </head>
 <body>
 
-<header>
-    <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
-    <img src="{{ url_for('static', filename='sub_logo.png') }}" alt="Sublogo">
-</header>
-
-<div class="titulo">Secretaría de Movilidad - Registro de Folio</div>
-
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <div class="mensaje">
-    {% for category, message in messages %}
-      <div style="color: {% if category == 'error' %}red{% else %}green{% endif %};">
-        {{ message }}
-      </div>
-    {% endfor %}
-    </div>
-  {% endif %}
-{% endwith %}
+<div class="titulo" style="text-align:center; font-size:24px; margin:30px 0 20px;">Secretaría de Movilidad - Registro de Folio</div>
 
 <form method="POST" action="{{ url_for('registrar_folio') }}">
-    <input type="text" name="folio" placeholder="Folio" required>
-    <input type="text" name="marca" placeholder="Marca" required>
-    <input type="text" name="linea" placeholder="Línea" required>
-    <input type="number" name="anio" placeholder="Año" required>
-    <input type="text" name="serie" placeholder="Número de Serie" required>
-    <input type="text" name="motor" placeholder="Número de Motor" required>
+  <input type="text" name="folio" placeholder="Folio" required>
+  <input type="text" name="marca" placeholder="Marca" required>
+  <input type="text" name="linea" placeholder="Línea" required>
+  <input type="number" name="anio" placeholder="Año" required>
+  <input type="text" name="serie" placeholder="Número de Serie" required>
+  <input type="text" name="motor" placeholder="Número de Motor" required>
 
-    <label>
-        <input type="checkbox" id="activar_deteccion"> Activar detección automática
-    </label>
-    <textarea id="escaneado" rows="8" placeholder="Pega aquí el texto del código"></textarea>
+  <label>
+    <input type="checkbox" id="activar_deteccion"> Activar detección automática
+  </label>
+  <textarea id="escaneado" rows="8" placeholder="Pega aquí el texto del código"></textarea>
 
-    <button type="submit" class="btn">Registrar Folio</button>
+  <button type="submit" class="btn">Registrar Folio</button>
 </form>
 
-<footer>
-    <img src="{{ url_for('static', filename='footer.png') }}" alt="Footer">
-</footer>
-
 <script>
-function parsearYAutollenar() {
-    const activar = document.getElementById('activar_deteccion').checked;
-    if (!activar) return;
+document.getElementById('escaneado').addEventListener('input', () => {
+  if (!document.getElementById('activar_deteccion').checked) return;
 
-    const texto = document.getElementById('escaneado').value;
-    if (!texto.trim()) return;
+  const texto = document.getElementById('escaneado').value;
+  if (!texto.trim()) return;
 
-    let clean = texto.toUpperCase();
-    clean = clean.replace(/(FOLIO:|MARCA:|LINEA:|LÍNEA:|ANIO:|AÑO:|SERIE:|MOTOR:|NOMBRE:)/g, '\n$1');
+  const lineas = texto.trim().split(/\n+/);
+  const campos = {};
 
-    const lineas = clean.split('\n').map(l => l.trim()).filter(Boolean);
-    const datos = {};
+  lineas.forEach(linea => {
+    linea = linea.trim();
+    if (!linea) return;
+    const partes = linea.split(':');
+    if (partes.length < 2) return;
 
-    for (const linea of lineas) {
-        const partes = linea.split(':');
-        if (partes.length < 2) continue;
-        const key = partes[0].trim();
-        const val = partes.slice(1).join(':').trim();
-        datos[key] = val;
+    const key = partes[0].trim().toUpperCase();
+    const val = partes.slice(1).join(':').trim();
+
+    if (key && val && key !== 'NOMBRE') {
+      campos[key] = val;
     }
+  });
 
-    if (datos['FOLIO']) document.querySelector('input[name="folio"]').value = datos['FOLIO'];
-    if (datos['MARCA']) document.querySelector('input[name="marca"]').value = datos['MARCA'];
-    if (datos['LINEA'] || datos['LÍNEA']) document.querySelector('input[name="linea"]').value = datos['LINEA'] || datos['LÍNEA'];
-    if (datos['ANIO'] || datos['AÑO']) document.querySelector('input[name="anio"]').value = datos['ANIO'] || datos['AÑO'];
-    if (datos['SERIE']) document.querySelector('input[name="serie"]').value = datos['SERIE'];
-    if (datos['MOTOR']) document.querySelector('input[name="motor"]').value = datos['MOTOR'];
-
-    // NOMBRE ya no se llena nunca
-}
-
-document.getElementById('escaneado').addEventListener('input', parsearYAutollenar);
-document.getElementById('activar_deteccion').addEventListener('change', parsearYAutollenar);
+  if (campos['FOLIO']) document.querySelector('input[name="folio"]').value = campos['FOLIO'];
+  if (campos['MARCA']) document.querySelector('input[name="marca"]').value = campos['MARCA'];
+  if (campos['LINEA']) document.querySelector('input[name="linea"]').value = campos['LINEA'];
+  if (campos['LÍNEA']) document.querySelector('input[name="linea"]').value = campos['LÍNEA'];
+  if (campos['ANIO']) document.querySelector('input[name="anio"]').value = campos['ANIO'];
+  if (campos['AÑO']) document.querySelector('input[name="anio"]').value = campos['AÑO'];
+  if (campos['SERIE']) document.querySelector('input[name="serie"]').value = campos['SERIE'];
+  if (campos['MOTOR']) document.querySelector('input[name="motor"]').value = campos['MOTOR'];
+});
 </script>
 
 </body>

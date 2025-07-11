@@ -2,131 +2,53 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registro de Folio</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #fff;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-      color: #333;
-    }
-    form {
-      max-width: 500px;
-      margin: 20px auto;
-      padding: 20px;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      background-color: #f9f9f9;
-    }
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-      font-size: 16px;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      background-color: #800000;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #a00000;
-    }
-    .checkbox-container {
-      display: flex;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-    .checkbox-container input[type="checkbox"] {
-      margin-right: 10px;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 <body>
-
-  <h1>Secretaría de Movilidad</h1>
+  <h2>Secretaría de Movilidad</h2>
 
   <form>
-    <input type="text" id="folio" name="folio" placeholder="FOLIO" required>
-    <input type="text" id="marca" name="marca" placeholder="MARCA" required>
-    <input type="text" id="linea" name="linea" placeholder="LÍNEA" required>
-    <input type="text" id="anio" name="anio" placeholder="AÑO" required>
-    <input type="text" id="serie" name="serie" placeholder="NÚMERO DE SERIE" required>
-    <input type="text" id="motor" name="motor" placeholder="NÚMERO DE MOTOR" required>
+    <input type="text" id="folio" placeholder="FOLIO">
+    <input type="text" id="marca" placeholder="MARCA">
+    <input type="text" id="linea" placeholder="LÍNEA">
+    <input type="text" id="anio" placeholder="AÑO">
+    <input type="text" id="serie" placeholder="NÚMERO DE SERIE">
+    <input type="text" id="motor" placeholder="NÚMERO DE MOTOR">
+    <input type="text" id="nombre" placeholder="NOMBRE">
 
-    <div class="checkbox-container">
-      <input type="checkbox" id="autollenado">
-      <label for="autollenado">Activar detección automática</label>
-    </div>
-
-    <textarea id="texto" placeholder="Pega aquí el contenido" rows="8"></textarea>
-
-    <button type="submit">Registrar Folio</button>
+    <label>
+      <input type="checkbox" id="autoDetect"> Activar detección automática
+    </label>
+    <br>
+    <textarea id="origen" rows="10" cols="50" placeholder="Pega aquí el texto"></textarea>
   </form>
 
   <script>
-    document.getElementById('autollenado').addEventListener('change', function() {
-      if (this.checked) procesarTextarea();
-    });
+    document.getElementById('autoDetect').addEventListener('change', function() {
+      if (this.checked) {
+        const txt = document.getElementById('origen').value.trim();
+        const lines = txt.split(/\n+/);
+        const datos = {};
 
-    document.getElementById('texto').addEventListener('input', function() {
-      if (document.getElementById('autollenado').checked) procesarTextarea();
-    });
-
-    function procesarTextarea() {
-      const texto = document.getElementById('texto').value;
-      const lineas = texto.split(/\r?\n/);
-
-      const campos = {
-        FOLIO: '',
-        MARCA: '',
-        LINEA: '',
-        ANIO: '',
-        SERIE: '',
-        MOTOR: ''
-      };
-
-      for (let linea of lineas) {
-        linea = linea.trim();
-        if (!linea) continue;
-
-        const partes = linea.split(':');
-        if (partes.length < 2) continue;
-
-        const clave = partes[0].trim().toUpperCase();
-        const valor = partes.slice(1).join(':').trim();
-
-        if (clave === 'NOMBRE') continue;  // IGNORAR NOMBRE
-
-        if (campos.hasOwnProperty(clave)) {
-          campos[clave] = valor;
+        for (let line of lines) {
+          line = line.trim();
+          if (!line.includes(':')) continue;
+          let [campo, ...resto] = line.split(':');
+          const valor = resto.join(':').trim();
+          datos[campo.trim().toUpperCase()] = valor;
         }
-      }
 
-      document.getElementById('folio').value = campos.FOLIO;
-      document.getElementById('marca').value = campos.MARCA;
-      document.getElementById('linea').value = campos.LINEA;
-      document.getElementById('anio').value = campos.ANIO;
-      document.getElementById('serie').value = campos.SERIE;
-      document.getElementById('motor').value = campos.MOTOR;
-    }
+        // Asigna a cada input
+        document.getElementById('folio').value = datos['FOLIO'] || '';
+        document.getElementById('marca').value = datos['MARCA'] || '';
+        document.getElementById('linea').value = datos['LINEA'] || '';
+        document.getElementById('anio').value = datos['ANIO'] || '';
+        document.getElementById('serie').value = datos['SERIE'] || '';
+        document.getElementById('motor').value = datos['MOTOR'] || '';
+        document.getElementById('nombre').value = datos['NOMBRE'] || '';
+      }
+    });
   </script>
 </body>
 </html>

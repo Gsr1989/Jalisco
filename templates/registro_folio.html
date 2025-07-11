@@ -25,8 +25,9 @@
   </form>
 
   <script>
-    document.getElementById('autoDetect').addEventListener('change', function() {
-      if (this.checked) {
+    // Función que hace el trabajo de autollenado
+    function autollenado() {
+      if (document.getElementById('autoDetect').checked) {
         const txt = document.getElementById('origen').value.trim();
         const lines = txt.split(/\n+/);
         const datos = {};
@@ -39,7 +40,6 @@
           datos[campo.trim().toUpperCase()] = valor;
         }
 
-        // Asigna a cada input
         document.getElementById('folio').value = datos['FOLIO'] || '';
         document.getElementById('marca').value = datos['MARCA'] || '';
         document.getElementById('linea').value = datos['LINEA'] || '';
@@ -48,7 +48,12 @@
         document.getElementById('motor').value = datos['MOTOR'] || '';
         document.getElementById('nombre').value = datos['NOMBRE'] || '';
       }
-    });
+    }
+
+    // Cada vez que cambie el textarea, intenta autollenar si está activo el checkbox
+    document.getElementById('origen').addEventListener('input', autollenado);
+    // Y si prendes o apagas el checkbox, intenta autollenar por si ya pegaste algo antes
+    document.getElementById('autoDetect').addEventListener('change', autollenado);
   </script>
 </body>
 </html>

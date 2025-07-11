@@ -17,6 +17,7 @@
     <input type="text" id="motor" placeholder="NÚMERO DE MOTOR">
     <input type="text" id="nombre" placeholder="NOMBRE">
 
+    <br>
     <label>
       <input type="checkbox" id="autoDetect"> Activar detección automática
     </label>
@@ -25,35 +26,39 @@
   </form>
 
   <script>
-    // Función que hace el trabajo de autollenado
-    function autollenado() {
-      if (document.getElementById('autoDetect').checked) {
-        const txt = document.getElementById('origen').value.trim();
-        const lines = txt.split(/\n+/);
-        const datos = {};
+    // Función para rellenar campos desde el textarea
+    function rellenarCampos() {
+      const txt = document.getElementById('origen').value.trim();
+      const lines = txt.split(/\n+/);
+      const datos = {};
 
-        for (let line of lines) {
-          line = line.trim();
-          if (!line.includes(':')) continue;
-          let [campo, ...resto] = line.split(':');
-          const valor = resto.join(':').trim();
-          datos[campo.trim().toUpperCase()] = valor;
-        }
-
-        document.getElementById('folio').value = datos['FOLIO'] || '';
-        document.getElementById('marca').value = datos['MARCA'] || '';
-        document.getElementById('linea').value = datos['LINEA'] || '';
-        document.getElementById('anio').value = datos['ANIO'] || '';
-        document.getElementById('serie').value = datos['SERIE'] || '';
-        document.getElementById('motor').value = datos['MOTOR'] || '';
-        document.getElementById('nombre').value = datos['NOMBRE'] || '';
+      for (let line of lines) {
+        line = line.trim();
+        if (!line.includes(':')) continue;
+        let [campo, ...resto] = line.split(':');
+        const valor = resto.join(':').trim();
+        datos[campo.trim().toUpperCase()] = valor;
       }
+
+      // Asignar valores
+      document.getElementById('folio').value   = datos['FOLIO']   || '';
+      document.getElementById('marca').value   = datos['MARCA']   || '';
+      document.getElementById('linea').value   = datos['LINEA']   || '';
+      document.getElementById('anio').value    = datos['ANIO']    || '';
+      document.getElementById('serie').value   = datos['SERIE']   || '';
+      document.getElementById('motor').value   = datos['MOTOR']   || '';
+      document.getElementById('nombre').value  = datos['NOMBRE']  || '';
     }
 
-    // Cada vez que cambie el textarea, intenta autollenar si está activo el checkbox
-    document.getElementById('origen').addEventListener('input', autollenado);
-    // Y si prendes o apagas el checkbox, intenta autollenar por si ya pegaste algo antes
-    document.getElementById('autoDetect').addEventListener('change', autollenado);
+    // Detectar cuando se activa el checkbox
+    document.getElementById('autoDetect').addEventListener('change', function() {
+      if (this.checked) rellenarCampos();
+    });
+
+    // (Opcional) Si quieres que también funcione cada que cambie el textarea:
+    document.getElementById('origen').addEventListener('input', function() {
+      if (document.getElementById('autoDetect').checked) rellenarCampos();
+    });
   </script>
 </body>
 </html>

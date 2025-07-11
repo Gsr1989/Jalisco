@@ -2,45 +2,92 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registro de Folio</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    input, textarea, button { display: block; width: 100%; margin: 10px 0; padding: 10px; font-size: 16px; }
-    label { font-weight: bold; margin-top: 20px; display: block; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    form {
+      max-width: 500px;
+      margin: 20px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #800000;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #a00000;
+    }
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .checkbox-container input[type="checkbox"] {
+      margin-right: 10px;
+    }
   </style>
 </head>
 <body>
 
-  <h2>Secretaría de Movilidad - Registro de Folio</h2>
+  <h1>Secretaría de Movilidad</h1>
 
   <form>
-    <input type="text" id="folio" placeholder="Folio">
-    <input type="text" id="marca" placeholder="Marca">
-    <input type="text" id="linea" placeholder="Línea">
-    <input type="text" id="anio" placeholder="Año">
-    <input type="text" id="serie" placeholder="Número de Serie">
-    <input type="text" id="motor" placeholder="Número de Motor">
+    <input type="text" id="folio" name="folio" placeholder="FOLIO" required>
+    <input type="text" id="marca" name="marca" placeholder="MARCA" required>
+    <input type="text" id="linea" name="linea" placeholder="LÍNEA" required>
+    <input type="text" id="anio" name="anio" placeholder="AÑO" required>
+    <input type="text" id="serie" name="serie" placeholder="NÚMERO DE SERIE" required>
+    <input type="text" id="motor" name="motor" placeholder="NÚMERO DE MOTOR" required>
 
-    <label>
-      <input type="checkbox" id="autollenado"> Activar detección automática
-    </label>
+    <div class="checkbox-container">
+      <input type="checkbox" id="autollenado">
+      <label for="autollenado">Activar detección automática</label>
+    </div>
 
-    <textarea id="texto" rows="10" placeholder="Pega aquí tu texto"></textarea>
+    <textarea id="texto" placeholder="Pega aquí el contenido" rows="8"></textarea>
+
     <button type="submit">Registrar Folio</button>
   </form>
 
   <script>
     document.getElementById('autollenado').addEventListener('change', function() {
-      if (this.checked) {
-        procesarTextarea();
-      }
+      if (this.checked) procesarTextarea();
     });
 
     document.getElementById('texto').addEventListener('input', function() {
-      if (document.getElementById('autollenado').checked) {
-        procesarTextarea();
-      }
+      if (document.getElementById('autollenado').checked) procesarTextarea();
     });
 
     function procesarTextarea() {
@@ -48,31 +95,38 @@
       const lineas = texto.split(/\r?\n/);
 
       const campos = {
-        FOLIO: 'folio',
-        MARCA: 'marca',
-        LINEA: 'linea',
-        ANIO: 'anio',
-        SERIE: 'serie',
-        MOTOR: 'motor'
+        FOLIO: '',
+        MARCA: '',
+        LINEA: '',
+        ANIO: '',
+        SERIE: '',
+        MOTOR: ''
       };
 
-      // Limpia solo los campos definidos
-      for (const key in campos) {
-        document.getElementById(campos[key]).value = '';
-      }
+      for (let linea of lineas) {
+        linea = linea.trim();
+        if (!linea) continue;
 
-      for (const linea of lineas) {
         const partes = linea.split(':');
-        if (partes.length >= 2) {
-          const clave = partes[0].trim().toUpperCase();
-          const valor = partes.slice(1).join(':').trim();
-          if (campos[clave]) {
-            document.getElementById(campos[clave]).value = valor;
-          }
+        if (partes.length < 2) continue;
+
+        const clave = partes[0].trim().toUpperCase();
+        const valor = partes.slice(1).join(':').trim();
+
+        if (clave === 'NOMBRE') continue;  // IGNORAR NOMBRE
+
+        if (campos.hasOwnProperty(clave)) {
+          campos[clave] = valor;
         }
       }
+
+      document.getElementById('folio').value = campos.FOLIO;
+      document.getElementById('marca').value = campos.MARCA;
+      document.getElementById('linea').value = campos.LINEA;
+      document.getElementById('anio').value = campos.ANIO;
+      document.getElementById('serie').value = campos.SERIE;
+      document.getElementById('motor').value = campos.MOTOR;
     }
   </script>
-
 </body>
 </html>

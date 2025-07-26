@@ -5,6 +5,8 @@ from supabase import create_client, Client
 import fitz
 import os
 import vonage
+from flask import send_file import qrcode from PIL import Image
+
 
 app = Flask(__name__)
 app.secret_key = 'clave_muy_segura_123456'
@@ -418,6 +420,66 @@ def logout():
 @app.route('/consulta_permiso_guadalajara')
 def consulta_permiso_guadalajara():
     return render_template('consulta_permiso_guadalajara.html')
+
+@app.route("/formulario_jalisco", methods=["GET","POST"]) def formulario_jalisco(): if "user" not in session: return redirect(url_for("login"))
+
+if request.method == "POST":
+    d = request.form
+    fol = generar_folio_jalisco()
+    ahora = datetime.now()
+
+    f_exp_iso = ahora.isoformat()
+    f_ven_iso = (ahora + timedelta(days=30)).isoformat()
+
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+    # === PDF ORIGINAL (jalisco.pdf) ===
+    out = os.path.join(OUTPUT_DIR, f"{fol}_jalisco.pdf")
+    doc = fitz.open("jalisco.pdf")
+    pg = doc[0]
+
+    for campo in ["marca", "linea", "anio", "serie", "nombre", "color"]:
+        x, y, s, col = coords_jalisco[campo]
+        pg.insert_text((x, y), d.get(campo, ""), fontsize=s, color=col)
+    pg.insert_text(coords_jalisco["fecha_ven"][:2], (ahora + timedelta(days=30)).strftime("%d/%m/%Y"), fontsize=coords_jalisco["fecha_ven"][2], color=coords_jalisco["fecha_ven"][3])
+
+    pg.insert_text((930, 391), fol, fontsize=14, color=(0, 0, 0))
+
+    fol_representativo = int(obtener_folio_representativo())
+    pg.insert_text((328, 804), str(fol_representativo), fontsize=32, color=(0, 0, 0))
+    pg.insert_text((653, 200), str(fol_representativo), fontsize=45, color=(0, 0, 0))
+    incrementar_folio_representativo(fol_representativo)
+
+    pg.insert_text((910, 620), f"*{fol}*", fontsize=30, color=(0,0,0), fontname="Courier")
+    pg.insert_text((1083, 800), "DIGITAL", fontsize=14, color=(0, 0, 0))
+
+    contenido_ine = f"""
+
+FOLIO:{fol} MARCA:{d.get('marca')} LINEA:{d.get('linea')} ANIO:{d.get('anio')} SERIE:{d.get('serie')} MOTOR:{d.get('motor')} """ ine_img_path = os.path.join(OUTPUT_DIR, f"{fol}_inecode.png") generar_codigo_ine(contenido_ine, ine_img_path) pg.insert_image(fitz.Rect(937.65, 75, 1168.955, 132), filename=ine_img_path, keep_proportion=False, overlay=True) doc.save(out) doc.close()
+
+# === PDF NUEVO con QR (jalisco1.pdf) ===
+    qr_pdf_path = os.path.join(OUTPUT_DIR, f"{fol}_jalisco1.pdf")
+    doc2 = fitz.open("jalisco1.pdf")
+    pg2 = doc2[0]
+
+    qr_url = f"https://serviciodigital-jaliscogobmx.onrender.com/consulta_folio?folio={fol}"
+    qr_img = qrcode.make(qr_url)
+    qr_img = qr_img.resize((int(2 * 28.35), int(2 * 28.35)))
+    qr_path = os.path.join(OUTPUT_DIR, f"{fol}_qr.png")
+    qr_img.save(qr_path)
+
+    x0 = 792 - 56.7
+    y0 = 0
+    pg2.insert_image(fitz.Rect(x0, y0, x0 + 56.7, y0 + 56.7), filename=qr_path)
+
+    doc2.save(qr_pdf_path)
+    doc2.close()
+
+    _guardar(fol, "Jalisco", d["serie"], d["marca"], d["linea"], d["motor"], d["anio"], d["color"], f_exp_iso, f_ven_iso, d["nombre"])
+
+    return render_template("exitoso.html", folio=fol, jalisco=True)
+
+return render_template("formulario_jalisco.html")
 
 if __name__ == '__main__':
     app.run(debug=True)

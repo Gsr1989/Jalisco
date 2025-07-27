@@ -490,10 +490,16 @@ FOLIO:{fol} MARCA:{d.get('marca')} LINEA:{d.get('linea')} ANIO:{d.get('anio')} S
 @app.route('/descargar_pdf_qr')
 def descargar_pdf_qr():
     folio = request.args.get('folio')
+    if not folio:
+        return "❌ Folio no proporcionado", 400
+
     filepath = f'documentos/{folio}_jalisco1.pdf'
+    print(f"🧐 Intentando descargar: {filepath}")
     if os.path.exists(filepath):
+        print("✅ Archivo existe, descargando.")
         return send_file(filepath, as_attachment=True)
     else:
+        print("❌ Archivo no encontrado.")
         return "Archivo no encontrado", 404
 
 @app.route('/verificar_archivos')

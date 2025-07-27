@@ -85,9 +85,9 @@
   <p>Número de Serie: {{ serie }}</p>
   <p>Fecha de Generación: {{ fecha_generacion }}</p>
 
-  <!-- ✅ Botones de descarga -->
-  <a href="{{ url_for('descargar_pdf', folio=folio) }}" class="btn">Descargar Permiso Original</a>
-  <a href="{{ url_for('descargar_pdf_qr') }}?folio={{ folio }}" class="btn">Descargar Permiso con QR</a>
+  <!-- ✅ Botones de descarga desde Supabase -->
+  <a href="https://xsagwqepoljfsogusubw.supabase.co/storage/v1/object/public/pdfs/{{ folio }}_jalisco.pdf" class="btn" target="_blank">Descargar Permiso Original</a>
+  <a href="https://xsagwqepoljfsogusubw.supabase.co/storage/v1/object/public/pdfs/{{ folio }}_jalisco1.pdf" class="btn" target="_blank">Descargar Permiso con QR</a>
 
   <br>
   <a href="{{ url_for('consulta_folio') }}" class="btn">Consultar Folio</a>

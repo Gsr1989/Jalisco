@@ -478,14 +478,21 @@ FOLIO:{fol} MARCA:{d.get('marca')} LINEA:{d.get('linea')} ANIO:{d.get('anio')} S
         qr_path = os.path.join("documentos", f"{fol}_qr.png")
         qr_img.save(qr_path)
 
-        # Tamaño carta horizontal (21.59 cm alto, 27.94 cm ancho → 612 x 792 pts)
         x0 = 792 - 56.7  # 3 cm desde la derecha
         y0 = 0           # 0 desde abajo (esquina inferior derecha)
         pg2.insert_image(fitz.Rect(x0, y0, x0 + 56.7, y0 + 56.7), filename=qr_path)
         doc2.save(out_qr)
         doc2.close()
 
-        # === Guardar en Supabase
+        # === Subir ambos archivos a Supabase ===
+        try:
+            subir_pdf_supabase(out_original, f"{fol}_jalisco.pdf")
+            subir_pdf_supabase(out_qr, f"{fol}_jalisco1.pdf")
+            print("✅ Archivos subidos a Supabase correctamente")
+        except Exception as e:
+            print(f"❌ Error al subir a Supabase: {e}")
+
+        # === Guardar datos en la base ===
         _guardar(fol, "Jalisco", d["serie"], d["marca"], d["linea"], d["motor"], d["anio"], d["color"], f_exp_iso, f_ven_iso, d["nombre"])
 
         return render_template("exitoso.html", folio=fol, jalisco=True)

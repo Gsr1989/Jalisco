@@ -2,8 +2,7 @@ Flask==2.3.3
 gunicorn==21.2.0
 supabase==1.0.3
 python-dotenv==1.0.1
-PyMuPDF==1.22.5
+PyMuPDF==1.21.1
 qrcode==7.3.1
 vonage==3.1.0
 Pillow>=10.0.0
-python-magic

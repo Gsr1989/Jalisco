@@ -85,8 +85,8 @@
   <p>Número de Serie: {{ serie }}</p>
   <p>Fecha de Generación: {{ fecha_generacion }}</p>
 
-  <!-- ✅ Botones de descarga corregidos -->
-  <a href="{{ url_for('descargar_pdf', folio=folio ~ '_jalisco') }}" class="btn">Descargar Permiso Original</a>
+  <!-- ✅ Botones de descarga -->
+  <a href="{{ url_for('descargar_pdf', folio=folio) }}" class="btn">Descargar Permiso Original</a>
   <a href="{{ url_for('descargar_pdf', folio=folio ~ '_jalisco1') }}" class="btn">Descargar Permiso con QR</a>
 
   <br>

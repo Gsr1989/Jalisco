@@ -5,8 +5,8 @@ from supabase import create_client, Client
 import fitz
 import os
 import vonage
-from flask import send_file import qrcode from PIL import Image
-
+import qrcode
+from PIL import Image
 
 app = Flask(__name__)
 app.secret_key = 'clave_muy_segura_123456'

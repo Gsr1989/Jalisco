@@ -22,6 +22,11 @@ VONAGE_SECRET = "RF1Uvng7cxLTddp9"
 vonage_client = vonage.Client(key=VONAGE_KEY, secret=VONAGE_SECRET)
 sms = vonage.Sms(vonage_client)
 
+def subir_pdf_supabase(path_local: str, nombre_remoto: str):
+    with open(path_local, "rb") as f:
+        res = supabase.storage.from_("pdfs").upload(nombre_remoto, f, {"content-type": "application/pdf"})
+    return res
+
 # ENTIDAD FIJA PARA ESTE SISTEMA
 ENTIDAD = "cdmx"
 

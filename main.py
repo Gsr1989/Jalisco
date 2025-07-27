@@ -496,5 +496,15 @@ def descargar_pdf_qr():
     else:
         return "Archivo no encontrado", 404
 
+@app.route('/verificar_archivos')
+def verificar_archivos():
+    folio = request.args.get('folio')
+    base = f'documentos/{folio}_jalisco.pdf'
+    qr = f'documentos/{folio}_jalisco1.pdf'
+    return {
+        "base_existe": os.path.exists(base),
+        "qr_existe": os.path.exists(qr)
+    }
+
 if __name__ == '__main__':
     app.run(debug=True)

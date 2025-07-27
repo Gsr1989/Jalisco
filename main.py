@@ -245,17 +245,16 @@ def registro_admin():
 
 # ⬅️ AQUÍ VAN, FUERA DE LAS RUTAS
 
+# Folio representativo solo visual, inicia en 1 y se incrementa cada vez
+folio_visual_actual = 1
+
 def obtener_folio_representativo():
-    datos = supabase.table("folios_representativos").select("*").eq("entidad", ENTIDAD).execute().data
-    if datos:
-        return datos[0]["ultimo_folio"]
-    else:
-        supabase.table("folios_representativos").insert({"entidad": ENTIDAD, "ultimo_folio": 1}).execute()
-        return 1
+    global folio_visual_actual
+    return folio_visual_actual
 
-def incrementar_folio_representativo(actual):
-    supabase.table("folios_representativos").update({"ultimo_folio": actual + 1}).eq("entidad", ENTIDAD).execute()
-
+def incrementar_folio_representativo(_):
+    global folio_visual_actual
+    folio_visual_actual += 1
 # ⬇️ ABAJO VIENE LA RUTA, COMO SIEMPRE
 
 

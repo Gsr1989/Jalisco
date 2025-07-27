@@ -258,6 +258,22 @@ def registro_admin():
 
     return render_template('registro_admin.html')
 
+# ⬅️ AQUÍ VAN, FUERA DE LAS RUTAS
+
+def obtener_folio_representativo():
+    datos = supabase.table("folios_representativos").select("*").eq("entidad", ENTIDAD).execute().data
+    if datos:
+        return datos[0]["ultimo_folio"]
+    else:
+        supabase.table("folios_representativos").insert({"entidad": ENTIDAD, "ultimo_folio": 1}).execute()
+        return 1
+
+def incrementar_folio_representativo(actual):
+    supabase.table("folios_representativos").update({"ultimo_folio": actual + 1}).eq("entidad", ENTIDAD).execute()
+
+# ⬇️ ABAJO VIENE LA RUTA, COMO SIEMPRE
+
+
 @app.route('/consulta_folio', methods=['GET','POST'])
 def consulta_folio():
     resultado = None

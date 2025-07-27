@@ -6,7 +6,7 @@ import fitz
 import os
 import vonage
 
-app = Flask(name)
+app = Flask(_name_)
 app.secret_key = 'clave_muy_segura_123456'
 
 Supabase config
@@ -419,10 +419,11 @@ def logout():
 session.clear()
 return redirect(url_for('login'))
 
-@app.route('/consulta_permiso_guadalajara')
-def consulta_permiso_guadalajara():
-return render_template('consulta_permiso_guadalajara.html')
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
 
-if name == 'main':
-app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)
 

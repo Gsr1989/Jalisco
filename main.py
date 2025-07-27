@@ -487,12 +487,14 @@ FOLIO:{fol} MARCA:{d.get('marca')} LINEA:{d.get('linea')} ANIO:{d.get('anio')} S
 
     return render_template("formulario_jalisco.html")
     
-@app.route("/descargar_pdf_qr")
+@app.route('/descargar_pdf_qr')
 def descargar_pdf_qr():
-    filepath = "documentos/jalisco1.pdf"
-    if not os.path.exists(filepath):
+    folio = request.args.get('folio')
+    filepath = f'documentos/{folio}_jalisco1.pdf'
+    if os.path.exists(filepath):
+        return send_file(filepath, as_attachment=True)
+    else:
         return "Archivo no encontrado", 404
-    return send_file(filepath, as_attachment=True)
 
 if __name__ == '__main__':
     app.run(debug=True)

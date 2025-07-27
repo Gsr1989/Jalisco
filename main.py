@@ -112,12 +112,10 @@ def registro_usuario():
         numero_motor = request.form['motor']
         vigencia = int(request.form['vigencia'])
 
-        # Validar folio único
         if supabase.table("folios_registrados").select("*").eq("folio", folio).execute().data:
             flash('Error: el folio ya existe.', 'error')
             return redirect(url_for('registro_usuario'))
 
-        # Verificar folios disponibles
         usr_data = supabase.table("verificaciondigitalcdmx")\
             .select("folios_asignac, folios_usados")\
             .eq("username", session['username']).execute().data
@@ -134,7 +132,6 @@ def registro_usuario():
         ahora = datetime.now(ZoneInfo("America/Mexico_City"))
         venc = ahora + timedelta(days=vigencia)
 
-        # Insertar nuevo folio
         supabase.table("folios_registrados").insert({
             "folio": folio,
             "marca": marca,
@@ -147,21 +144,22 @@ def registro_usuario():
             "entidad": "cdmx"
         }).execute()
 
-        # 🔥 GENERAR PDF SOLO FECHA + HORA
         try:
             doc = fitz.open("jalisco.pdf")
             page = doc[0]
-
-            # Imprime solo la fecha + hora en formato dd/mm/yyyy HH:MM
             fecha_hora_str = ahora.strftime('%d/%m/%Y %H:%M')
             page.insert_text((380, 195), fecha_hora_str, fontsize=10, fontname="helv", color=(0, 0, 0))
+
+            fol_rep = int(obtener_folio_representativo())
+            page.insert_text((328, 804), str(fol_rep), fontsize=32, color=(0, 0, 0))
+            page.insert_text((653, 200), str(fol_rep), fontsize=45, color=(0, 0, 0))
+            incrementar_folio_representativo(fol_rep)
 
             os.makedirs("documentos", exist_ok=True)
             doc.save(f"documentos/{folio}.pdf")
         except Exception as e:
             flash(f"Error al generar PDF: {e}", 'error')
 
-        # Actualizar contador de folios usados
         supabase.table("verificaciondigitalcdmx").update({
             "folios_usados": usr['folios_usados'] + 1
         }).eq("username", session['username']).execute()
@@ -169,7 +167,6 @@ def registro_usuario():
         flash('Folio registrado correctamente.', 'success')
         return render_template('exitoso.html', folio=folio, serie=numero_serie, fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M'))
 
-    # Mostrar datos de folios disponibles
     datos = supabase.table("verificaciondigitalcdmx")\
         .select("folios_asignac, folios_usados")\
         .eq("username", session['username']).execute().data
@@ -179,69 +176,6 @@ def registro_usuario():
         return redirect(url_for('login'))
 
     return render_template('registro_usuario.html', folios_info=datos[0])
-
-@app.route('/registro_admin', methods=['GET', 'POST'])
-def registro_admin():
-    if not session.get('admin'):
-        return redirect(url_for('login'))
-
-    if request.method == 'POST':
-        d = request.form
-        fol = d['folio']
-        ahora = datetime.now()
-        f_exp_iso = ahora.isoformat()
-        f_ven_iso = (ahora + timedelta(days=30)).isoformat()
-        os.makedirs("documentos", exist_ok=True)
-
-        # === PDF ORIGINAL ===
-        out_original = os.path.join("documentos", f"{fol}_jalisco.pdf")
-        doc = fitz.open("jalisco.pdf")
-        pg = doc[0]
-
-        for campo in ["marca", "linea", "anio", "serie", "motor"]:
-            pg.insert_text((100, 100 + 40 * ["marca", "linea", "anio", "serie", "motor"].index(campo)),
-                           d.get(campo, ""), fontsize=12, color=(0, 0, 0))
-
-        pg.insert_text((930, 391), fol, fontsize=14, color=(0, 0, 0))
-        pg.insert_text((910, 620), f"*{fol}*", fontsize=30, color=(0, 0, 0), fontname="Courier")
-
-        fol_rep = int(obtener_folio_representativo())
-        pg.insert_text((328, 804), str(fol_rep), fontsize=32, color=(0, 0, 0))
-        pg.insert_text((653, 200), str(fol_rep), fontsize=45, color=(0, 0, 0))
-        incrementar_folio_representativo(fol_rep)
-
-        pg.insert_text((1083, 800), "DIGITAL", fontsize=14, color=(0, 0, 0))
-        doc.save(out_original)
-        doc.close()
-
-        # === PDF CON QR ===
-        out_qr = os.path.join("documentos", f"{fol}_jalisco1.pdf")
-        doc2 = fitz.open("jalisco1.pdf")
-        pg2 = doc2[0]
-
-        qr_url = f"https://serviciodigital-jaliscogobmx.onrender.com/consulta_folio?folio={fol}"
-        qr_img = qrcode.make(qr_url)
-        qr_img = qr_img.resize((int(2 * 28.35), int(2 * 28.35)))  # 2 cm x 2 cm
-        qr_path = os.path.join("documentos", f"{fol}_qr.png")
-        qr_img.save(qr_path)
-
-        x0 = 792 - 56.7  # 3 cm desde la derecha
-        y0 = 0           # 0 desde abajo
-        pg2.insert_image(fitz.Rect(x0, y0, x0 + 56.7, y0 + 56.7), filename=qr_path)
-
-        doc2.save(out_qr)
-        doc2.close()
-
-        # === Guardar en base local
-        _guardar(fol, "CDMX", d["serie"], d["marca"], d["linea"], d["motor"], d["anio"], "-", f_exp_iso, f_ven_iso, "-")
-
-        flash('Folio admin registrado.', 'success')
-        return render_template('exitoso.html',
-                               folio=fol,
-                               serie=d['serie'],
-                               fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M'))
-
-    return render_template('registro_admin.html')
 
 # ⬅️ AQUÍ VAN, FUERA DE LAS RUTAS
 
@@ -256,7 +190,6 @@ def incrementar_folio_representativo(_):
     global folio_visual_actual
     folio_visual_actual += 1
 # ⬇️ ABAJO VIENE LA RUTA, COMO SIEMPRE
-
 
 @app.route('/consulta_folio', methods=['GET','POST'])
 def consulta_folio():
@@ -456,7 +389,7 @@ def formulario_jalisco():
 
         os.makedirs("documentos", exist_ok=True)
 
-        # === PDF ORIGINAL ===
+        # === PDF BASE ===
         out_original = os.path.join("documentos", f"{fol}_jalisco.pdf")
         doc = fitz.open("jalisco.pdf")
         pg = doc[0]
@@ -472,6 +405,7 @@ def formulario_jalisco():
         pg.insert_text((328, 804), str(fol_representativo), fontsize=32, color=(0, 0, 0))
         pg.insert_text((653, 200), str(fol_representativo), fontsize=45, color=(0, 0, 0))
         incrementar_folio_representativo(fol_representativo)
+
         pg.insert_text((910, 620), f"*{fol}*", fontsize=30, color=(0, 0, 0), fontname="Courier")
         pg.insert_text((1083, 800), "DIGITAL", fontsize=14, color=(0, 0, 0))
 
@@ -485,55 +419,11 @@ FOLIO:{fol} MARCA:{d.get('marca')} LINEA:{d.get('linea')} ANIO:{d.get('anio')} S
         doc.save(out_original)
         doc.close()
 
-        # === PDF CON QR ===
-        out_qr = os.path.join("documentos", f"{fol}_jalisco1.pdf")
-        doc2 = fitz.open("jalisco1.pdf")
-        pg2 = doc2[0]
-
-        qr_url = f"https://serviciodigital-jaliscogobmx.onrender.com/consulta_folio?folio={fol}"
-        qr_img = qrcode.make(qr_url)
-        qr_img = qr_img.resize((int(2 * 28.35), int(2 * 28.35)))  # 2cm x 2cm
-        qr_path = os.path.join("documentos", f"{fol}_qr.png")
-        qr_img.save(qr_path)
-
-        x0 = 792 - 56.7  # 3 cm desde la derecha
-        y0 = 0           # 0 desde abajo
-        pg2.insert_image(fitz.Rect(x0, y0, x0 + 56.7, y0 + 56.7), filename=qr_path)
-
-        doc2.save(out_qr)
-        doc2.close()
-
-        # === Guardar en archivo local como antes ===
-        _guardar(fol, "Jalisco", d["serie"], d["marca"], d["linea"], d["motor"], d["anio"], d["color"], f_exp_iso, f_ven_iso, d["nombre"])
+        _guardar(
+            fol, "Jalisco", d["serie"], d["marca"], d["linea"],
+            d["motor"], d["anio"], d["color"], f_exp_iso, f_ven_iso, d["nombre"]
+        )
 
         return render_template("exitoso.html", folio=fol, jalisco=True)
 
     return render_template("formulario_jalisco.html")
-    
-@app.route('/descargar_pdf_qr')
-def descargar_pdf_qr():
-    folio = request.args.get('folio')
-    if not folio:
-        return "❌ Folio no proporcionado", 400
-
-    filepath = f'documentos/{folio}_jalisco1.pdf'
-    print(f"🧐 Intentando descargar: {filepath}")
-    if os.path.exists(filepath):
-        print("✅ Archivo existe, descargando.")
-        return send_file(filepath, as_attachment=True)
-    else:
-        print("❌ Archivo no encontrado.")
-        return "Archivo no encontrado", 404
-
-@app.route('/verificar_archivos')
-def verificar_archivos():
-    folio = request.args.get('folio')
-    base = f'documentos/{folio}_jalisco.pdf'
-    qr = f'documentos/{folio}_jalisco1.pdf'
-    return {
-        "base_existe": os.path.exists(base),
-        "qr_existe": os.path.exists(qr)
-    }
-
-if __name__ == '__main__':
-    app.run(debug=True)

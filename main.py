@@ -492,31 +492,38 @@ def registro_admin():
             "entidad": "cdmx"
         }).execute()
 
-        # Generación del PDF sin QR, solo texto y folio visual
         try:
+            os.makedirs("documentos", exist_ok=True)
+            fecha_hora_str = ahora.strftime('%d/%m/%Y %H:%M')
+            folio_visual = int(obtener_folio_representativo())
+
+            # === RECIBO BASE ===
             doc = fitz.open("jalisco.pdf")
             page = doc[0]
-
-            fecha_hora_str = ahora.strftime('%d/%m/%Y %H:%M')
             page.insert_text((380, 195), fecha_hora_str, fontsize=10, fontname="helv", color=(0, 0, 0))
-
-            folio_visual = int(obtener_folio_representativo())
             page.insert_text((328, 804), str(folio_visual), fontsize=32, color=(0, 0, 0))
             page.insert_text((653, 200), str(folio_visual), fontsize=45, color=(0, 0, 0))
-            incrementar_folio_representativo(folio_visual)
-
-            os.makedirs("documentos", exist_ok=True)
             doc.save(f"documentos/{folio}.pdf")
             doc.close()
+
+            # === PERMISO FINAL ===
+            doc1 = fitz.open("jalisco1.pdf")
+            page1 = doc1[0]
+            page1.insert_text((328, 804), str(folio_visual), fontsize=32, color=(0, 0, 0))
+            page1.insert_text((653, 200), str(folio_visual), fontsize=45, color=(0, 0, 0))
+            doc1.save(f"documentos/{folio}_jalisco1.pdf")
+            doc1.close()
+
+            incrementar_folio_representativo(folio_visual)
+
         except Exception as e:
-            flash(f"Error al generar PDF: {e}", 'error')
+            flash(f"Error al generar los PDFs: {e}", 'error')
             return redirect(url_for('registro_admin'))
 
         flash('Permiso registrado exitosamente.', 'success')
         return render_template("exitoso.html", folio=folio)
 
-    # Petición GET normal (solo muestra el formulario)
-    return render_template("registro_admin.html") 
-
+    return render_template("registro_admin.html")
+    
 if __name__ == '__main__':
     app.run(debug=True)

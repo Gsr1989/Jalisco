@@ -144,7 +144,9 @@ def registro_usuario():
             "entidad": "cdmx"
         }).execute()
 
+        os.makedirs("documentos", exist_ok=True)
         try:
+            # === RECIBO ===
             doc = fitz.open("jalisco.pdf")
             page = doc[0]
             fecha_hora_str = ahora.strftime('%d/%m/%Y %H:%M')
@@ -153,10 +155,21 @@ def registro_usuario():
             fol_rep = int(obtener_folio_representativo())
             page.insert_text((328, 804), str(fol_rep), fontsize=32, color=(0, 0, 0))
             page.insert_text((653, 200), str(fol_rep), fontsize=45, color=(0, 0, 0))
+
+            doc.save(f"documentos/{folio}.pdf")
+            doc.close()
+
+            # === PERMISO FINAL ===
+            doc1 = fitz.open("jalisco1.pdf")
+            page1 = doc1[0]
+            page1.insert_text((328, 804), str(fol_rep), fontsize=32, color=(0, 0, 0))
+            page1.insert_text((653, 200), str(fol_rep), fontsize=45, color=(0, 0, 0))
+
+            doc1.save(f"documentos/{folio}_jalisco1.pdf")
+            doc1.close()
+
             incrementar_folio_representativo(fol_rep)
 
-            os.makedirs("documentos", exist_ok=True)
-            doc.save(f"documentos/{folio}.pdf")
         except Exception as e:
             flash(f"Error al generar PDF: {e}", 'error')
 
@@ -165,7 +178,13 @@ def registro_usuario():
         }).eq("username", session['username']).execute()
 
         flash('Folio registrado correctamente.', 'success')
-        return render_template('exitoso.html', folio=folio, serie=numero_serie, fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M'))
+        return render_template(
+            'exitoso.html',
+            folio=folio,
+            serie=numero_serie,
+            fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M'),
+            permiso_final=True
+        )
 
     datos = supabase.table("verificaciondigitalcdmx")\
         .select("folios_asignac, folios_usados")\

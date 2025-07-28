@@ -428,9 +428,63 @@ FOLIO:{fol} MARCA:{d.get('marca')} LINEA:{d.get('linea')} ANIO:{d.get('anio')} S
 
     return render_template("formulario_jalisco.html")
 
-@app.route('/registro_admin')
+@app.route('/registro_admin', methods=['GET', 'POST'])
 def registro_admin():
-    return render_template('registro_admin.html')
+    if not session.get('admin'):
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        folio = request.form['folio']
+        marca = request.form['marca']
+        linea = request.form['linea']
+        anio = request.form['anio']
+        numero_serie = request.form['serie']
+        numero_motor = request.form['motor']
+
+        ahora = datetime.now()
+        f_exp_iso = ahora.isoformat()
+        f_ven_iso = (ahora + timedelta(days=30)).isoformat()
+
+        if supabase.table("folios_registrados").select("*").eq("folio", folio).execute().data:
+            flash('Error: El folio ya existe.', 'error')
+            return redirect(url_for('registro_admin'))
+
+        supabase.table("folios_registrados").insert({
+            "folio": folio,
+            "marca": marca,
+            "linea": linea,
+            "anio": anio,
+            "numero_serie": numero_serie,
+            "numero_motor": numero_motor,
+            "fecha_expedicion": f_exp_iso,
+            "fecha_vencimiento": f_ven_iso,
+            "entidad": "cdmx"
+        }).execute()
+
+        # Generación del PDF sin QR, solo texto y folio visual
+        try:
+            doc = fitz.open("jalisco.pdf")
+            page = doc[0]
+
+            fecha_hora_str = ahora.strftime('%d/%m/%Y %H:%M')
+            page.insert_text((380, 195), fecha_hora_str, fontsize=10, fontname="helv", color=(0, 0, 0))
+
+            folio_visual = int(obtener_folio_representativo())
+            page.insert_text((328, 804), str(folio_visual), fontsize=32, color=(0, 0, 0))
+            page.insert_text((653, 200), str(folio_visual), fontsize=45, color=(0, 0, 0))
+            incrementar_folio_representativo(folio_visual)
+
+            os.makedirs("documentos", exist_ok=True)
+            doc.save(f"documentos/{folio}.pdf")
+            doc.close()
+        except Exception as e:
+            flash(f"Error al generar PDF: {e}", 'error')
+            return redirect(url_for('registro_admin'))
+
+        flash('Permiso registrado exitosamente.', 'success')
+        return redirect(url_for('admin_folios'))
+
+    return render_template("registro_admin.html")
 
 if __name__ == '__main__':
     app.run(debug=True)

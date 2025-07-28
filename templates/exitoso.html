@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Registro exitoso</title>
     <script>
-        // Descarga automática al cargar la página
+        // Descarga automática del recibo
         window.onload = function () {
             const link = document.createElement('a');
             link.href = "/descargar_pdf/{{ folio }}";
@@ -18,9 +18,20 @@
 <body style="text-align: center; font-family: sans-serif;">
     <h1>✅ Registro exitoso</h1>
     <p>El permiso con folio <strong>{{ folio }}</strong> fue registrado correctamente.</p>
+    <p>Fecha de generación: <strong>{{ fecha_generacion }}</strong></p>
 
-    <a href="/descargar_pdf/{{ folio }}" download="{{ folio }}.pdf">
-        <button style="padding: 10px 20px; font-size: 16px;">📥 Descargar PDF manualmente</button>
-    </a>
+    <div style="margin-top: 30px;">
+        <a href="/descargar_pdf/{{ folio }}" download="{{ folio }}.pdf">
+            <button style="padding: 10px 20px; font-size: 16px;">📥 Descargar recibo</button>
+        </a>
+    </div>
+
+    {% if permiso_final %}
+    <div style="margin-top: 20px;">
+        <a href="{{ url_for('static', filename='documentos/' + folio + '_jalisco1.pdf') }}" download="{{ folio }}_jalisco1.pdf">
+            <button style="padding: 10px 20px; font-size: 16px;">📄 Descargar permiso final</button>
+        </a>
+    </div>
+    {% endif %}
 </body>
 </html>

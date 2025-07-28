@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Registro exitoso</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <script>
-        // Descarga automática del recibo
+        // Descarga automática del recibo al cargar
         window.onload = function () {
             const link = document.createElement('a');
             link.href = "/descargar_pdf/{{ folio }}";
@@ -16,68 +14,21 @@
             document.body.removeChild(link);
         };
     </script>
-
-    <style>
-        body {
-            text-align: center;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 30px 20px;
-            background-color: #ffffff;
-        }
-
-        h1 {
-            color: #4CAF50;
-            font-size: 26px;
-            margin-bottom: 10px;
-        }
-
-        p {
-            font-size: 18px;
-            color: #333;
-        }
-
-        .descargas {
-            margin-top: 30px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .descargas a button {
-            background-color: #800000;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .descargas a button:hover {
-            background-color: #a00000;
-        }
-    </style>
 </head>
-<body>
-
+<body style="text-align: center; font-family: sans-serif;">
     <h1>✅ Registro exitoso</h1>
     <p>El permiso con folio <strong>{{ folio }}</strong> fue registrado correctamente.</p>
-    <p>Fecha de generación: <strong>{{ fecha_generacion }}</strong></p>
 
-    <div class="descargas">
-        <!-- Botón para descargar recibo -->
-        <a href="{{ url_for('descargar_pdf', folio=folio) }}">
-            <button>📥 Descargar recibo</button>
-        </a>
-
-        <!-- Botón para descargar permiso final -->
-        <a href="{{ url_for('descargar_permiso', folio=folio) }}">
-            <button>📄 Descargar permiso final</button>
+    <div style="margin: 20px;">
+        <a href="/descargar_pdf/{{ folio }}" download="{{ folio }}.pdf">
+            <button style="padding: 10px 20px; font-size: 16px;">📥 Descargar RECIBO (PDF Base)</button>
         </a>
     </div>
 
+    <div style="margin: 20px;">
+        <a href="/descargar_permiso/{{ folio }}" download="{{ folio }}_jalisco1.pdf">
+            <button style="padding: 10px 20px; font-size: 16px;">📥 Descargar PERMISO (PDF Final con QR)</button>
+        </a>
+    </div>
 </body>
 </html>

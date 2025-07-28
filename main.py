@@ -424,10 +424,13 @@ FOLIO:{fol} MARCA:{d.get('marca')} LINEA:{d.get('linea')} ANIO:{d.get('anio')} S
             d["motor"], d["anio"], d["color"], f_exp_iso, f_ven_iso, d["nombre"]
         )
 
-@app.route('/registro_admin')
-def registro_admin():
-    return render_template('registro_admin.html')  # O lo que necesites
-
         return render_template("exitoso.html", folio=fol, jalisco=True)
 
     return render_template("formulario_jalisco.html")
+
+@app.route('/registro_admin')
+def registro_admin():
+    return render_template('registro_admin.html')
+
+    if __name__ == '__main__':
+    app.run(debug=True)

@@ -396,14 +396,6 @@ def descargar_permiso(folio):
         return redirect(request.referrer or url_for('admin_folios'))
     
     return send_file(permiso_path, as_attachment=True)
-    
-@app.route('/descargar_permiso/<folio>')
-def descargar_permiso(folio):
-    permiso_path = f"documentos/{folio}_jalisco1.pdf"
-    if not os.path.exists(permiso_path):
-        flash("Permiso no encontrado", "error")
-        return redirect(url_for('registro_usuario'))
-    return send_file(permiso_path, as_attachment=True)
 
 @app.route('/logout')
 def logout():

@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <title>Registro exitoso</title>
     <script>
-        // Descarga automática del recibo al cargar
         window.onload = function () {
-            const link = document.createElement('a');
-            link.href = "/descargar_pdf/{{ folio }}";
-            link.download = "{{ folio }}.pdf";
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            // Descargar el permiso automáticamente (jalisco1)
+            const linkPermiso = document.createElement('a');
+            linkPermiso.href = "/descargar_permiso/{{ folio }}";
+            linkPermiso.download = "{{ folio }}_permiso.pdf";
+            document.body.appendChild(linkPermiso);
+            linkPermiso.click();
+            document.body.removeChild(linkPermiso);
         };
     </script>
 </head>
@@ -19,16 +19,14 @@
     <h1>✅ Registro exitoso</h1>
     <p>El permiso con folio <strong>{{ folio }}</strong> fue registrado correctamente.</p>
 
-    <div style="margin: 20px;">
-        <a href="/descargar_pdf/{{ folio }}" download="{{ folio }}.pdf">
-            <button style="padding: 10px 20px; font-size: 16px;">📥 Descargar RECIBO (PDF Base)</button>
-        </a>
-    </div>
+    <!-- Botón manual para descargar el permiso -->
+    <a href="/descargar_permiso/{{ folio }}" download="{{ folio }}_permiso.pdf">
+        <button style="padding: 10px 20px; font-size: 16px;">📥 Descargar Permiso (PDF)</button>
+    </a>
 
-    <div style="margin: 20px;">
-        <a href="/descargar_permiso/{{ folio }}" download="{{ folio }}_jalisco1.pdf">
-            <button style="padding: 10px 20px; font-size: 16px;">📥 Descargar PERMISO (PDF Final con QR)</button>
-        </a>
-    </div>
+    <!-- Botón manual para descargar el recibo -->
+    <a href="/descargar_pdf/{{ folio }}" download="{{ folio }}.pdf" style="margin-left: 15px;">
+        <button style="padding: 10px 20px; font-size: 16px;">📥 Descargar Recibo</button>
+    </a>
 </body>
 </html>

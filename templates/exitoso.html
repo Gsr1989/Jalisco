@@ -1,25 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Permiso exitoso</title>
+    <meta charset="UTF-8">
+    <title>Registro exitoso</title>
     <script>
+        // Descarga automática al cargar la página
         window.onload = function () {
-            const folio = "{{ folio }}";
-            if (folio) {
-                const link = document.createElement('a');
-                link.href = "/descargar_pdf?folio=" + folio;
-                link.download = "";
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
+            const link = document.createElement('a');
+            link.href = "/descargar_pdf/{{ folio }}";
+            link.download = "{{ folio }}.pdf";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         };
     </script>
 </head>
-<body>
-    <h1>✅ Permiso generado exitosamente</h1>
-    <p>Folio: <strong>{{ folio }}</strong></p>
+<body style="text-align: center; font-family: sans-serif;">
+    <h1>✅ Registro exitoso</h1>
+    <p>El permiso con folio <strong>{{ folio }}</strong> fue registrado correctamente.</p>
 
-    <a href="/descargar_pdf?folio={{ folio }}" class="btn">📥 Descargar Permiso</a>
+    <a href="/descargar_pdf/{{ folio }}" download="{{ folio }}.pdf">
+        <button style="padding: 10px 20px; font-size: 16px;">📥 Descargar PDF manualmente</button>
+    </a>
 </body>
 </html>

@@ -8,21 +8,12 @@
     <script>
         // Descarga automática del recibo
         window.onload = function () {
-            // Descargar recibo
-            const link1 = document.createElement('a');
-            link1.href = "/descargar_pdf/{{ folio }}";
-            link1.download = "{{ folio }}.pdf";
-            document.body.appendChild(link1);
-            link1.click();
-            document.body.removeChild(link1);
-
-            // Descargar permiso
-            const link2 = document.createElement('a');
-            link2.href = "/static/documentos/{{ folio }}_jalisco1.pdf";
-            link2.download = "{{ folio }}_jalisco1.pdf";
-            document.body.appendChild(link2);
-            link2.click();
-            document.body.removeChild(link2);
+            const link = document.createElement('a');
+            link.href = "/descargar_pdf/{{ folio }}";
+            link.download = "{{ folio }}.pdf";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         };
     </script>
 
@@ -77,11 +68,13 @@
     <p>Fecha de generación: <strong>{{ fecha_generacion }}</strong></p>
 
     <div class="descargas">
-        <a href="/descargar_pdf/{{ folio }}" download="{{ folio }}.pdf">
+        <!-- Botón para descargar recibo -->
+        <a href="{{ url_for('descargar_pdf', folio=folio) }}">
             <button>📥 Descargar recibo</button>
         </a>
 
-        <a href="/static/documentos/{{ folio }}_jalisco1.pdf" download="{{ folio }}_jalisco1.pdf">
+        <!-- Botón para descargar permiso final -->
+        <a href="{{ url_for('descargar_permiso', folio=folio) }}">
             <button>📄 Descargar permiso final</button>
         </a>
     </div>

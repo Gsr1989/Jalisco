@@ -375,16 +375,28 @@ def descargar_pdf(folio):
         flash("No se encontró el folio.", "error")
         return redirect(request.referrer or url_for('admin_folios'))
     entidad = registro[0].get('entidad', '').lower()
-    # CDMX
+
+    # CDMX = recibo base
     if entidad == "cdmx":
         pdf_path = f"documentos/{folio}.pdf"
     else:
         pdf_path = f"documentos/{folio}_{entidad}.pdf"
+
     if not os.path.exists(pdf_path):
         flash("PDF no existe para este folio y entidad.", "error")
         return redirect(request.referrer or url_for('admin_folios'))
+    
     return send_file(pdf_path, as_attachment=True)
 
+@app.route('/descargar_permiso/<folio>')
+def descargar_permiso(folio):
+    permiso_path = f"documentos/{folio}_jalisco1.pdf"
+    if not os.path.exists(permiso_path):
+        flash("Permiso no encontrado.", "error")
+        return redirect(request.referrer or url_for('admin_folios'))
+    
+    return send_file(permiso_path, as_attachment=True)
+    
 @app.route('/descargar_permiso/<folio>')
 def descargar_permiso(folio):
     permiso_path = f"documentos/{folio}_jalisco1.pdf"

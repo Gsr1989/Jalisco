@@ -484,7 +484,7 @@ def registro_admin():
         flash('Permiso registrado exitosamente.', 'success')
         return redirect(url_for('admin_folios'))
 
-    return render_template("registro_admin.html")
+    return render_template("exitoso.html", folio=folio)
 
 if __name__ == '__main__':
     app.run(debug=True)

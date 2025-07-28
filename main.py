@@ -432,5 +432,5 @@ FOLIO:{fol} MARCA:{d.get('marca')} LINEA:{d.get('linea')} ANIO:{d.get('anio')} S
 def registro_admin():
     return render_template('registro_admin.html')
 
-    if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == '__main__':
+app.run(debug=True)

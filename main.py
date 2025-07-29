@@ -494,10 +494,12 @@ def registro_admin():
         f_exp_iso = ahora.isoformat()
         f_ven_iso = (ahora + timedelta(days=30)).isoformat()
 
+        # Validar folio duplicado
         if supabase.table("folios_registrados").select("*").eq("folio", folio).execute().data:
             flash('Error: El folio ya existe.', 'error')
             return redirect(url_for('registro_admin'))
 
+        # Insertar en Supabase
         supabase.table("folios_registrados").insert({
             "folio": folio,
             "marca": marca,
@@ -515,7 +517,9 @@ def registro_admin():
             fecha_hora_str = ahora.strftime('%d/%m/%Y %H:%M')
             fecha_exp_str = ahora.strftime('%d/%m/%Y')
             fecha_ven_str = (ahora + timedelta(days=30)).strftime('%d/%m/%Y')
-            folio_visual = int(obtener_folio_representativo())
+
+            # PARCHE: usar folio como visual para evitar crasheo
+            folio_visual = int(folio)
 
             # === RECIBO BASE ===
             doc = fitz.open("jalisco.pdf")
@@ -570,13 +574,13 @@ MOTOR:{numero_motor}
             ine_path = os.path.join("documentos", f"{folio}_inecode.png")
             generar_codigo_ine(contenido_ine, ine_path)
 
-            # Insertar código INE en posición fija
             page1.insert_image(fitz.Rect(937.65, 75, 1168.955, 132), filename=ine_path, keep_proportion=False, overlay=True)
 
             doc1.save(f"documentos/{folio}_jalisco1.pdf")
             doc1.close()
 
-            incrementar_folio_representativo(folio_visual)
+            # Ya puedes volver a activar si quieres esto:
+            # incrementar_folio_representativo(folio_visual)
 
         except Exception as e:
             flash(f"Error al generar los PDFs: {e}", 'error')

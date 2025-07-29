@@ -508,7 +508,7 @@ def registro_admin():
             fecha_exp_str = ahora.strftime('%d/%m/%Y')
             fecha_ven_str = (ahora + timedelta(days=30)).strftime('%d/%m/%Y')
 
-            folio_visual = folio  # No convertirlo en int, se queda como string largo
+            folio_visual = folio  # No convertirlo en int
 
             # Coordenadas JALISCO
             coords_jalisco = {
@@ -557,7 +557,7 @@ def registro_admin():
                     x, y, size, color_text = coords_jalisco[campo]
                     page1.insert_text((x, y), str(valor).upper(), fontsize=size, color=color_text)
 
-            # FOLIO REPRESENTATIVO x2
+            # FOLIO REPRESENTATIVO
             page1.insert_text((328, 804), folio_visual, fontsize=32, color=(0, 0, 0))
             page1.insert_text((653, 200), folio_visual, fontsize=45, color=(0, 0, 0))
 
@@ -566,7 +566,7 @@ def registro_admin():
             page1.insert_text((910, 620), f"*{folio}*", fontsize=30, color=(0, 0, 0), fontname="Courier")
             page1.insert_text((1083, 800), "DIGITAL", fontsize=14, color=(0, 0, 0))
 
-            # === Código INE ===
+            # === Código PDF417 como imagen ===
             contenido_ine = f"""
 FOLIO:{folio}
 MARCA:{marca}
@@ -577,7 +577,6 @@ MOTOR:{numero_motor}
 """
             ine_path = os.path.join("documentos", f"{folio}_inecode.png")
             generar_codigo_ine(contenido_ine, ine_path)
-
             page1.insert_image(fitz.Rect(937.65, 75, 1168.955, 132), filename=ine_path, keep_proportion=False, overlay=True)
 
             doc1.save(f"documentos/{folio}_jalisco1.pdf")

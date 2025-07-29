@@ -531,8 +531,9 @@ def registro_admin():
             for campo, valor in datos.items():
                 if campo in coords_jalisco:
                     x, y, size, color_text = coords_jalisco[campo]
-                    page1.insert_text((x, y), str(valor), fontsize=size, color=color_text)
+                    page1.insert_text((x, y), str(valor).upper(), fontsize=size, color=color_text)
 
+            # Folio visual (grande)
             page1.insert_text((328, 804), str(folio_visual), fontsize=32, color=(0, 0, 0))
             page1.insert_text((653, 200), str(folio_visual), fontsize=45, color=(0, 0, 0))
 

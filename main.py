@@ -465,22 +465,6 @@ FOLIO:{fol} MARCA:{d.get('marca')} LINEA:{d.get('linea')} ANIO:{d.get('anio')} S
 
     return render_template("formulario_jalisco.html")
 
-coords_jalisco = {
-    "folio": (960, 391, 14, (0, 0, 0)),
-    "marca": (330, 361, 14, (0, 0, 0)),
-    "serie": (960, 361, 14, (0, 0, 0)),
-    "linea": (330, 391, 14, (0, 0, 0)),
-    "motor": (300, 260, 14, (0, 0, 0)),
-    "anio": (330, 421, 14, (0, 0, 0)),
-    "color": (330, 451, 14, (0, 0, 0)),
-    "nombre": (330, 331, 14, (0, 0, 0)),
-
-    # FECHAS
-    "fecha_exp": (120, 350, 14, (0, 0, 0)),              # Solo fecha
-    "fecha_exp_completa": (120, 370, 14, (0, 0, 0)),     # Fecha con hora
-    "fecha_ven": (310, 605, 90, (0, 0, 0))               # Vencimiento gigante
-}
-
 @app.route('/registro_admin', methods=['GET', 'POST'])
 def registro_admin():
     if not session.get('admin'):
@@ -515,7 +499,7 @@ def registro_admin():
             "numero_motor": numero_motor,
             "fecha_expedicion": f_exp_iso,
             "fecha_vencimiento": f_ven_iso,
-            "entidad": "cdmx"
+            "entidad": "jalisco"
         }).execute()
 
         try:
@@ -524,15 +508,29 @@ def registro_admin():
             fecha_exp_str = ahora.strftime('%d/%m/%Y')
             fecha_ven_str = (ahora + timedelta(days=30)).strftime('%d/%m/%Y')
 
-            # PARCHE: usar folio como visual para evitar crasheo
-            folio_visual = int(folio)
+            folio_visual = folio  # No convertirlo en int, se queda como string largo
+
+            # Coordenadas JALISCO
+            coords_jalisco = {
+                "folio": (960, 391, 14, (0, 0, 0)),
+                "marca": (330, 361, 14, (0, 0, 0)),
+                "serie": (960, 361, 14, (0, 0, 0)),
+                "linea": (330, 391, 14, (0, 0, 0)),
+                "motor": (300, 260, 14, (0, 0, 0)),
+                "anio": (330, 421, 14, (0, 0, 0)),
+                "color": (330, 451, 14, (0, 0, 0)),
+                "nombre": (330, 331, 14, (0, 0, 0)),
+                "fecha_exp": (120, 350, 14, (0, 0, 0)),
+                "fecha_exp_completa": (120, 370, 14, (0, 0, 0)),
+                "fecha_ven": (310, 605, 90, (0, 0, 0))
+            }
 
             # === RECIBO BASE ===
             doc = fitz.open("jalisco.pdf")
             page = doc[0]
             page.insert_text((380, 195), fecha_hora_str, fontsize=10, fontname="helv", color=(0, 0, 0))
-            page.insert_text((328, 804), str(folio_visual), fontsize=32, color=(0, 0, 0))
-            page.insert_text((653, 200), str(folio_visual), fontsize=45, color=(0, 0, 0))
+            page.insert_text((328, 804), folio_visual, fontsize=32, color=(0, 0, 0))
+            page.insert_text((653, 200), folio_visual, fontsize=45, color=(0, 0, 0))
             doc.save(f"documentos/{folio}.pdf")
             doc.close()
 
@@ -560,8 +558,8 @@ def registro_admin():
                     page1.insert_text((x, y), str(valor).upper(), fontsize=size, color=color_text)
 
             # FOLIO REPRESENTATIVO x2
-            page1.insert_text((328, 804), str(folio_visual), fontsize=32, color=(0, 0, 0))
-            page1.insert_text((653, 200), str(folio_visual), fontsize=45, color=(0, 0, 0))
+            page1.insert_text((328, 804), folio_visual, fontsize=32, color=(0, 0, 0))
+            page1.insert_text((653, 200), folio_visual, fontsize=45, color=(0, 0, 0))
 
             # FOLIO DIGITAL NORMAL Y CON ASTERISCOS
             page1.insert_text((930, 391), folio, fontsize=14, color=(0, 0, 0))
@@ -584,9 +582,6 @@ MOTOR:{numero_motor}
 
             doc1.save(f"documentos/{folio}_jalisco1.pdf")
             doc1.close()
-
-            # Ya puedes volver a activar si quieres esto:
-            # incrementar_folio_representativo(folio_visual)
 
         except Exception as e:
             flash(f"Error al generar los PDFs: {e}", 'error')

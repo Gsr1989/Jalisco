@@ -2,160 +2,207 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Registro de Folio (Admin)</title>
+  <title>Registro Admin Jalisco</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
-      background-color: #ffffff;
       font-family: Arial, sans-serif;
+      background: #f4f4f4;
       margin: 0;
       padding: 0;
-    }
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 30px;
-    }
-    header img {
-      height: 80px;
-    }
-    .titulo {
       text-align: center;
-      font-size: 28px;
-      margin-top: 30px;
-      font-weight: bold;
-      color: #222;
     }
-    .formulario {
-      max-width: 600px;
-      margin: 30px auto;
+    header, footer {
+      width: 100%;
+      background-color: #8a1538;
+    }
+    header img, footer img {
+      width: 100%;
+      max-width: 500px;
+    }
+    h2 {
+      margin: 30px 0 10px;
+      font-size: 22px;
+    }
+    form {
+      background: white;
       padding: 20px;
-      border-radius: 10px;
-      background-color: #f9f9f9;
+      margin: 10px auto 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 90%;
+      text-align: left;
+    }
+    label {
+      font-size: 15px;
+      margin: 10px 0 5px;
+      display: block;
     }
     input, textarea {
       width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 6px;
+      padding: 10px;
+      font-size: 15px;
+      margin-bottom: 15px;
       border: 1px solid #ccc;
-      font-size: 16px;
+      border-radius: 6px;
       text-transform: uppercase;
     }
-    .btn {
-      background-color: #800000;
+    textarea {
+      overflow: hidden;
+      resize: none;
+      min-height: 80px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      background-color: #c8102e;
       color: white;
       border: none;
-      padding: 14px 22px;
-      font-size: 16px;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
-      width: 100%;
-      margin-top: 15px;
     }
-    .btn:hover {
-      background-color: #a00000;
+    button:hover {
+      background-color: #9e0d22;
     }
-    footer {
-      margin-top: 40px;
-      width: 100%;
-    }
-    footer img {
-      width: 100%;
-      display: block;
-    }
-    .flash-message {
-      padding: 10px;
-      margin: 15px auto;
+    .autobox {
+      margin: 20px auto 10px;
+      max-width: 400px;
       width: 90%;
-      max-width: 600px;
-      border-radius: 5px;
-      color: white;
-      font-weight: bold;
-      text-align: center;
+      text-align: left;
     }
-    .success { background-color: green; }
-    .error { background-color: red; }
-
-    @media (max-width: 600px) {
-      header img { height: 60px; }
-      .titulo { font-size: 24px; margin-top: 20px; }
+    .cambiar-entidad {
+      margin: 30px auto 0;
+      max-width: 400px;
+    }
+    .cambiar-entidad button {
+      background-color: #ff4444;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      width: 100%;
     }
   </style>
 </head>
 <body>
-
 <header>
-  <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
-  <img src="{{ url_for('static', filename='sub_logo.png') }}" alt="Sub Logo">
+  <img src="{{ url_for('static', filename='logo.png') }}" alt="Encabezado">
 </header>
 
-<div class="titulo">Secretaría de Movilidad</div>
+<h2>Registro Permiso Admin</h2>
+<form method="POST" autocomplete="off">
+  <label>Folio:
+    <input type="text" name="folio" id="folio" required maxlength="10">
+  </label>
+  <label>Marca:
+    <input type="text" name="marca" id="marca" required maxlength="20">
+  </label>
+  <label>Línea:
+    <input type="text" name="linea" id="linea" required maxlength="20">
+  </label>
+  <label>Año:
+    <input type="text" name="anio" id="anio" required maxlength="4">
+  </label>
+  <label>Número de serie:
+    <input type="text" name="serie" id="serie" required maxlength="17">
+  </label>
+  <label>Número de motor:
+    <input type="text" name="motor" id="motor" required maxlength="25">
+  </label>
+  <label>Color:
+    <input type="text" name="color" id="color" required maxlength="20">
+  </label>
+  <label>Nombre del contribuyente:
+    <input type="text" name="nombre" id="nombre" required>
+  </label>
 
-<!-- Flash messages -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    {% for category, message in messages %}
-      <div class="flash-message {{ category }}">{{ message }}</div>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
+  <button type="submit">Registrar Permiso</button>
 
-<form method="POST" class="formulario">
-  <input type="hidden" name="entidad" value="cdmx">
-  <input type="hidden" name="vigencia" value="30">
-  <input type="hidden" name="telefono" value="">
-
-  <input type="text" name="folio" placeholder="Folio" required>
-  <input type="text" name="marca" id="marca" placeholder="Marca" required>
-  <input type="text" name="linea" id="linea" placeholder="Línea" required>
-  <input type="number" name="anio" id="anio" placeholder="Año" required>
-  <input type="text" name="serie" id="serie" placeholder="Número de Serie" required>
-  <input type="text" name="motor" id="motor" placeholder="Número de Motor" required>
-
-  <label><input type="checkbox" id="modoAuto" checked> Activar detección automática</label>
-  <textarea id="autotexto" rows="6" placeholder="Pega aquí la descripción completa..."></textarea>
-
-  <button type="submit" class="btn">Registrar Folio</button>
-
-  <div style="margin-top: 30px; display: flex; flex-direction: column; gap: 10px;">
-    <a href="{{ url_for('admin') }}"><button type="button" class="btn">Volver al Panel</button></a>
-    <a href="{{ url_for('consulta_folio') }}"><button type="button" class="btn">Consultar Folio</button></a>
-    <a href="{{ url_for('logout') }}"><button type="button" class="btn">Cerrar Sesión</button></a>
+  <div class="autobox">
+    <label style="margin-top: 20px;">
+      <input type="checkbox" id="modoAuto" checked>
+      Activar detección automática
+    </label>
+    <textarea id="autotexto" placeholder="Pega aquí la descripción completa..."></textarea>
   </div>
 </form>
 
+<div class="cambiar-entidad">
+  <button onclick="borrarEntidad()">Cambiar entidad de este dispositivo</button>
+</div>
+
 <footer>
-  <img src="{{ url_for('static', filename='footer.png') }}" alt="Footer">
+  <img src="{{ url_for('static', filename='footer.png') }}" alt="Pie de página">
 </footer>
 
 <script>
-document.getElementById('autotexto').addEventListener('input', function () {
-  if (!document.getElementById('modoAuto').checked) return;
-  const texto = this.value.toUpperCase();
-  const get = (id) => document.getElementById(id);
+  function borrarEntidad() {
+    localStorage.removeItem('entidad_preferida');
+    alert('Entidad eliminada. Puedes seleccionar una nueva.');
+    window.location.href = "/seleccionar_entidad";
+  }
 
-  const reglas = [
-    { campo: 'marca', patrones: [/MARCA\s*:?(\w+)/, /MARCA\s*([\w\-]+)/] },
-    { campo: 'linea', patrones: [/LINEA\s*:?([^\n]+)/, /LINEA\s*([\w\-]+)/] },
-    { campo: 'anio', patrones: [/A[NÑ]O\s*:?(\d{4})/] },
-    { campo: 'serie', patrones: [/SERIE\s*:?([\w\d]+)/, /N.?SERIE\s*:?([\w\d]+)/] },
-    { campo: 'motor', patrones: [/MOTOR\s*:?([\w\d]+)/] },
-  ];
+  const campo = document.getElementById("autotexto");
+  const auto = document.getElementById("modoAuto");
 
-  reglas.forEach(({ campo, patrones }) => {
-    for (let reg of patrones) {
-      let m = texto.match(reg);
-      if (m && m[1]) {
-        get(campo).value = m[1].trim();
-        break;
+  campo.addEventListener("input", () => {
+    campo.style.height = "auto";
+    campo.style.height = campo.scrollHeight + "px";
+  });
+
+  document.querySelectorAll('input[type="text"]').forEach(input => {
+    input.addEventListener('input', () => {
+      input.value = input.value.toUpperCase();
+    });
+  });
+
+  campo.addEventListener("input", async () => {
+    if (!auto.checked) return;
+
+    const texto = campo.value.toUpperCase();
+    const limpiar = txt => txt.replace(/(MARCA|L[ÍI]NEA|SUBMARCA|MODELO|AÑO|N[ÚU]MERO DE SERIE|SERIE|MOTOR|COLOR|NOMBRE DEL CONTRIBUYENTE|NOMBRE|:)/g, '').trim();
+
+    const marca = texto.match(/MARCA\s+[A-Z0-9\s]+/);
+    if (marca) document.getElementById("marca").value = limpiar(marca[0]);
+
+    const linea = texto.match(/L[ÍI]NEA\s+[A-Z0-9\s]+/);
+    if (linea) document.getElementById("linea").value = limpiar(linea[0]);
+
+    const color = texto.match(/COLOR\s+[A-Z0-9\s]+/);
+    if (color) document.getElementById("color").value = limpiar(color[0]);
+
+    const año = texto.match(/\b(19[5-9][0-9]|20[0-4][0-9]|[1-4][0-9]{3}|50000)\b/);
+    if (año) document.getElementById("anio").value = año[0];
+
+    const serie = texto.match(/\b[A-HJ-NPR-Z0-9]{17}\b/);
+    if (serie) {
+      document.getElementById("serie").value = limpiar(serie[0]);
+      try {
+        const url = `https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/${serie[0]}?format=json`;
+        const response = await fetch(url);
+        const data = await response.json();
+        const res = data.Results[0];
+        if (res.Make) document.getElementById("marca").value = res.Make.toUpperCase();
+        if (res.Model) document.getElementById("linea").value = res.Model.toUpperCase();
+        if (res.ModelYear) document.getElementById("anio").value = res.ModelYear;
+      } catch (e) {
+        console.warn("Error consultando vPIC: ", e);
       }
     }
-  });
-});
-</script>
 
+    const motor = texto.match(/(HECHO EN|FABRICADO EN|MOTOR|SIN N[ÚU]MERO|S\/N|SN|NO TIENE|NO CUENTA)\s*[A-Z0-9ÁÉÍÓÚÑ\s]*/);
+    if (motor) document.getElementById("motor").value = limpiar(motor[0]);
+
+    const lineas = texto.split("\n").map(l => l.trim()).filter(l => l.length > 5 && isNaN(l));
+    if (lineas.length > 0) {
+      const posibleNombre = lineas[lineas.length - 1];
+      document.getElementById("nombre").value = limpiar(posibleNombre);
+    }
+  });
+</script>
 </body>
 </html>

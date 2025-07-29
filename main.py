@@ -598,6 +598,11 @@ MOTOR:{numero_motor}
         return render_template("exitoso.html", folio=folio)
 
     return render_template("registro_admin.html")
+
+@app.route('/version')
+def version():
+    import vonage
+    return f"Vonage version: {vonage.__version__}"
     
 if __name__ == '__main__':
     app.run(debug=True)

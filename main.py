@@ -471,6 +471,8 @@ def registro_admin():
         anio = request.form['anio']
         numero_serie = request.form['serie']
         numero_motor = request.form['motor']
+        color = request.form.get('color', '')
+        nombre = request.form.get('nombre', '')
 
         ahora = datetime.now()
         f_exp_iso = ahora.isoformat()
@@ -495,6 +497,8 @@ def registro_admin():
         try:
             os.makedirs("documentos", exist_ok=True)
             fecha_hora_str = ahora.strftime('%d/%m/%Y %H:%M')
+            fecha_exp_str = ahora.strftime('%d/%m/%Y')
+            fecha_ven_str = (ahora + timedelta(days=30)).strftime('%d/%m/%Y')
             folio_visual = int(obtener_folio_representativo())
 
             # === RECIBO BASE ===
@@ -509,8 +513,29 @@ def registro_admin():
             # === PERMISO FINAL ===
             doc1 = fitz.open("jalisco1.pdf")
             page1 = doc1[0]
+
+            datos = {
+                "folio": folio,
+                "marca": marca,
+                "linea": linea,
+                "anio": anio,
+                "serie": numero_serie,
+                "motor": numero_motor,
+                "color": color,
+                "nombre": nombre,
+                "fecha_exp": fecha_exp_str,
+                "fecha_exp_completa": fecha_hora_str,
+                "fecha_ven": fecha_ven_str
+            }
+
+            for campo, valor in datos.items():
+                if campo in coords_jalisco:
+                    x, y, size, color_text = coords_jalisco[campo]
+                    page1.insert_text((x, y), str(valor), fontsize=size, color=color_text)
+
             page1.insert_text((328, 804), str(folio_visual), fontsize=32, color=(0, 0, 0))
             page1.insert_text((653, 200), str(folio_visual), fontsize=45, color=(0, 0, 0))
+
             doc1.save(f"documentos/{folio}_jalisco1.pdf")
             doc1.close()
 

@@ -586,6 +586,20 @@ MOTOR:{numero_motor}
         return render_template("exitoso.html", folio=folio)
 
     return render_template("registro_admin.html")
+
+def generar_codigo_ine(contenido, ruta_salida):
+    import barcode
+    from barcode.writer import ImageWriter
+    from PIL import Image
+
+    ine = barcode.get('pdf417', contenido, writer=ImageWriter())
+    ine.save(ruta_salida.replace(".png", ""), options={"module_height": 5.0, "quiet_zone": 1})
+
+    # Recortar márgenes (ajusta según lo necesites)
+    img = Image.open(ruta_salida)
+    ancho, alto = img.size
+    img_cropped = img.crop((0, 7, ancho - 45, alto - 15))  # izquierda, arriba, derecha, abajo
+    img_cropped.save(ruta_salida)
     
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, send_file
-from flask import Flask, render_template, request, send_file, redirect, url_for, session
 from io import BytesIO
 import base64
 from pdf417gen import encode, render_image
@@ -12,7 +11,7 @@ import csv
 from supabase import create_client, Client
 import json
 import io
-import fitz  # <— ¡Aquí lo agregas!
+import fitz  # PyMuPDF
 import vonage
 
 app = Flask(__name__)

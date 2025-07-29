@@ -1,12 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, send_file
+from flask import Flask, render_template, request, redirect, url_for, flash, session, send_file
 from datetime import datetime, timedelta
-from zoneinfo import ZoneInfo
 from supabase import create_client, Client
 import fitz
 import os
 import vonage
-import qrcode
-from PIL import Image
 
 app = Flask(__name__)
 app.secret_key = 'clave_muy_segura_123456'

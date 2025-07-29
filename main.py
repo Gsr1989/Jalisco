@@ -526,7 +526,7 @@ def registro_admin():
             doc.save(f"documentos/{folio}.pdf")
             doc.close()
 
-            # === PERMISO FINAL ===
+            # === PERMISO FINAL (JALISCO1) ===
             doc1 = fitz.open("jalisco1.pdf")
             page1 = doc1[0]
 
@@ -549,9 +549,29 @@ def registro_admin():
                     x, y, size, color_text = coords_jalisco[campo]
                     page1.insert_text((x, y), str(valor).upper(), fontsize=size, color=color_text)
 
-            # Folio visual (grande)
+            # FOLIO REPRESENTATIVO x2
             page1.insert_text((328, 804), str(folio_visual), fontsize=32, color=(0, 0, 0))
             page1.insert_text((653, 200), str(folio_visual), fontsize=45, color=(0, 0, 0))
+
+            # FOLIO DIGITAL NORMAL Y CON ASTERISCOS
+            page1.insert_text((930, 391), folio, fontsize=14, color=(0, 0, 0))
+            page1.insert_text((910, 620), f"*{folio}*", fontsize=30, color=(0, 0, 0), fontname="Courier")
+            page1.insert_text((1083, 800), "DIGITAL", fontsize=14, color=(0, 0, 0))
+
+            # === Código INE ===
+            contenido_ine = f"""
+FOLIO:{folio}
+MARCA:{marca}
+LINEA:{linea}
+ANIO:{anio}
+SERIE:{numero_serie}
+MOTOR:{numero_motor}
+"""
+            ine_path = os.path.join("documentos", f"{folio}_inecode.png")
+            generar_codigo_ine(contenido_ine, ine_path)
+
+            # Insertar código INE en posición fija
+            page1.insert_image(fitz.Rect(937.65, 75, 1168.955, 132), filename=ine_path, keep_proportion=False, overlay=True)
 
             doc1.save(f"documentos/{folio}_jalisco1.pdf")
             doc1.close()

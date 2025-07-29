@@ -1,12 +1,18 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, send_file
-from datetime import datetime, timedelta
-from zoneinfo import ZoneInfo
-from supabase import create_client, Client
-import fitz
-import os
-import vonage
-import qrcode
+from flask import Flask, render_template, request, send_file, redirect, url_for, session
+from io import BytesIO
+import base64
+from pdf417gen import encode, render_image
 from PIL import Image
+import qrcode
+from datetime import datetime, timedelta
+import os
+import string
+import csv
+from supabase import create_client, Client
+import json
+import io
+import fitz  # <— ¡Aquí lo agregas!
 
 app = Flask(__name__)
 app.secret_key = 'clave_muy_segura_123456'

@@ -459,6 +459,20 @@ FOLIO:{fol} MARCA:{d.get('marca')} LINEA:{d.get('linea')} ANIO:{d.get('anio')} S
 
     return render_template("formulario_jalisco.html")
 
+coords_jalisco = {
+    "folio": (960, 391, 14, (0, 0, 0)),
+    "marca": (330, 361, 14, (0, 0, 0)),
+    "serie": (960, 361, 14, (0, 0, 0)),
+    "linea": (330, 391, 14, (0, 0, 0)),
+    "motor": (300, 260, 14, (0, 0, 0)),
+    "anio": (330, 421, 14, (0, 0, 0)),
+    "color": (330, 451, 14, (0, 0, 0)),
+    "nombre": (330, 331, 14, (0, 0, 0)),
+    "fecha_exp": (120, 350, 14, (0, 0, 0)),
+    "fecha_exp_completa": (120, 370, 14, (0, 0, 0)),
+    "fecha_ven": (310, 605, 90, (0, 0, 0))
+}
+
 @app.route('/registro_admin', methods=['GET', 'POST'])
 def registro_admin():
     if not session.get('admin'):

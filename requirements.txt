@@ -1,7 +1,8 @@
-Flask==2.3.3
-gunicorn==21.2.0
-supabase==1.0.3
-python-dotenv==1.0.1
-PyMuPDF==1.23.7
-qrcode==7.3.1
-vonage==3.1.0
+Flask>=2.2
+gunicorn>=23.0.0
+pdf417gen>=0.8.1
+Pillow>=9.0.0
+qrcode[pil]>=7.3.0
+reportlab>=3.6.12
+PyMuPDF==1.22.3
+PyPDF2>=3.0.1

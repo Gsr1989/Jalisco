@@ -468,9 +468,11 @@ coords_jalisco = {
     "anio": (330, 421, 14, (0, 0, 0)),
     "color": (330, 451, 14, (0, 0, 0)),
     "nombre": (330, 331, 14, (0, 0, 0)),
-    "fecha_exp": (120, 350, 14, (0, 0, 0)),
-    "fecha_exp_completa": (120, 370, 14, (0, 0, 0)),
-    "fecha_ven": (310, 605, 90, (0, 0, 0))
+
+    # FECHAS
+    "fecha_exp": (120, 350, 14, (0, 0, 0)),              # Solo fecha
+    "fecha_exp_completa": (120, 370, 14, (0, 0, 0)),     # Fecha con hora
+    "fecha_ven": (310, 605, 90, (0, 0, 0))               # Vencimiento gigante
 }
 
 @app.route('/registro_admin', methods=['GET', 'POST'])

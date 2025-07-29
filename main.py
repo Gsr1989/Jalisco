@@ -13,6 +13,7 @@ from supabase import create_client, Client
 import json
 import io
 import fitz  # <— ¡Aquí lo agregas!
+import vonage
 
 app = Flask(__name__)
 app.secret_key = 'clave_muy_segura_123456'

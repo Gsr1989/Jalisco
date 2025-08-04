@@ -3,76 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>Registro exitoso</title>
-    <style>
-        body {
-            text-align: center;
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #f9f9f9;
-            padding: 50px;
-            color: #333;
-        }
-
-        h1 {
-            color: #2e7d32;
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-
-        p {
-            font-size: 18px;
-            margin-bottom: 30px;
-        }
-
-        .button {
-            display: inline-block;
-            background-color: #1976d2;
-            color: #fff;
-            padding: 12px 24px;
-            font-size: 16px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            text-decoration: none;
-            margin: 10px;
-            transition: background-color 0.2s ease-in-out;
-        }
-
-        .button:hover {
-            background-color: #1565c0;
-        }
-
-        .container {
-            background-color: white;
-            border-radius: 12px;
-            padding: 40px;
-            max-width: 500px;
-            margin: auto;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
-        }
-    </style>
-
     <script>
         window.onload = function () {
             const link = document.createElement('a');
-            link.href = "/descargar_permiso/{{ folio }}";  // descarga automática del PERMISO
-            link.download = "{{ folio }}_jalisco1.pdf";
+            link.href = "/descargar_pdf/{{ folio }}";
+            link.download = "{{ folio }}_jalisco.pdf";
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         };
     </script>
 </head>
-<body>
-    <div class="container">
-        <h1>✅ Registro exitoso</h1>
-        <p>El permiso con folio <strong>{{ folio }}</strong> fue registrado correctamente.</p>
+<body style="text-align: center; font-family: sans-serif; background-color: #f7f7f7; padding: 40px;">
+    <h1 style="color: green;">✅ Registro exitoso</h1>
+    <p style="font-size: 18px;">El permiso con folio <strong>{{ folio }}</strong> fue registrado correctamente.</p>
 
-        <a href="/descargar_pdf/{{ folio }}" download="{{ folio }}.pdf" class="button">
-            📥 Descargar RECIBO (PDF)
-        </a>
-
-        <a href="/descargar_permiso/{{ folio }}" download="{{ folio }}_jalisco1.pdf" class="button">
-            📥 Descargar PERMISO (PDF)
+    <div style="margin-top: 40px;">
+        <a href="/descargar_pdf/{{ folio }}" download="{{ folio }}_jalisco.pdf">
+            <button style="padding: 12px 24px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                📥 Descargar RECIBO (PDF)
+            </button>
         </a>
     </div>
 </body>

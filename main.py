@@ -418,9 +418,10 @@ def eliminar_folios_masivo():
 
 @app.route('/descargar_permiso/<folio>')
 def descargar_permiso(folio):
-    pdf_path = f"documentos/{folio}_jalisco.pdf"
+    pdf_path = f"documentos/{folio}_jalisco1.pdf"
     if not os.path.exists(pdf_path):
-        return "PDF no encontrado", 404
+        flash("PDF no existe para este folio y entidad.", "error")
+        return redirect(url_for('admin_folios'))
     return send_file(pdf_path, as_attachment=True)
     
 @app.route('/logout')

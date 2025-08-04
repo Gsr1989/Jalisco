@@ -418,22 +418,20 @@ def eliminar_folios_masivo():
 
 @app.route('/descargar_pdf/<folio>')
 def descargar_pdf(folio):
-    # Busca entidad para el folio
     registro = supabase.table("folios_registrados").select("entidad").eq("folio", folio).execute().data
     if not registro:
         flash("No se encontró el folio.", "error")
         return redirect(request.referrer or url_for('admin_folios'))
+
     entidad = registro[0].get('entidad', '').lower()
-    # CDMX
-    if entidad == "cdmx":
-        pdf_path = f"documentos/{folio}.pdf"
-    else:
-        pdf_path = f"documentos/{folio}_{entidad}.pdf"
+    pdf_path = f"documentos/{folio}_{entidad}.pdf"
+
     if not os.path.exists(pdf_path):
         flash("PDF no existe para este folio y entidad.", "error")
         return redirect(request.referrer or url_for('admin_folios'))
-    return send_file(pdf_path, as_attachment=True)
 
+    return send_file(pdf_path, as_attachment=True)
+    
 @app.route('/logout')
 def logout():
     session.clear()

@@ -481,10 +481,8 @@ def formulario_jalisco():
 
         pg.insert_text(coords_jalisco["fecha_ven"][:2], (ahora + timedelta(days=30)).strftime("%d/%m/%Y"), fontsize=coords_jalisco["fecha_ven"][2], color=coords_jalisco["fecha_ven"][3])
         pg.insert_text((930, 391), fol, fontsize=14, color=(0, 0, 0))
-        fol_representativo = int(obtener_folio_representativo())
-        pg.insert_text((328, 804), str(fol_representativo), fontsize=32, color=(0, 0, 0))
-        pg.insert_text((653, 200), str(fol_representativo), fontsize=45, color=(0, 0, 0))
-        incrementar_folio_representativo(fol_representativo)
+       
+        
         pg.insert_text((910, 620), f"*{fol}*", fontsize=30, color=(0, 0, 0), fontname="Courier")
         pg.insert_text((1083, 800), "DIGITAL", fontsize=14, color=(0, 0, 0))
 

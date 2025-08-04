@@ -418,18 +418,9 @@ def eliminar_folios_masivo():
 
 @app.route('/descargar_permiso/<folio>')
 def descargar_permiso(folio):
-    registro = supabase.table("folios_registrados").select("entidad").eq("folio", folio).execute().data
-    if not registro:
-        flash("No se encontró el folio.", "error")
-        return redirect(url_for('admin_folios'))
-
-    entidad = registro[0].get('entidad', '').lower()
-    pdf_path = f"documentos/{folio}_{entidad}.pdf"  # <--- aquí ya sin el "1"
-
+    pdf_path = f"documentos/{folio}_jalisco.pdf"
     if not os.path.exists(pdf_path):
-        flash("PDF no existe para este folio y entidad.", "error")
-        return redirect(url_for('admin_folios'))
-
+        return "PDF no encontrado", 404
     return send_file(pdf_path, as_attachment=True)
     
 @app.route('/logout')

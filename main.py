@@ -416,25 +416,14 @@ def eliminar_folios_masivo():
 
 # --- 👇AQUÍ VA TU NUEVA FUNCIÓN DE DESCARGA UNIVERSAL🖕 ---
 
-@app.route('/descargar_permiso/<folio>')
-def descargar_permiso(folio):
+@app.route('/descargar_pdf/<folio>')
+def descargar_pdf(folio):
     try:
-        # Buscar entidad desde Supabase
-        registro = supabase.table("folios_registrados").select("entidad").eq("folio", folio).execute().data
-        if not registro:
-            return "No se encontró el folio", 404
+        filepath = os.path.join("documentos", f"{folio}_jalisco.pdf")
+        return send_file(filepath, as_attachment=True)
+    except FileNotFoundError:
+        return f"No se encontró el archivo {folio}_jalisco.pdf", 404
         
-        entidad = registro[0]["entidad"].lower()  # ejemplo: 'jalisco'
-        nombre_archivo = f"{folio}_{entidad}1.pdf"
-        ruta_archivo = os.path.join("documentos", nombre_archivo)
-        
-        if not os.path.exists(ruta_archivo):
-            return "Archivo no encontrado", 404
-
-        return send_file(ruta_archivo, as_attachment=True)
-    except Exception as e:
-        return f"Error al descargar el permiso: {str(e)}", 500
-
 @app.route('/logout')
 def logout():
     session.clear()

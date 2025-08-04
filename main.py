@@ -414,25 +414,26 @@ def eliminar_folios_masivo():
         flash(f"Error al eliminar folios: {e}", "error")
     return redirect(url_for('admin_folios'))
 
-# --- AQUÍ VA TU NUEVA FUNCIÓN DE DESCARGA UNIVERSAL ---
+# --- 👇AQUÍ VA TU NUEVA FUNCIÓN DE DESCARGA UNIVERSAL🖕 ---
 
-@app.route('/descargar_permiso/<folio>') def descargar_permiso(folio): try: # Buscar entidad desde Supabase registro = supabase.table("folios_registrados").select("entidad").eq("folio", folio).execute().data if not registro: return "No se encontró el folio", 404
+@app.route('/descargar_permiso/<folio>')
+def descargar_permiso(folio):
+    try:
+        # Buscar entidad desde Supabase
+        registro = supabase.table("folios_registrados").select("entidad").eq("folio", folio).execute().data
+        if not registro:
+            return "No se encontró el folio", 404
+        
+        entidad = registro[0]["entidad"].lower()  # ejemplo: 'jalisco'
+        nombre_archivo = f"{folio}_{entidad}1.pdf"
+        ruta_archivo = os.path.join("documentos", nombre_archivo)
+        
+        if not os.path.exists(ruta_archivo):
+            return "Archivo no encontrado", 404
 
-entidad = registro[0].get('entidad', '').lower()
-    filename = f"{folio}_{entidad}1.pdf"
-    filepath = os.path.join("documentos", filename)
-
-    if not os.path.exists(filepath):
-        return "PDF no encontrado", 404
-
-    return send_file(
-        filepath,
-        mimetype='application/pdf',
-        as_attachment=True,
-        download_name=filename
-    )
-except Exception as e:
-    return f"Error interno: {e}", 500
+        return send_file(ruta_archivo, as_attachment=True)
+    except Exception as e:
+        return f"Error al descargar el permiso: {str(e)}", 500
 
 @app.route('/logout')
 def logout():

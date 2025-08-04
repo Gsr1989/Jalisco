@@ -4,6 +4,7 @@ from supabase import create_client, Client
 import fitz
 import os
 import vonage
+import qrcode
 
 app = Flask(__name__)
 app.secret_key = 'clave_muy_segura_123456'

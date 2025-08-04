@@ -428,6 +428,7 @@ def eliminar_folios_masivo():
     return redirect(url_for('admin_folios'))
 
 # --- AQUÍ VA TU NUEVA FUNCIÓN DE DESCARGA UNIVERSAL ---
+
 @app.route('/descargar_pdf/<folio>')
 def descargar_pdf(folio):
     # Busca entidad para el folio

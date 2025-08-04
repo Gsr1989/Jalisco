@@ -205,10 +205,6 @@ def registro_admin():
 
         pg.insert_text((930, 391), fol, fontsize=14, color=(0, 0, 0))
         pg.insert_text((910, 620), f"*{fol}*", fontsize=30, color=(0, 0, 0), fontname="Courier")
-        fol_rep = int(obtener_folio_representativo())
-        pg.insert_text((328, 804), str(fol_rep), fontsize=32, color=(0, 0, 0))
-        pg.insert_text((653, 200), str(fol_rep), fontsize=45, color=(0, 0, 0))
-        incrementar_folio_representativo(fol_rep)
         pg.insert_text((1083, 800), "DIGITAL", fontsize=14, color=(0, 0, 0))
         doc.save(out_original)
         doc.close()
@@ -257,16 +253,6 @@ def registro_admin():
 
 # ⬅️ AQUÍ VAN, FUERA DE LAS RUTAS
 
-def obtener_folio_representativo():
-    datos = supabase.table("folios_representativos").select("*").eq("entidad", ENTIDAD).execute().data
-    if datos:
-        return datos[0]["ultimo_folio"]
-    else:
-        supabase.table("folios_representativos").insert({"entidad": ENTIDAD, "ultimo_folio": 1}).execute()
-        return 1
-
-def incrementar_folio_representativo(actual):
-    supabase.table("folios_representativos").update({"ultimo_folio": actual + 1}).eq("entidad", ENTIDAD).execute()
 
 # ⬇️ ABAJO VIENE LA RUTA, COMO SIEMPRE
 

@@ -416,19 +416,19 @@ def eliminar_folios_masivo():
 
 # --- AQUÍ VA TU NUEVA FUNCIÓN DE DESCARGA UNIVERSAL ---
 
-@app.route('/descargar_pdf/<folio>')
-def descargar_pdf(folio):
+@app.route('/descargar_permiso/<folio>')
+def descargar_permiso(folio):
     registro = supabase.table("folios_registrados").select("entidad").eq("folio", folio).execute().data
     if not registro:
         flash("No se encontró el folio.", "error")
-        return redirect(request.referrer or url_for('admin_folios'))
+        return redirect(url_for('admin_folios'))
 
     entidad = registro[0].get('entidad', '').lower()
-    pdf_path = f"documentos/{folio}_{entidad}.pdf"
+    pdf_path = f"documentos/{folio}_{entidad}.pdf"  # <--- aquí ya sin el "1"
 
     if not os.path.exists(pdf_path):
         flash("PDF no existe para este folio y entidad.", "error")
-        return redirect(request.referrer or url_for('admin_folios'))
+        return redirect(url_for('admin_folios'))
 
     return send_file(pdf_path, as_attachment=True)
     

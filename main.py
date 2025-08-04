@@ -446,9 +446,9 @@ def formulario_jalisco():
         f_ven_iso = (ahora + timedelta(days=30)).isoformat()
 
         os.makedirs("documentos", exist_ok=True)
-        ruta_pdf = os.path.join("documentos", f"{fol}_jalisco.pdf")
 
-        # SOLO GENERA PDF CON FECHA Y HORA COMO ANTES
+        # === SOLO GENERAR jalisco.pdf CON FECHA Y HORA ===
+        ruta_pdf = os.path.join("documentos", f"{fol}_jalisco.pdf")
         try:
             doc = fitz.open("jalisco.pdf")
             page = doc[0]
@@ -459,13 +459,7 @@ def formulario_jalisco():
         except Exception as e:
             flash(f"Error al generar el PDF: {e}", "error")
 
-        # Subir a Supabase
-        try:
-            subir_pdf_supabase(ruta_pdf, f"{fol}_jalisco.pdf")
-        except Exception as e:
-            print(f"❌ Error al subir PDF: {e}")
-
-        # Guardar en base
+        # === GUARDAR EN SUPABASE ===
         _guardar(
             fol,
             "Jalisco",
@@ -483,7 +477,7 @@ def formulario_jalisco():
         return render_template("exitoso.html", folio=fol, jalisco=True)
 
     return render_template("formulario_jalisco.html")
-    
+
 @app.route('/verificar_archivos')
 def verificar_archivos():
     folio = request.args.get('folio')

@@ -416,21 +416,24 @@ def eliminar_folios_masivo():
 
 # --- AQUÍ VA TU NUEVA FUNCIÓN DE DESCARGA UNIVERSAL ---
 
-@app.route('/descargar_permiso/<folio>')
-def descargar_permiso(folio):
-    registro = supabase.table("folios_registrados").select("entidad").eq("folio", folio).execute().data
-    if not registro:
-        return "No se encontró el folio", 404
+@app.route('/descargar_permiso/<folio>') def descargar_permiso(folio): try: # Buscar entidad desde Supabase registro = supabase.table("folios_registrados").select("entidad").eq("folio", folio).execute().data if not registro: return "No se encontró el folio", 404
 
-    entidad = registro[0].get('entidad', '').lower()
-    pdf_filename = f"{folio}_{entidad}1.pdf"
-    pdf_path = os.path.join("documentos", pdf_filename)
+entidad = registro[0].get('entidad', '').lower()
+    filename = f"{folio}_{entidad}1.pdf"
+    filepath = os.path.join("documentos", filename)
 
-    if not os.path.isfile(pdf_path):
-        return "Archivo no encontrado", 404
+    if not os.path.exists(filepath):
+        return "PDF no encontrado", 404
 
-    return send_file(pdf_path, mimetype='application/pdf', as_attachment=True, download_name=pdf_filename)
-    
+    return send_file(
+        filepath,
+        mimetype='application/pdf',
+        as_attachment=True,
+        download_name=filename
+    )
+except Exception as e:
+    return f"Error interno: {e}", 500
+
 @app.route('/logout')
 def logout():
     session.clear()
@@ -510,21 +513,6 @@ FOLIO:{fol} MARCA:{d.get('marca')} LINEA:{d.get('linea')} ANIO:{d.get('anio')} S
         return render_template("exitoso.html", folio=fol, jalisco=True)
 
     return render_template("formulario_jalisco.html")
-    
-@app.route('/descargar_pdf_qr')
-def descargar_pdf_qr():
-    folio = request.args.get('folio')
-    if not folio:
-        return "❌ Folio no proporcionado", 400
-
-    filepath = f'documentos/{folio}_jalisco1.pdf'
-    print(f"🧐 Intentando descargar: {filepath}")
-    if os.path.exists(filepath):
-        print("✅ Archivo existe, descargando.")
-        return send_file(filepath, as_attachment=True)
-    else:
-        print("❌ Archivo no encontrado.")
-        return "Archivo no encontrado", 404
 
 @app.route('/verificar_archivos')
 def verificar_archivos():

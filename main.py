@@ -163,7 +163,6 @@ def registro_admin():
         venc = ahora + timedelta(days=vigencia)
 
         try:
-            # Generar PDF
             doc = fitz.open("jalisco.pdf")
             page = doc[0]
             fecha_hora_str = ahora.strftime('%d/%m/%Y %H:%M')
@@ -178,39 +177,6 @@ def registro_admin():
 
         flash('Permiso generado correctamente.', 'success')
         return render_template('exitoso.html', folio=folio, serie=numero_serie, fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M'))
-if request.method == 'POST':
-        folio = request.form['folio']
-        marca = request.form['marca']
-        linea = request.form['linea']
-        anio = request.form['anio']
-        numero_serie = request.form['serie']
-        numero_motor = request.form['motor']
-        vigencia = int(request.form['vigencia'])
-
-        ahora = datetime.now(ZoneInfo("America/Mexico_City"))
-        venc = ahora + timedelta(days=vigencia)
-
-        try:
-            # Generar PDF
-            doc = fitz.open("jalisco.pdf")
-            page = doc[0]
-            fecha_hora_str = ahora.strftime('%d/%m/%Y %H:%M')
-            page.insert_text((380, 195), fecha_hora_str, fontsize=10, fontname="helv", color=(0, 0, 0))
-            page.insert_text((380, 290), numero_serie, fontsize=10, fontname="helv", color=(0, 0, 0))
-            os.makedirs("documentos", exist_ok=True)
-            output_path = f"documentos/{folio}.pdf"
-            doc.save(output_path)
-        except Exception as e:
-            flash(f"Error al generar el PDF: {e}", 'error')
-            return redirect(url_for('registro_usuario'))
-
-        flash('Permiso generado correctamente.', 'success')
-        return render_template('exitoso.html', folio=folio, serie=numero_serie, fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M'))
-
-        return render_template('exitoso.html',
-                               folio=fol,
-                               serie=d['serie'],
-                               fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M'))
 
     return render_template('registro_admin.html')
 

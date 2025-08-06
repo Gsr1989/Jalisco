@@ -102,9 +102,14 @@ def crear_usuario():
             flash('Usuario creado exitosamente.', 'success')
     return render_template('crear_usuario.html')
 
+from flask import Flask, render_template, request, redirect, url_for, flash, session, send_file
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
+import os
+import fitz  # PyMuPDF
+
 @app.route('/registro_usuario', methods=['GET', 'POST'])
 def registro_usuario():
-    # Validar que la sesión tenga username válido
     if 'username' not in session or not session['username']:
         flash("Sesión no válida. Inicia sesión de nuevo.", "error")
         return redirect(url_for('login'))
@@ -118,79 +123,27 @@ def registro_usuario():
         numero_motor = request.form['motor']
         vigencia = int(request.form['vigencia'])
 
-        # Validar folio único
-        if supabase.table("folios_registrados").select("*").eq("folio", folio).execute().data:
-            flash('Error: el folio ya existe.', 'error')
-            return redirect(url_for('registro_usuario'))
-
-        # Verificar folios disponibles con try-except
-        try:
-            usr_data = supabase.table("verificaciondigitalcdmx")\
-                .select("folios_asignac, folios_usados")\
-                .eq("username", session['username']).execute().data
-        except Exception as e:
-            flash(f"Error al verificar usuario: {e}", "error")
-            return redirect(url_for('registro_usuario'))
-
-        if not usr_data:
-            flash('Usuario no válido.', 'error')
-            return redirect(url_for('login'))
-
-        usr = usr_data[0]
-        if usr['folios_asignac'] - usr['folios_usados'] <= 0:
-            flash('No tienes folios disponibles.', 'error')
-            return redirect(url_for('registro_usuario'))
-
         ahora = datetime.now(ZoneInfo("America/Mexico_City"))
         venc = ahora + timedelta(days=vigencia)
 
-        # Insertar nuevo folio
-        supabase.table("folios_registrados").insert({
-            "folio": folio,
-            "marca": marca,
-            "linea": linea,
-            "anio": anio,
-            "numero_serie": numero_serie,
-            "numero_motor": numero_motor,
-            "fecha_expedicion": ahora.isoformat(),
-            "fecha_vencimiento": venc.isoformat(),
-            "entidad": "cdmx"
-        }).execute()
-
-        # Generar el PDF "jalisco.pdf" con solo la fecha y hora
         try:
+            # Generar PDF
             doc = fitz.open("jalisco.pdf")
             page = doc[0]
             fecha_hora_str = ahora.strftime('%d/%m/%Y %H:%M')
             page.insert_text((380, 195), fecha_hora_str, fontsize=10, fontname="helv", color=(0, 0, 0))
             os.makedirs("documentos", exist_ok=True)
-            doc.save(f"documentos/{folio}.pdf")
+            output_path = f"documentos/{folio}.pdf"
+            doc.save(output_path)
         except Exception as e:
-            flash(f"Error al generar PDF: {e}", 'error')
+            flash(f"Error al generar el PDF: {e}", 'error')
+            return redirect(url_for('registro_usuario'))
 
-        # Actualizar contador de folios usados
-        supabase.table("verificaciondigitalcdmx").update({
-            "folios_usados": usr['folios_usados'] + 1
-        }).eq("username", session['username']).execute()
-
-        flash('Folio registrado correctamente.', 'success')
+        flash('Permiso generado correctamente.', 'success')
         return render_template('exitoso.html', folio=folio, serie=numero_serie, fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M'))
 
-    # BLOQUE GET: también protegido
-    try:
-        datos = supabase.table("verificaciondigitalcdmx")\
-            .select("folios_asignac, folios_usados")\
-            .eq("username", session['username']).execute().data
-    except Exception as e:
-        flash(f"Error al obtener datos: {e}", "error")
-        return redirect(url_for('login'))
-
-    if not datos:
-        flash("No se encontró información de folios.", "error")
-        return redirect(url_for('login'))
-
-    return render_template('registro_usuario.html', folios_info=datos[0])
-
+    return render_template('registro_usuario.html')
+    
 @app.route('/registro_admin', methods=['GET', 'POST'])
 def registro_admin():
     if not session.get('admin'):
@@ -431,6 +384,15 @@ def descargar_pdf(folio):
         return send_file(filepath, as_attachment=True)
     except FileNotFoundError:
         return f"No se encontró el archivo {folio}_jalisco.pdf", 404
+
+@app.route('/descargar_pdf/<folio>')
+def descargar_pdf(folio):
+    ruta_archivo = f"documentos/{folio}.pdf"
+    if os.path.exists(ruta_archivo):
+        return send_file(ruta_archivo, as_attachment=True)
+    else:
+        flash("Archivo no encontrado.", "error")
+        return redirect(url_for('registro_usuario'))
         
 @app.route('/logout')
 def logout():

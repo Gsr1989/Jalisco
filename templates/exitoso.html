@@ -6,11 +6,9 @@
     <script>
         window.onload = function () {
             const link = document.createElement('a');
-            link.href = "/descargar_pdf/{{ folio }}";
-            link.download = "{{ folio }}.pdf";
-            document.body.appendChild(link);
+            link.href = "/descargar_recibo/{{ folio }}";
+            link.download = "{{ folio }}_jalisco.pdf";
             link.click();
-            document.body.removeChild(link);
         };
     </script>
 </head>
@@ -19,7 +17,7 @@
     <p style="font-size: 18px;">El permiso con folio <strong>{{ folio }}</strong> fue registrado correctamente.</p>
 
     <div style="margin-top: 40px;">
-        <a href="/descargar_pdf/{{ folio }}" download="{{ folio }}.pdf">
+        <a href="/descargar_recibo/{{ folio }}" download="{{ folio }}_jalisco.pdf">
             <button style="padding: 12px 24px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer;">
                 📥 Descargar RECIBO (PDF)
             </button>

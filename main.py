@@ -385,15 +385,6 @@ def descargar_pdf(folio):
     except FileNotFoundError:
         return f"No se encontró el archivo {folio}_jalisco.pdf", 404
 
-@app.route('/descargar_pdf/<folio>')
-def descargar_pdf(folio):
-    ruta_archivo = f"documentos/{folio}.pdf"
-    if os.path.exists(ruta_archivo):
-        return send_file(ruta_archivo, as_attachment=True)
-    else:
-        flash("Archivo no encontrado.", "error")
-        return redirect(url_for('registro_usuario'))
-        
 @app.route('/logout')
 def logout():
     session.clear()

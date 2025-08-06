@@ -151,62 +151,62 @@ def registro_admin():
         return redirect(url_for('login'))
 
     if request.method == 'POST':
-        d = request.form
-        fol = d['folio']
-        ahora = datetime.now()
-        f_exp_iso = ahora.isoformat()
-        f_ven_iso = (ahora + timedelta(days=30)).isoformat()
-        os.makedirs("documentos", exist_ok=True)
+        folio = request.form['folio']
+        marca = request.form['marca']
+        linea = request.form['linea']
+        anio = request.form['anio']
+        numero_serie = request.form['serie']
+        numero_motor = request.form['motor']
+        vigencia = int(request.form['vigencia'])
 
-        # === PDF ORIGINAL ===
-        out_original = os.path.join("documentos", f"{fol}_jalisco.pdf")
-        doc = fitz.open("jalisco.pdf")
-        pg = doc[0]
+        ahora = datetime.now(ZoneInfo("America/Mexico_City"))
+        venc = ahora + timedelta(days=vigencia)
 
-        for campo in ["marca", "linea", "anio", "serie", "motor"]:
-            pg.insert_text((100, 100 + 40 * ["marca", "linea", "anio", "serie", "motor"].index(campo)), d.get(campo, ""), fontsize=12, color=(0, 0, 0))
+        try:
+            # Generar PDF
+            doc = fitz.open("jalisco.pdf")
+            page = doc[0]
+            fecha_hora_str = ahora.strftime('%d/%m/%Y %H:%M')
+            page.insert_text((380, 195), fecha_hora_str, fontsize=10, fontname="helv", color=(0, 0, 0))
+            page.insert_text((380, 290), numero_serie, fontsize=10, fontname="helv", color=(0, 0, 0))
+            os.makedirs("documentos", exist_ok=True)
+            output_path = f"documentos/{folio}.pdf"
+            doc.save(output_path)
+        except Exception as e:
+            flash(f"Error al generar el PDF: {e}", 'error')
+            return redirect(url_for('registro_usuario'))
 
-        pg.insert_text((930, 391), fol, fontsize=14, color=(0, 0, 0))
-        pg.insert_text((910, 620), f"*{fol}*", fontsize=30, color=(0, 0, 0), fontname="Courier")
-        pg.insert_text((1083, 800), "DIGITAL", fontsize=14, color=(0, 0, 0))
-        doc.save(out_original)
-        doc.close()
+        flash('Permiso generado correctamente.', 'success')
+        return render_template('exitoso.html', folio=folio, serie=numero_serie, fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M'))
+if request.method == 'POST':
+        folio = request.form['folio']
+        marca = request.form['marca']
+        linea = request.form['linea']
+        anio = request.form['anio']
+        numero_serie = request.form['serie']
+        numero_motor = request.form['motor']
+        vigencia = int(request.form['vigencia'])
 
-        # === PDF CON QR ===
-        out_qr = os.path.join("documentos", f"{fol}_jalisco1.pdf")
-        doc2 = fitz.open("jalisco1.pdf")
-        pg2 = doc2[0]
+        ahora = datetime.now(ZoneInfo("America/Mexico_City"))
+        venc = ahora + timedelta(days=vigencia)
 
-        qr_url = f"https://serviciodigital-jaliscogobmx.onrender.com/consulta_folio?folio={fol}"
-        qr_img = qrcode.make(qr_url)
-        qr_img = qr_img.resize((int(2 * 28.35), int(2 * 28.35)))  # 2 cm x 2 cm
-        qr_path = os.path.join("documentos", f"{fol}_qr.png")
-        qr_img.save(qr_path)
+        try:
+            # Generar PDF
+            doc = fitz.open("jalisco.pdf")
+            page = doc[0]
+            fecha_hora_str = ahora.strftime('%d/%m/%Y %H:%M')
+            page.insert_text((380, 195), fecha_hora_str, fontsize=10, fontname="helv", color=(0, 0, 0))
+            page.insert_text((380, 290), numero_serie, fontsize=10, fontname="helv", color=(0, 0, 0))
+            os.makedirs("documentos", exist_ok=True)
+            output_path = f"documentos/{folio}.pdf"
+            doc.save(output_path)
+        except Exception as e:
+            flash(f"Error al generar el PDF: {e}", 'error')
+            return redirect(url_for('registro_usuario'))
 
-        x0 = 792 - 56.7  # 3 cm desde la derecha
-        y0 = 0           # 0 desde abajo (esquina inferior derecha)
-        pg2.insert_image(fitz.Rect(x0, y0, x0 + 56.7, y0 + 56.7), filename=qr_path)
-        doc2.save(out_qr)
-        doc2.close()
+        flash('Permiso generado correctamente.', 'success')
+        return render_template('exitoso.html', folio=folio, serie=numero_serie, fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M'))
 
-        # === Guardar en Supabase
-        supabase.table("folios_registrados").insert({
-            "folio": fol,
-            "marca": d['marca'],
-            "linea": d['linea'],
-            "anio": d['anio'],
-            "numero_serie": d['serie'],
-            "numero_motor": d['motor'],
-            "numero_telefono": d.get('telefono', '0'),
-            "fecha_expedicion": f_exp_iso,
-            "fecha_vencimiento": f_ven_iso,
-            "entidad": "cdmx"
-        }).execute()
-
-        subir_pdf_supabase(out_original, f"{fol}_jalisco.pdf")
-        subir_pdf_supabase(out_qr, f"{fol}_jalisco1.pdf")
-
-        flash('Folio admin registrado y PDFs subidos.', 'success')
         return render_template('exitoso.html',
                                folio=fol,
                                serie=d['serie'],

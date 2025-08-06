@@ -103,7 +103,9 @@ def crear_usuario():
 
 @app.route('/registro_usuario', methods=['GET', 'POST'])
 def registro_usuario():
-    if not session.get('username'):
+    # Validar que la sesión tenga username válido
+    if 'username' not in session or not session['username']:
+        flash("Sesión no válida. Inicia sesión de nuevo.", "error")
         return redirect(url_for('login'))
 
     if request.method == 'POST':
@@ -120,10 +122,14 @@ def registro_usuario():
             flash('Error: el folio ya existe.', 'error')
             return redirect(url_for('registro_usuario'))
 
-        # Verificar folios disponibles
-        usr_data = supabase.table("verificaciondigitalcdmx")\
-            .select("folios_asignac, folios_usados")\
-            .eq("username", session['username']).execute().data
+        # Verificar folios disponibles con try-except
+        try:
+            usr_data = supabase.table("verificaciondigitalcdmx")\
+                .select("folios_asignac, folios_usados")\
+                .eq("username", session['username']).execute().data
+        except Exception as e:
+            flash(f"Error al verificar usuario: {e}", "error")
+            return redirect(url_for('registro_usuario'))
 
         if not usr_data:
             flash('Usuario no válido.', 'error')
@@ -150,15 +156,12 @@ def registro_usuario():
             "entidad": "cdmx"
         }).execute()
 
-        # 🔥 GENERAR PDF SOLO FECHA + HORA
+        # Generar el PDF "jalisco.pdf" con solo la fecha y hora
         try:
             doc = fitz.open("jalisco.pdf")
             page = doc[0]
-
-            # Imprime solo la fecha + hora en formato dd/mm/yyyy HH:MM
             fecha_hora_str = ahora.strftime('%d/%m/%Y %H:%M')
             page.insert_text((380, 195), fecha_hora_str, fontsize=10, fontname="helv", color=(0, 0, 0))
-
             os.makedirs("documentos", exist_ok=True)
             doc.save(f"documentos/{folio}.pdf")
         except Exception as e:
@@ -172,10 +175,14 @@ def registro_usuario():
         flash('Folio registrado correctamente.', 'success')
         return render_template('exitoso.html', folio=folio, serie=numero_serie, fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M'))
 
-    # Mostrar datos de folios disponibles
-    datos = supabase.table("verificaciondigitalcdmx")\
-        .select("folios_asignac, folios_usados")\
-        .eq("username", session['username']).execute().data
+    # BLOQUE GET: también protegido
+    try:
+        datos = supabase.table("verificaciondigitalcdmx")\
+            .select("folios_asignac, folios_usados")\
+            .eq("username", session['username']).execute().data
+    except Exception as e:
+        flash(f"Error al obtener datos: {e}", "error")
+        return redirect(url_for('login'))
 
     if not datos:
         flash("No se encontró información de folios.", "error")

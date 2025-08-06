@@ -377,14 +377,20 @@ def eliminar_folios_masivo():
 
 # --- 👇AQUÍ VA TU NUEVA FUNCIÓN DE DESCARGA UNIVERSAL🖕 ---
 
-@app.route('/descargar_pdf/<folio>')
-def descargar_pdf(folio):
-    try:
-        filepath = os.path.join("documentos", f"{folio}_jalisco.pdf")
-        return send_file(filepath, as_attachment=True)
-    except FileNotFoundError:
-        return f"No se encontró el archivo {folio}_jalisco.pdf", 404
+from flask import send_file, abort
 
+@app.route('/descargar_recibo/<folio>')
+def descargar_recibo(folio):
+    ruta_pdf = f"documentos/{folio}.pdf"
+    if not os.path.exists(ruta_pdf):
+        abort(404)
+    return send_file(
+        ruta_pdf,
+        as_attachment=True,
+        download_name=f"{folio}_jalisco.pdf",
+        mimetype='application/pdf'
+    )
+    
 @app.route('/logout')
 def logout():
     session.clear()

@@ -132,7 +132,7 @@ def registro_usuario():
             page = doc[0]
             fecha_hora_str = ahora.strftime('%d/%m/%Y %H:%M')
             page.insert_text((380, 195), fecha_hora_str, fontsize=10, fontname="helv", color=(0, 0, 0))
-            page.insert_text((380, 385), serie, fontsize=10, fontname="helv", color=(0, 0, 0))
+            page.insert_text((380, 385), numero_serie, fontsize=10, fontname="helv", color=(0, 0, 0))
             os.makedirs("documentos", exist_ok=True)
             output_path = f"documentos/{folio}.pdf"
             doc.save(output_path)

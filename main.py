@@ -52,7 +52,7 @@ def login():
         password = request.form['password']
         
         # Admin hardcode
-        if username == 'Gsr89roja.' and password == 'serg890105':
+        if username == 'Serg890105tm3' and password == 'Serg890105tm3':
             session['admin'] = True
             return redirect(url_for('admin'))
 

@@ -68,9 +68,8 @@ def login():
             session['username'] = resp.data[0]['username']
             return redirect(url_for('registro_usuario'))
 
-        return render_template('bloqueado.html')
-
-    return render_template('bloqueado.html')
+        flash('Credenciales incorrectas', 'error')
+    return render_template('login.html')
     
 @app.route('/admin')
 def admin():

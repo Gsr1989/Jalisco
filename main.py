@@ -158,9 +158,10 @@ def registro_admin():
         numero_motor = request.form['motor']
         vigencia = int(request.form['vigencia'])
 
-        ahora = datetime.now(ZoneInfo("America/Mexico_City"))
+        ahora = datetime.now()
         venc = ahora + timedelta(days=vigencia)
 
+        # GENERAR PDF
         try:
             doc = fitz.open("jalisco.pdf")
             page = doc[0]
@@ -172,13 +173,35 @@ def registro_admin():
             doc.save(output_path)
         except Exception as e:
             flash(f"Error al generar el PDF: {e}", 'error')
-            return redirect(url_for('registro_usuario'))
+            return redirect(url_for('registro_admin'))
+
+        # GUARDAR EN SUPABASE
+        try:
+            supabase.table("folios_registrados").insert({
+                "folio": folio,
+                "marca": marca,
+                "linea": linea,
+                "anio": anio,
+                "numero_serie": numero_serie,
+                "numero_motor": numero_motor,
+                "fecha_expedicion": ahora.isoformat(),
+                "fecha_vencimiento": venc.isoformat(),
+                "entidad": "jalisco"
+            }).execute()
+        except Exception as e:
+            flash(f"Error al guardar en Supabase: {e}", 'error')
+            return redirect(url_for('registro_admin'))
 
         flash('Permiso generado correctamente.', 'success')
-        return render_template('exitoso.html', folio=folio, serie=numero_serie, fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M'))
+        return render_template(
+            'exitoso.html',
+            folio=folio,
+            serie=numero_serie,
+            fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M')
+        )
 
     return render_template('registro_admin.html')
-
+    
 # ⬅️ AQUÍ VAN, FUERA DE LAS RUTAS
 
 

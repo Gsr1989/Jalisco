@@ -447,67 +447,35 @@ def verificar_archivos():
 # ========== NUEVO ENDPOINT PARA CONSULTA DIRECTA - SISTEMA JALISCO ==========
 @app.route('/consulta/<folio>')
 def consulta_folio_directo(folio):
-    """
-    Endpoint específico para consultas directas por URL
-    Devuelve HTML con los datos del folio de Jalisco
-    Usa la misma lógica que tu consulta_folio existente
-    """
-    try:
-        # Buscar en la tabla folios_registrados (tu tabla actual)
-        registros = supabase.table("folios_registrados") \
-            .select("*") \
-            .eq("folio", folio.strip().upper()) \
-            .execute().data
-        
-        if not registros:
-            # Folio no encontrado - mismo HTML que usas en tu sistema
-            resultado = {
-                "estado": "NO SE ENCUENTRA REGISTRADO",
-                "color": "rojo",
-                "folio": folio
-            }
-            return render_template('resultado_consulta.html', resultado=resultado)
-        
-        # Folio encontrado - procesar igual que tu función consulta_folio
-        r = registros[0]
-        
-        try:
-            fexp = datetime.fromisoformat(r['fecha_expedicion'])
-            fven = datetime.fromisoformat(r['fecha_vencimiento'])
-        except:
-            fexp = datetime.now()
-            fven = datetime.now()
-        
-        # Determinar estado (misma lógica que ya tienes)
-        estado = "VIGENTE" if datetime.now() <= fven else "VENCIDO"
-        color = "verde" if estado == "VIGENTE" else "cafe"
-        
-        resultado = {
-            "estado": estado,
-            "color": color,
-            "folio": folio,
-            "fecha_expedicion": fexp.strftime('%d/%m/%Y'),
-            "fecha_vencimiento": fven.strftime('%d/%m/%Y'),
-            "marca": r['marca'],
-            "linea": r['linea'],
-            "año": r['anio'],
-            "numero_serie": r['numero_serie'],
-            "numero_motor": r['numero_motor'],
-            "entidad": r.get('entidad', 'jalisco')
-        }
-        
-        # Usar tu template existente
-        return render_template('resultado_consulta.html', resultado=resultado)
-        
-    except Exception as e:
-        # En caso de error
-        resultado = {
-            "estado": "ERROR EN CONSULTA",
-            "color": "rojo",
-            "folio": folio,
-            "error": str(e)
-        }
-        return render_template('resultado_consulta.html', resultado=resultado)
-
+    """Ruta para QR dinámicos con el diseño original"""
+    
+    row = supabase.table("folios_registrados").select("*").eq("folio", folio).eq("entidad", "jalisco").execute().data
+    
+    if not row:
+        return render_template("resultado_consulta.html", resultado={
+            "estado": "NO SE ENCUENTRA REGISTRADO",
+            "folio": folio
+        })
+    
+    r = row[0]
+    fe = datetime.fromisoformat(r['fecha_expedicion'])
+    fv = datetime.fromisoformat(r['fecha_vencimiento'])
+    estado = "VIGENTE" if datetime.now() <= fv else "VENCIDO"
+    
+    resultado = {
+        "estado": estado,
+        "folio": folio,
+        "fecha_expedicion": fe.strftime("%d/%m/%Y"),
+        "fecha_vencimiento": fv.strftime("%d/%m/%Y"),
+        "marca": r['marca'],
+        "linea": r['linea'],
+        "año": r['anio'],
+        "numero_serie": r['numero_serie'],
+        "numero_motor": r['numero_motor'],
+        "entidad": r.get('entidad', '')
+    }
+    
+    return render_template("resultado_consulta.html", resultado=resultado)
+    
 if __name__ == '__main__':
     app.run(debug=True)

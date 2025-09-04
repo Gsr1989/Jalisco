@@ -449,7 +449,7 @@ def verificar_archivos():
 def consulta_folio_directo(folio):
     """Ruta para QR dinámicos con el diseño original"""
     
-    row = supabase.table("folios_registrados").select("*").eq("folio", folio).eq("entidad", "jalisco").execute().data
+    row = supabase.table("folios_registrados").select("*").eq("folio", folio).eq("entidad", "Jalisco").execute().data
     
     if not row:
         return render_template("resultado_consulta.html", resultado={

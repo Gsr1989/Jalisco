@@ -101,12 +101,6 @@ def crear_usuario():
             flash('Usuario creado exitosamente.', 'success')
     return render_template('crear_usuario.html')
 
-from flask import Flask, render_template, request, redirect, url_for, flash, session, send_file
-from datetime import datetime, timedelta
-from zoneinfo import ZoneInfo
-import os
-import fitz  # PyMuPDF
-
 @app.route('/registro_usuario', methods=['GET', 'POST'])
 def registro_usuario():
     if 'username' not in session or not session['username']:
@@ -201,12 +195,6 @@ def registro_admin():
         )
 
     return render_template('registro_admin.html')
-    
-# ⬅️ AQUÍ VAN, FUERA DE LAS RUTAS
-
-
-# ⬇️ ABAJO VIENE LA RUTA, COMO SIEMPRE
-
 
 @app.route('/consulta_folio', methods=['GET','POST'])
 def consulta_folio():
@@ -364,10 +352,6 @@ def eliminar_folios_masivo():
         flash(f"Error al eliminar folios: {e}", "error")
     return redirect(url_for('admin_folios'))
 
-# --- 👇AQUÍ VA TU NUEVA FUNCIÓN DE DESCARGA UNIVERSAL🖕 ---
-
-from flask import send_file, abort
-
 @app.route('/descargar_recibo/<folio>')
 def descargar_recibo(folio):
     ruta_pdf = f"documentos/{folio}.pdf"
@@ -444,51 +428,18 @@ def verificar_archivos():
         "qr_existe": os.path.exists(qr)
     }
 
-# ========== NUEVO ENDPOINT PARA CONSULTA DIRECTA - SISTEMA JALISCO ==========
+# ========== QR DINÁMICO FLEXIBLE - SIN DUPLICADOS ==========
 @app.route('/consulta/<folio>')
 def consulta_folio_directo(folio):
-    """Ruta para QR dinámicos con el diseño original"""
+    """Ruta para QR dinámicos - versión flexible sin filtro de entidad"""
     
-    row = supabase.table("folios_registrados").select("*").eq("folio", folio).eq("entidad", "Jalisco").execute().data
-    
-    if not row:
-        return render_template("resultado_consulta.html", resultado={
-            "estado": "NO SE ENCUENTRA REGISTRADO",
-            "folio": folio
-        })
-    
-    r = row[0]
-    fe = datetime.fromisoformat(r['fecha_expedicion'])
-    fv = datetime.fromisoformat(r['fecha_vencimiento'])
-    estado = "VIGENTE" if datetime.now() <= fv else "VENCIDO"
-    
-    resultado = {
-        "estado": estado,
-        "folio": folio,
-        "fecha_expedicion": fe.strftime("%d/%m/%Y"),
-        "fecha_vencimiento": fv.strftime("%d/%m/%Y"),
-        "marca": r['marca'],
-        "linea": r['linea'],
-        "año": r['anio'],
-        "numero_serie": r['numero_serie'],
-        "numero_motor": r['numero_motor'],
-        "entidad": r.get('entidad', '')
-    }
-    
-    return render_template("resultado_consulta.html", resultado=resultado)
-
-# ========== REEMPLAZA TU RUTA ACTUAL CON ESTA ==========
-@app.route('/consulta/<folio>')
-def consulta_folio_directo(folio):
-    """Ruta para QR dinámicos - versión flexible que funciona para todas las entidades"""
-    
-    # Buscar sin filtro de entidad primero (igual que en CDMX)
+    # Buscar sin filtro de entidad primero
     row = supabase.table("folios_registrados").select("*").eq("folio", folio).execute().data
     
     if not row:
         return render_template("resultado_consulta.html", resultado={
             "estado": "NO SE ENCUENTRA REGISTRADO",
-            "color": "rojo",  # Agregado para mantener consistencia con tu sistema
+            "color": "rojo",
             "folio": folio
         })
     
@@ -496,11 +447,11 @@ def consulta_folio_directo(folio):
     fe = datetime.fromisoformat(r['fecha_expedicion'])
     fv = datetime.fromisoformat(r['fecha_vencimiento'])
     estado = "VIGENTE" if datetime.now() <= fv else "VENCIDO"
-    color = "verde" if estado == "VIGENTE" else "cafe"  # Tu sistema de colores
+    color = "verde" if estado == "VIGENTE" else "cafe"
     
     resultado = {
         "estado": estado,
-        "color": color,  # Agregado para tu template
+        "color": color,
         "folio": folio,
         "fecha_expedicion": fe.strftime("%d/%m/%Y"),
         "fecha_vencimiento": fv.strftime("%d/%m/%Y"),
@@ -509,7 +460,7 @@ def consulta_folio_directo(folio):
         "año": r['anio'],
         "numero_serie": r['numero_serie'],
         "numero_motor": r['numero_motor'],
-        "entidad": r.get('entidad', 'Jalisco')  # Default a Jalisco
+        "entidad": r.get('entidad', 'Jalisco')
     }
     
     return render_template("resultado_consulta.html", resultado=resultado)

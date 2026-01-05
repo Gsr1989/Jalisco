@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Registro exitoso</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
         window.onload = function () {
             const link = document.createElement('a');
@@ -11,16 +12,55 @@
             link.click();
         };
     </script>
+    <style>
+        body {
+            text-align: center;
+            font-family: sans-serif;
+            background-color: #f7f7f7;
+            padding: 40px;
+        }
+        h1 { color: green; }
+        .info {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 500px;
+            margin: 20px auto;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        a {
+            text-decoration: none;
+        }
+    </style>
 </head>
-<body style="text-align: center; font-family: sans-serif; background-color: #f7f7f7; padding: 40px;">
-    <h1 style="color: green;">✅ Registro exitoso</h1>
-    <p style="font-size: 18px;">El permiso con folio <strong>{{ folio }}</strong> fue registrado correctamente.</p>
+<body>
+    <h1>✅ Registro exitoso</h1>
+    <div class="info">
+        <p>El permiso con folio <strong>{{ folio }}</strong> fue registrado correctamente.</p>
+        <p><strong>No. Serie:</strong> {{ serie }}</p>
+        <p><strong>Fecha:</strong> {{ fecha_generacion }}</p>
+    </div>
 
-    <div style="margin-top: 40px;">
+    <div>
         <a href="/descargar_recibo/{{ folio }}" download="{{ folio }}_jalisco.pdf">
-            <button style="padding: 12px 24px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer;">
-                📥 Descargar RECIBO (PDF)
-            </button>
+            <button>📥 Descargar PDF Completo</button>
+        </a>
+        <br>
+        <a href="{{ url_for('admin') if session.get('admin') else url_for('registro_usuario') }}">
+            <button style="background-color: #800000;">← Generar Otro Permiso</button>
         </a>
     </div>
 </body>

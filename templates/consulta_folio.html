@@ -2,101 +2,55 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Consulta de Folio</title>
+    <title>Consultar Folio</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        :root {
-            --color-principal: #3A4A4F;
-        }
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #fff;
-            color: var(--color-principal);
-        }
-        header {
-            width: 100%;
-        }
-        header img {
-            width: 100%;
-            display: block;
-        }
-        h1 {
-            text-align: center;
-            font-size: 28px;
-            margin-top: 30px;
-            color: var(--color-principal);
-        }
-        main {
-            max-width: 500px;
-            margin: 0 auto;
+            background: #f5f5f5;
             padding: 20px;
-            text-align: center;
         }
-        label, input, button {
-            color: var(--color-principal);
-            font-size: 16px;
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
         }
-        input[type="text"] {
+        h1 { text-align: center; color: #333; }
+        input, button {
             width: 100%;
             padding: 12px;
-            border-radius: 6px;
-            border: 1px solid var(--color-principal);
-            margin-bottom: 20px;
-            background-color: #fff;
-        }
-        input::placeholder {
-            color: var(--color-principal);
-            opacity: 0.7;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
         }
         button {
-            background-color: var(--color-principal);
+            background: #800000;
             color: white;
-            padding: 12px 20px;
             border: none;
-            border-radius: 6px;
-            font-size: 16px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
         }
-        button:hover {
-            background-color: #2E3C41;
-        }
-        footer {
-            margin-top: 40px;
-            width: 100%;
-        }
-        footer img {
-            width: 100%;
-            display: block;
-        }
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 24px;
-                margin-top: 20px;
-            }
-            button {
-                width: 100%;
-            }
+        button:hover { background: #a00000; }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            color: #800000;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
-    <header>
-        <img src="{{ url_for('static', filename='logotipo.png') }}" alt="Logotipo">
-    </header>
-
-    <h1>SECRETARÍA DE TRANSPORTE</h1>
-
-    <main>
-        <form action="/consulta_folio" method="POST">
-            <input type="text" name="folio" placeholder="Ingresa tu folio" required>
+    <div class="container">
+        <h1>🔍 Consultar Folio</h1>
+        <form method="POST">
+            <label>Número de Folio:</label>
+            <input type="text" name="folio" placeholder="Ingrese el folio" required>
             <button type="submit">Consultar</button>
         </form>
-    </main>
-
-    <footer>
-        <img src="{{ url_for('static', filename='footer.png') }}" alt="Footer">
-    </footer>
+        <a href="{{ url_for('admin') if session.get('admin') else url_for('inicio') }}">← Volver</a>
+    </div>
 </body>
-</html>
+</html

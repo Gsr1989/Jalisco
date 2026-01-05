@@ -3,131 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <title>Crear Usuario</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
-            background-color: #ffffff;
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 30px;
-        }
-        header img {
-            height: 80px;
-        }
-        .titulo {
-            text-align: center;
-            font-size: 28px;
-            margin-top: 30px;
-            font-weight: bold;
-            color: #222;
-        }
-        .formulario {
-            max-width: 600px;
-            margin: 30px auto;
+            background: #f5f5f5;
             padding: 20px;
-            border-radius: 10px;
-            background-color: #f9f9f9;
         }
-        input {
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+        }
+        h1 { text-align: center; color: #333; }
+        input, button {
             width: 100%;
             padding: 12px;
             margin: 10px 0;
-            border-radius: 6px;
-            border: 1px solid #ccc;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
             font-size: 16px;
         }
-        .btn, .nav-btn {
-            background-color: #800000;
+        button {
+            background: #800000;
             color: white;
             border: none;
-            padding: 14px 22px;
-            font-size: 16px;
-            border-radius: 6px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
-            width: 100%;
-            margin-top: 15px;
-            text-align: center;
-            display: block;
-            text-decoration: none;
         }
-        .btn:hover, .nav-btn:hover {
-            background-color: #a00000;
-        }
-        .mensaje {
-            margin: 20px auto;
-            max-width: 600px;
-            padding: 10px;
-            text-align: center;
-            font-weight: bold;
+        button:hover { background: #a00000; }
+        .alert {
+            padding: 15px;
+            margin: 10px 0;
             border-radius: 5px;
         }
-        .success {
-            background-color: #4CAF50;
+        .alert-success {
+            background: #4caf50;
             color: white;
         }
-        .error {
-            background-color: #f44336;
+        .alert-error {
+            background: #f44336;
             color: white;
         }
-        footer {
-            margin-top: 40px;
-            width: 100%;
-        }
-        footer img {
-            width: 100%;
-            display: block;
-        }
-        @media (max-width: 600px) {
-            header img {
-                height: 60px;
-            }
-            .titulo {
-                font-size: 24px;
-                margin-top: 20px;
-            }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            color: #800000;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
-
-<header>
-    <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
-    <img src="{{ url_for('static', filename='sub_logo.png') }}" alt="Sub Logo">
-</header>
-
-<div class="titulo">Secretaría de Movilidad</div>
-
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    {% for category, message in messages %}
-      <div class="mensaje {{ category }}">{{ message }}</div>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
-
-<form method="POST" class="formulario">
-    <input type="text" name="username" placeholder="Nombre de usuario" required>
-    <input type="password" name="password" placeholder="Contraseña" required>
-    <input type="number" name="folios" placeholder="Cantidad de folios" required>
-    <button type="submit" class="btn">Crear Usuario</button>
-</form>
-
-<div class="formulario">
-    <a href="{{ url_for('admin') }}" class="nav-btn">Volver al Panel</a>
-    <a href="{{ url_for('consulta_folio') }}" class="nav-btn">Consultar Folio</a>
-    <a href="{{ url_for('logout') }}" class="nav-btn">Cerrar Sesión</a>
-</div>
-
-<footer>
-    <img src="{{ url_for('static', filename='footer.png') }}" alt="Footer">
-</footer>
-
+    <div class="container">
+        <h1>👤 Crear Nuevo Usuario</h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form method="POST">
+            <label>Usuario:</label>
+            <input type="text" name="username" required>
+            
+            <label>Contraseña:</label>
+            <input type="password" name="password" required>
+            
+            <label>Folios a Asignar:</label>
+            <input type="number" name="folios" min="1" required>
+            
+            <button type="submit">Crear Usuario</button>
+        </form>
+        
+        <a href="{{ url_for('admin') }}">← Volver al Panel</a>
+    </div>
 </body>
 </html>

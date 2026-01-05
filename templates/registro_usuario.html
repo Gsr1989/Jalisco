@@ -30,11 +30,109 @@
             font-weight: bold;
             color: #222;
         }
-        .info-folios {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 18px;
+        
+        /* CONTADOR VISUAL CHINGÓN */
+        .contador-container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
+        
+        .contador-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+        }
+        
+        .contador-header h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        .contador-numeros {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        
+        .contador-item {
+            text-align: center;
+            color: white;
+        }
+        
+        .contador-item .numero {
+            font-size: 48px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .contador-item .label {
+            font-size: 14px;
+            text-transform: uppercase;
+            opacity: 0.9;
+        }
+        
+        /* BARRA DE PROGRESO */
+        .progress-container {
+            background: rgba(255,255,255,0.3);
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50 0%, #8bc34a 100%);
+            border-radius: 15px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .progress-bar.warning {
+            background: linear-gradient(90deg, #ff9800 0%, #ffc107 100%);
+        }
+        
+        .progress-bar.danger {
+            background: linear-gradient(90deg, #f44336 0%, #e91e63 100%);
+        }
+        
+        .alerta-folios {
+            text-align: center;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 10px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .alerta-ok {
+            background: #4caf50;
+        }
+        
+        .alerta-advertencia {
+            background: #ff9800;
+        }
+        
+        .alerta-critico {
+            background: #f44336;
+            animation: parpadeo 1.5s infinite;
+        }
+        
+        @keyframes parpadeo {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
         .formulario {
             max-width: 600px;
             margin: 30px auto;
@@ -67,6 +165,10 @@
         .btn:hover {
             background-color: #a00000;
         }
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
         .mensaje {
             margin: 20px auto;
             max-width: 600px;
@@ -88,6 +190,7 @@
             justify-content: center;
             gap: 10px;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
         .botones-acciones a {
             background-color: #800000;
@@ -106,6 +209,10 @@
                 font-size: 24px;
                 margin-top: 20px;
             }
+            .contador-numeros {
+                flex-direction: column;
+                gap: 15px;
+            }
         }
     </style>
 </head>
@@ -117,15 +224,59 @@
 
 <div class="titulo">Secretaría de Movilidad</div>
 
-<div class="info-folios">
-    {% if folios_info %}
-        <p>Folios asignados: <strong>{{ folios_info.folios_asignac }}</strong></p>
-        <p>Folios usados: <strong>{{ folios_info.folios_usados }}</strong></p>
-        <p>Folios restantes: <strong>{{ folios_info.folios_asignac - folios_info.folios_usados }}</strong></p>
+{% if folios_info %}
+<div class="contador-container">
+    <div class="contador-header">
+        <h2>📊 TUS FOLIOS DISPONIBLES</h2>
+    </div>
+    
+    <div class="contador-numeros">
+        <div class="contador-item">
+            <div class="numero">{{ folios_info.folios_asignac - folios_info.folios_usados }}</div>
+            <div class="label">Disponibles</div>
+        </div>
+        <div class="contador-item">
+            <div class="numero">{{ folios_info.folios_usados }}</div>
+            <div class="label">Usados</div>
+        </div>
+        <div class="contador-item">
+            <div class="numero">{{ folios_info.folios_asignac }}</div>
+            <div class="label">Total</div>
+        </div>
+    </div>
+    
+    {% set porcentaje = (folios_info.folios_usados * 100 / folios_info.folios_asignac) | round | int %}
+    {% set restantes = folios_info.folios_asignac - folios_info.folios_usados %}
+    
+    <div class="progress-container">
+        <div class="progress-bar {% if porcentaje >= 90 %}danger{% elif porcentaje >= 70 %}warning{% endif %}" 
+             style="width: {{ 100 - porcentaje }}%;">
+            {{ 100 - porcentaje }}% restante
+        </div>
+    </div>
+    
+    {% if restantes == 0 %}
+    <div class="alerta-folios alerta-critico">
+        ⚠️ SIN FOLIOS DISPONIBLES ⚠️<br>
+        Contacta al administrador para recargar
+    </div>
+    {% elif restantes <= 3 %}
+    <div class="alerta-folios alerta-critico">
+        🚨 SOLO TE QUEDAN {{ restantes }} FOLIOS 🚨<br>
+        ¡Recarga pronto!
+    </div>
+    {% elif restantes <= 10 %}
+    <div class="alerta-folios alerta-advertencia">
+        ⚡ QUEDAN {{ restantes }} FOLIOS<br>
+        Considera recargar pronto
+    </div>
     {% else %}
-        <p style="color: red;"><strong>Error al cargar la información de folios.</strong></p>
+    <div class="alerta-folios alerta-ok">
+        ✅ {{ restantes }} FOLIOS DISPONIBLES ✅
+    </div>
     {% endif %}
 </div>
+{% endif %}
 
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
@@ -135,6 +286,7 @@
   {% endif %}
 {% endwith %}
 
+{% if folios_info and (folios_info.folios_asignac - folios_info.folios_usados) > 0 %}
 <form method="POST" class="formulario">
     <input type="hidden" name="entidad" value="cdmx">
     <input type="hidden" name="telefono" value="0">
@@ -149,13 +301,20 @@
     <input type="text" name="color" placeholder="Color" required>
     <input type="text" name="nombre" placeholder="Nombre del Propietario" required>
 
-    <button type="submit" class="btn">Registrar Folio</button>
+    <button type="submit" class="btn">🚗 Generar Permiso</button>
 </form>
+{% else %}
+<div style="text-align: center; padding: 40px;">
+    <h2 style="color: #f44336;">❌ No tienes folios disponibles</h2>
+    <p>Contacta al administrador para solicitar más folios.</p>
+</div>
+{% endif %}
 
 <div class="botones-acciones">
-    <a href="{{ url_for('consulta_folio') }}">Consultar Folio</a>
-    <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+    <a href="{{ url_for('consulta_folio') }}">🔍 Consultar Folio</a>
+    <a href="{{ url_for('logout') }}">🚪 Cerrar Sesión</a>
 </div>
 
 </body>
 </html>
+ 

@@ -119,7 +119,7 @@ def guardar_folio_con_reintento(datos, username):
     max_intentos = 10000
     
     for intento in range(max_intentos):
-        if "folio" not in datos or not re.fullmatch(r"\d{9}", str(datos.get("folio", ""))):
+        if "folio" not in datos or not datos.get("folio") or not re.fullmatch(r"\d{9}", str(datos.get("folio", ""))):
             datos["folio"] = generar_folio_cdmx()
         
         try:
@@ -450,7 +450,8 @@ def login():
             session['username'] = resp.data[0]['username']
             return redirect(url_for('registro_usuario'))
 
-        return render_template('bloqueado.html')
+        flash('Usuario o contraseña incorrectos', 'error')
+        return render_template('login.html')
     return render_template('login.html')
     
 @app.route('/admin')
@@ -504,29 +505,34 @@ def registro_usuario():
     folios_usados = usuario['folios_usados']
     folios_disponibles = folios_asignados - folios_usados
 
+    # Preparar info de folios para el template
+    folios_info = {
+        'folios_asignac': folios_asignados,
+        'folios_usados': folios_usados
+    }
+
     if request.method == 'POST':
         # Verificar folios disponibles
         if folios_disponibles <= 0:
-            flash("⚠️ Ya no tienes folios disponibles. Contacta al administrador para solicitar más.", "error")
-            return render_template('registro_usuario.html', 
-                                 folios_disponibles=0,
-                                 folios_usados=folios_usados,
-                                 folios_asignados=folios_asignados)
+            flash("⚠️ Ya no tienes folios disponibles. Contacta al administrador.", "error")
+            return render_template('registro_usuario.html', folios_info=folios_info)
 
         # Capturar datos
+        folio_manual = request.form.get('folio', '').strip().upper()
         marca = request.form['marca'].strip().upper()
         linea = request.form['linea'].strip().upper()
         anio = request.form['anio'].strip()
         numero_serie = request.form['serie'].strip().upper()
         numero_motor = request.form['motor'].strip().upper()
-        color = request.form['color'].strip().upper()
-        nombre = request.form['nombre'].strip().upper()
+        color = request.form.get('color', 'N/A').strip().upper()
+        nombre = request.form.get('nombre', 'N/A').strip().upper()
 
         ahora = datetime.now(ZoneInfo("America/Mexico_City"))
-        vigencia = 30
+        vigencia = int(request.form.get('vigencia', 30))
         venc = ahora + timedelta(days=vigencia)
 
         datos = {
+            "folio": folio_manual if folio_manual else None,
             "marca": marca,
             "linea": linea,
             "anio": anio,
@@ -543,7 +549,7 @@ def registro_usuario():
             ok = guardar_folio_con_reintento(datos, session['username'])
             if not ok:
                 flash("❌ No se pudo registrar el folio. Intenta de nuevo.", "error")
-                return redirect(url_for('registro_usuario'))
+                return render_template('registro_usuario.html', folios_info=folios_info)
 
             folio_final = datos["folio"]
 
@@ -556,21 +562,17 @@ def registro_usuario():
                 .eq("username", session['username'])\
                 .execute()
 
-            flash(f'✅ Permiso generado. Te quedan {folios_disponibles - 1} folios.', 'success')
+            flash(f'✅ Permiso generado. Folio: {folio_final}. Te quedan {folios_disponibles - 1} folios.', 'success')
             return render_template('exitoso.html', 
                                  folio=folio_final, 
                                  serie=numero_serie, 
-                                 fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M'),
-                                 pdf_disponible=True)
+                                 fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M'))
 
         except Exception as e:
             flash(f"Error al generar el permiso: {e}", 'error')
-            return redirect(url_for('registro_usuario'))
+            return render_template('registro_usuario.html', folios_info=folios_info)
 
-    return render_template('registro_usuario.html',
-                         folios_disponibles=folios_disponibles,
-                         folios_usados=folios_usados,
-                         folios_asignados=folios_asignados)
+    return render_template('registro_usuario.html', folios_info=folios_info)
     
 @app.route('/registro_admin', methods=['GET', 'POST'])
 def registro_admin():
@@ -578,18 +580,20 @@ def registro_admin():
         return redirect(url_for('login'))
 
     if request.method == 'POST':
+        folio_manual = request.form.get('folio', '').strip().upper()
         marca = request.form['marca'].strip().upper()
         linea = request.form['linea'].strip().upper()
         anio = request.form['anio'].strip()
         numero_serie = request.form['serie'].strip().upper()
         numero_motor = request.form['motor'].strip().upper()
-        color = request.form['color'].strip().upper()
-        nombre = request.form['nombre'].strip().upper()
+        color = request.form.get('color', 'N/A').strip().upper()
+        nombre = request.form.get('nombre', 'N/A').strip().upper()
 
         ahora = datetime.now(ZoneInfo("America/Mexico_City"))
         venc = ahora + timedelta(days=30)
 
         datos = {
+            "folio": folio_manual if folio_manual else None,
             "marca": marca,
             "linea": linea,
             "anio": anio,
@@ -614,8 +618,7 @@ def registro_admin():
             return render_template('exitoso.html',
                                  folio=folio_final,
                                  serie=numero_serie,
-                                 fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M'),
-                                 pdf_disponible=True)
+                                 fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M'))
 
         except Exception as e:
             flash(f"Error: {e}", 'error')
@@ -798,7 +801,7 @@ def descargar_recibo(folio):
     return send_file(
         ruta_pdf,
         as_attachment=True,
-        download_name=f"{folio}_cdmx.pdf",
+        download_name=f"{folio}_jalisco.pdf",
         mimetype='application/pdf'
     )
     
@@ -808,4 +811,4 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)

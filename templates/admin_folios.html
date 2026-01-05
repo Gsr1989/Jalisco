@@ -1,175 +1,93 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Administrar Folios</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body { background:#fff; font-family:Arial,sans-serif; margin:0; padding:0; color:#000; }
-    header { display:flex; justify-content:space-between; align-items:center; padding:10px 30px }
-    header img { height:80px }
-    .titulo { text-align:center; font-size:26px; font-weight:bold; margin:20px 0 }
-    .server-filter, .busqueda { max-width:95%; margin:0 auto 20px; display:flex; flex-wrap:wrap; gap:10px; justify-content:center }
-    .server-filter input, .server-filter select, .server-filter button,
-    .busqueda input {
-      padding:8px; font-size:14px; border-radius:6px; border:1px solid #ccc;
-    }
-    .server-filter button { background:#800; color:#fff; border:none; cursor:pointer }
-    .server-filter button:hover { background:#a00 }
-    #search { display:block; margin:0 auto 15px; padding:8px; width:90%; max-width:400px; font-size:14px; border:1px solid #ccc; border-radius:6px }
-    .flash-container { max-width:95%; margin:10px auto }
-    .flash.success { background:#d4edda; color:#155724; padding:8px; border-radius:4px; margin-bottom:10px }
-    .flash.error   { background:#f8d7da; color:#721c24; padding:8px; border-radius:4px; margin-bottom:10px }
-    .tabla-container { max-width:95%; margin:auto; overflow-x:auto }
-    table { width:100%; border-collapse:collapse; margin-bottom:40px }
-    th,td { padding:12px; border:1px solid #ccc; text-align:center; font-size:14px }
-    th { background:#800; color:#fff }
-    .estado-verde { color:green; font-weight:bold }
-    .estado-rojo  { color:red;   font-weight:bold }
-    .btn { padding:6px 10px; font-size:13px; border:none; border-radius:5px; cursor:pointer; margin:2px 0 }
-    .btn-editar   { background:#2a72a5; color:#fff }
-    .btn-eliminar { background:#a00;    color:#fff }
-    .btn-descargar{ background:#228B22; color:#fff }
-    .btn-sms      { background:#ff9900; color:#fff }
-    .btn-masivo   { background:#800; color:#fff; margin-top:20px; }
-    .volver { text-align:center; margin-bottom:20px }
-    .volver a { background:#800; color:#fff; padding:10px 18px; border-radius:8px; text-decoration:none; font-size:15px }
-    footer img { width:100%; display:block }
-    @media(max-width:600px){
-      header img{height:60px}
-      .titulo{font-size:22px}
-      th,td{font-size:12px}
-      .server-filter, .busqueda{flex-direction:column;align-items:center}
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Administrar Folios</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+        }
+        h1 { text-align: center; color: #333; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #800000;
+            color: white;
+        }
+        tr:hover {
+            background: #f5f5f5;
+        }
+        .vigente { color: green; font-weight: bold; }
+        .vencido { color: red; font-weight: bold; }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            color: #800000;
+            text-decoration: none;
+        }
+        button {
+            padding: 8px 16px;
+            background: #800000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #a00000;
+        }
+    </style>
 </head>
 <body>
-
-<header>
-  <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
-  <img src="{{ url_for('static', filename='sub_logo.png') }}" alt="Sub Logo">
-</header>
-
-<div class="titulo">Administración de Folios Registrados</div>
-
-<!-- Mensajes flash -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <div class="flash-container">
-      {% for cat,msg in messages %}
-        <div class="flash {{ cat }}">{{ msg }}</div>
-      {% endfor %}
+    <div class="container">
+        <h1>📋 Administrar Folios</h1>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Folio</th>
+                    <th>Marca</th>
+                    <th>Serie</th>
+                    <th>Expedición</th>
+                    <th>Vencimiento</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fol in folios %}
+                <tr>
+                    <td>{{ fol.folio }}</td>
+                    <td>{{ fol.marca }}</td>
+                    <td>{{ fol.numero_serie }}</td>
+                    <td>{{ fol.fecha_expedicion }}</td>
+                    <td>{{ fol.fecha_vencimiento }}</td>
+                    <td class="{{ 'vigente' if fol.estado == 'VIGENTE' else 'vencido' }}">
+                        {{ fol.estado }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <a href="{{ url_for('admin') }}">← Volver al Panel</a>
     </div>
-  {% endif %}
-{% endwith %}
-
-<!-- 1) BUSCADOR SERVER-SIDE -->
-<form method="get" action="{{ url_for('admin_folios') }}" class="server-filter">
-  <input type="text" name="filtro" placeholder="Buscar servidor..." value="{{ filtro }}">
-  <select name="criterio">
-    <option value="folio" {% if criterio=='folio' %}selected{% endif %}>Folio</option>
-    <option value="numero_serie" {% if criterio=='numero_serie' %}selected{% endif %}>Serie</option>
-  </select>
-  <select name="estado">
-    <option value="todos" {% if estado=='todos' %}selected{% endif %}>Todos</option>
-    <option value="vigente" {% if estado=='vigente' %}selected{% endif %}>Vigente</option>
-    <option value="vencido" {% if estado=='vencido' %}selected{% endif %}>Vencido</option>
-  </select>
-  <input type="date" name="fecha_inicio" value="{{ fecha_inicio }}">
-  <input type="date" name="fecha_fin" value="{{ fecha_fin }}">
-  <select name="ordenar">
-    <option value="desc" {% if ordenar=='desc' %}selected{% endif %}>Más recientes</option>
-    <option value="asc" {% if ordenar=='asc' %}selected{% endif %}>Más antiguos</option>
-  </select>
-  <button type="submit">Buscar</button>
-</form>
-
-<!-- 2) BUSCADOR CLIENT-SIDE -->
-<input id="search" type="text" placeholder="Buscar en esta tabla…">
-
-<!-- ✅ FORMULARIO MASIVO -->
-<form method="POST" action="{{ url_for('eliminar_folios_masivo') }}">
-  <div class="tabla-container">
-    <table id="tabla">
-      <thead>
-        <tr>
-          <th><input type="checkbox" id="select-all"></th>
-          <th>Folio</th><th>Marca</th><th>Línea</th><th>Año</th>
-          <th>Serie</th><th>Motor</th><th>Entidad</th><th>Teléfono</th>
-          <th>Expedición</th><th>Vencimiento</th><th>Estado</th><th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for f in folios %}
-        <tr>
-          <td><input type="checkbox" name="folios" value="{{ f.folio }}"></td>
-          <td>{{ f.folio }}</td>
-          <td>{{ f.marca }}</td>
-          <td>{{ f.linea }}</td>
-          <td>{{ f.anio }}</td>
-          <td>{{ f.numero_serie }}</td>
-          <td>{{ f.numero_motor }}</td>
-          <td>{{ f.entidad }}</td>
-          <td>{{ f.numero_telefono or '—' }}</td>
-          <td>{{ f.fecha_expedicion[:10] }}</td>
-          <td>{{ f.fecha_vencimiento[:10] }}</td>
-          <td>
-            <span class="{% if f.estado=='VIGENTE' %}estado-verde{% else %}estado-rojo{% endif %}">
-              {{ f.estado }}
-            </span>
-          </td>
-          <td>
-            <a href="{{ url_for('editar_folio', folio=f.folio) }}">
-              <button type="button" class="btn btn-editar">Editar</button>
-            </a>
-            <form method="POST" action="{{ url_for('eliminar_folio') }}" style="display:inline">
-              <input type="hidden" name="folio" value="{{ f.folio }}">
-              <button type="submit" class="btn btn-eliminar">Eliminar</button>
-            </form>
-            <a href="{{ url_for('descargar_pdf', folio=f.folio) }}" target="_blank">
-              <button type="button" class="btn btn-descargar">PDF</button>
-            </a>
-            <form method="POST" action="{{ url_for('enviar_sms_manual') }}" style="display:inline">
-              <input type="hidden" name="folio" value="{{ f.folio }}">
-              <input type="hidden" name="telefono" value="{{ f.numero_telefono }}">
-              <button type="submit" class="btn btn-sms">SMS</button>
-            </form>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  <div style="text-align:center;">
-    <button type="submit" class="btn btn-masivo">🗑️ Eliminar seleccionados</button>
-  </div>
-</form>
-
-<div class="volver">
-  <a href="{{ url_for('admin') }}">Volver al Panel</a>
-</div>
-<footer><img src="{{ url_for('static', filename='footer.png') }}" alt="Footer"></footer>
-
-<!-- ✅ JS -->
-<script>
-  const s = document.getElementById('search');
-  s.addEventListener('keydown', e => {
-    if (e.key === 'Enter') e.preventDefault();
-  });
-  s.addEventListener('input', function() {
-    const term = this.value.toLowerCase();
-    document.querySelectorAll('#tabla tbody tr').forEach(r => {
-      r.style.display = r.textContent.toLowerCase().includes(term) ? '' : 'none';
-    });
-  });
-
-  const selectAll = document.getElementById('select-all');
-  selectAll.addEventListener('change', function() {
-    document.querySelectorAll('input[name="folios"]').forEach(cb => {
-      cb.checked = this.checked;
-    });
-  });
-</script>
-
 </body>
 </html>

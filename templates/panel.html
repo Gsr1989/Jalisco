@@ -2,118 +2,80 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Panel de Administración</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Panel Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
-            background-color: #ffffff;
             font-family: Arial, sans-serif;
+            background: #f5f5f5;
             margin: 0;
-            padding: 0;
+            padding: 20px;
         }
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 30px;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
         }
-        header img {
-            height: 80px;
-        }
-        .titulo {
-            text-align: center;
-            font-size: 28px;
+        h1 { color: #333; text-align: center; }
+        .menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
             margin-top: 30px;
-            font-weight: bold;
-            color: #222;
         }
-        .flash-message {
-            max-width: 700px;
-            margin: 20px auto;
-            padding: 12px;
-            border-radius: 6px;
-            font-weight: bold;
+        .menu-item {
+            padding: 30px;
+            background: #800000;
+            color: white;
+            text-align: center;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+        .menu-item:hover {
+            transform: translateY(-5px);
+            background: #a00000;
+        }
+        .menu-item h2 {
+            margin: 0 0 10px 0;
+        }
+        .logout {
+            margin-top: 30px;
             text-align: center;
         }
-        .flash-message.success { background-color: #28a745; color: #fff; }
-        .flash-message.error   { background-color: #dc3545; color: #fff; }
-        .flash-message.info    { background-color: #17a2b8; color: #fff; }
-
-        .botones {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 30px auto;
-            flex-wrap: wrap;
-            max-width: 700px;
-        }
-        .btn {
-            background-color: #800000;
-            color: #fff;
-            border: none;
-            padding: 4px 8px;
-            font-size: 14px;
-            border-radius: 4px;
-            cursor: pointer;
+        .logout a {
+            color: #800000;
             text-decoration: none;
-            white-space: nowrap;
-            transition: background-color 0.2s ease;
-        }
-        .btn:hover {
-            background-color: #a00000;
-        }
-
-        footer {
-            margin-top: 40px;
-            width: 100%;
-        }
-        footer img {
-            width: 100%;
-            display: block;
-        }
-
-        @media (max-width: 600px) {
-            header img { height: 60px; }
-            .titulo { font-size: 24px; margin-top: 20px; }
-            .btn {
-                padding: 6px 10px;
-                font-size: 16px;
-                width: auto;
-            }
+            font-size: 18px;
         }
     </style>
 </head>
 <body>
-
-<header>
-    <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
-    <img src="{{ url_for('static', filename='sub_logo.png') }}" alt="Sub Logo">
-</header>
-
-<div class="titulo">Secretaría de Movilidad - Panel Principal</div>
-
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    {% for category, message in messages %}
-      <div class="flash-message {{ category }}">{{ message }}</div>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
-
-<div class="botones">
-    <a href="{{ url_for('registro_admin') }}" class="btn">Registrar Folio</a>
-    <a href="{{ url_for('consulta_folio') }}" class="btn">Consultar Folio</a>
-    <a href="{{ url_for('crear_usuario') }}" class="btn">Crear Usuario</a>
-    <a href="{{ url_for('admin_folios') }}" class="btn">Ver Todos los Folios</a>
-    <form method="POST" action="{{ url_for('enviar_alertas') }}" style="display:inline;">
-      <button type="submit" class="btn">Enviar SMS Vencidos</button>
-    </form>
-    <a href="{{ url_for('logout') }}" class="btn">Cerrar Sesión</a>
-</div>
-
-<footer>
-    <img src="{{ url_for('static', filename='footer.png') }}" alt="Footer">
-</footer>
-
+    <div class="container">
+        <h1>🏛️ Panel de Administración</h1>
+        <div class="menu">
+            <a href="{{ url_for('crear_usuario') }}" class="menu-item">
+                <h2>👤 Crear Usuario</h2>
+                <p>Crear nuevos usuarios y asignar folios</p>
+            </a>
+            <a href="{{ url_for('registro_admin') }}" class="menu-item">
+                <h2>📄 Generar Permiso</h2>
+                <p>Generar permisos sin límite</p>
+            </a>
+            <a href="{{ url_for('admin_folios') }}" class="menu-item">
+                <h2>📋 Ver Folios</h2>
+                <p>Administrar todos los folios</p>
+            </a>
+            <a href="{{ url_for('consulta_folio') }}" class="menu-item">
+                <h2>🔍 Consultar Folio</h2>
+                <p>Buscar información de folios</p>
+            </a>
+        </div>
+        <div class="logout">
+            <a href="{{ url_for('logout') }}">🚪 Cerrar Sesión</a>
+        </div>
+    </div>
 </body>
 </html>

@@ -3,168 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <title>Resultado de Consulta</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        :root {
-            --color-principal: #3A4A4F;
-            --color-naranja: #E88924;
-        }
         body {
-            background-color: #ffffff;
-            font-family: 'Montserrat', Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            color: var(--color-principal);
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
         }
-        header {
-            width: 100%;
-        }
-        header img {
-            width: 100%;
-            display: block;
-        }
-        .titulo {
-            text-align: center;
-            font-size: 24px;
-            margin-top: 20px;
-            font-weight: bold;
-            color: var(--color-naranja);
-        }
-        .subtitulo {
-            text-align: center;
-            font-size: 18px;
-            margin-top: 5px;
-            color: var(--color-principal);
-        }
-        .estado {
-            text-align: center;
-            font-size: 22px;
-            font-weight: bold;
-            margin-top: 30px;
-            padding: 10px;
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
             border-radius: 10px;
-            width: 90%;
-            max-width: 600px;
-            margin: 30px auto 0;
-            color: white;
         }
-        .verde { background-color: #28a745; }       
-        .vencido { background-color: #b38b00; }     
-        .no-encontrado { background-color: #a00000; }
-        .certificado {
-            border: 2px solid #ccc;
+        h1 { text-align: center; color: #333; }
+        .resultado {
             padding: 20px;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 600px;
-            margin: 30px auto;
-            background-color: #f2f2f2;
-            color: var(--color-principal);
+            border-radius: 5px;
+            margin: 20px 0;
         }
-        .recuadro-interno {
-            border: 2px solid #aaa;
-            padding: 20px;
-            border-radius: 12px;
-            background-color: #ffffff;
+        .verde { background: #4caf50; color: white; }
+        .rojo { background: #f44336; color: white; }
+        .cafe { background: #ff9800; color: white; }
+        .info-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 5px;
         }
-        .dato {
-            margin: 12px 0;
-            font-size: 16px;
-            color: var(--color-principal);
-        }
-        .dato strong {
-            display: block;
-            font-size: 15px;
-            margin-bottom: 5px;
-            color: var(--color-principal);
-            font-weight: 700;
-        }
-        .valido {
-            text-align: center;
-            font-weight: bold;
-            margin-top: 20px;
-            color: var(--color-principal);
-        }
-        .acciones {
-            width: 90%;
-            max-width: 600px;
-            margin: 20px auto;
-            text-align: center;
-        }
-        .btn-regresar a {
+        a {
             display: inline-block;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-size: 16px;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #800000;
             color: white;
-            background-color: var(--color-principal);
             text-decoration: none;
-            transition: background-color 0.3s ease;
+            border-radius: 5px;
         }
-        .btn-regresar a:hover {
-            background-color: #2E3C41;
-        }
-        footer {
-            margin-top: 40px;
-            width: 100%;
-        }
-        footer img {
-            width: 100%;
-            display: block;
-        }
-        @media (max-width: 600px) {
-            .titulo    { font-size: 20px; }
-            .estado    { font-size: 20px; }
-        }
+        a:hover { background: #a00000; }
     </style>
 </head>
 <body>
-
-    <header>
-        <img src="{{ url_for('static', filename='logotipo.png') }}" alt="Logotipo">
-    </header>
-
-    <div class="titulo">Gobierno de Jalisco</div>
-    <div class="subtitulo">SECRETARÍA DE TRANSPORTE</div>
-
-    {% if resultado.estado == "NO SE ENCUENTRA REGISTRADO" %}
-      <div class="estado no-encontrado">
-        FOLIO {{ resultado.folio }} : NO SE ENCUENTRA REGISTRADO
-      </div>
-    {% elif resultado.estado == "VENCIDO" %}
-      <div class="estado vencido">
-        FOLIO {{ resultado.folio }} : VENCIDO
-      </div>
-    {% else %}
-      <div class="estado verde">
-        FOLIO {{ resultado.folio }} : VIGENTE
-      </div>
-    {% endif %}
-
-    {% if resultado.estado != "NO SE ENCUENTRA REGISTRADO" %}
-      <div class="certificado">
-        <div class="recuadro-interno">
-          <div class="dato"><strong>FECHA DE EXPEDICIÓN</strong> {{ resultado.fecha_expedicion }}</div>
-          <div class="dato"><strong>FECHA DE VENCIMIENTO</strong> {{ resultado.fecha_vencimiento }}</div>
-          <div class="dato"><strong>MARCA</strong> {{ resultado.marca }}</div>
-          <div class="dato"><strong>LÍNEA</strong> {{ resultado.linea }}</div>
-          <div class="dato"><strong>AÑO</strong> {{ resultado.año }}</div>
-          <div class="dato"><strong>NÚMERO DE SERIE</strong> {{ resultado.numero_serie }}</div>
-          <div class="dato"><strong>NÚMERO DE MOTOR</strong> {{ resultado.numero_motor }}</div>
+    <div class="container">
+        <h1>🔍 Resultado de Consulta</h1>
+        
+        {% if resultado %}
+        <div class="resultado {{ resultado.color }}">
+            <h2 style="margin: 0; text-align: center;">{{ resultado.estado }}</h2>
         </div>
-      </div>
-    {% endif %}
-
-    <div class="valido">DOCUMENTO DIGITAL VÁLIDO EN TODO MÉXICO</div>
-
-    <div class="acciones btn-regresar">
-      <a href="https://www.jalisco.gob.mx/inicio">Regresar</a>
+        
+        <div class="info-item">
+            <strong>Folio:</strong> {{ resultado.folio }}
+        </div>
+        
+        {% if resultado.estado != 'NO SE ENCUENTRA REGISTRADO' %}
+        <div class="info-item">
+            <strong>Fecha Expedición:</strong> {{ resultado.fecha_expedicion }}
+        </div>
+        <div class="info-item">
+            <strong>Fecha Vencimiento:</strong> {{ resultado.fecha_vencimiento }}
+        </div>
+        <div class="info-item">
+            <strong>Marca:</strong> {{ resultado.marca }}
+        </div>
+        <div class="info-item">
+            <strong>Línea:</strong> {{ resultado.linea }}
+        </div>
+        <div class="info-item">
+            <strong>Año:</strong> {{ resultado.año }}
+        </div>
+        <div class="info-item">
+            <strong>No. Serie:</strong> {{ resultado.numero_serie }}
+        </div>
+        <div class="info-item">
+            <strong>No. Motor:</strong> {{ resultado.numero_motor }}
+        </div>
+        <div class="info-item">
+            <strong>Entidad:</strong> {{ resultado.entidad | upper }}
+        </div>
+        {% endif %}
+        {% endif %}
+        
+        <a href="{{ url_for('consulta_folio') }}">← Nueva Consulta</a>
     </div>
-
-    <footer>
-      <img src="{{ url_for('static', filename='footer.png') }}" alt="Footer">
-    </footer>
-
 </body>
-</html>
+</html

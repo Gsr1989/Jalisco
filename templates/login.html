@@ -13,12 +13,15 @@
         }
         header {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            padding: 10px 30px;
+            padding: 20px 30px;
+            background: #800000;
+            color: white;
         }
-        header img {
-            height: 80px;
+        header h1 {
+            margin: 0;
+            font-size: 24px;
         }
         .titulo {
             text-align: center;
@@ -62,18 +65,7 @@
             font-weight: bold;
             margin-top: 10px;
         }
-        footer {
-            margin-top: 40px;
-            width: 100%;
-        }
-        footer img {
-            width: 100%;
-            display: block;
-        }
         @media (max-width: 600px) {
-            header img {
-                height: 60px;
-            }
             .titulo {
                 font-size: 24px;
             }
@@ -83,8 +75,7 @@
 <body>
 
     <header>
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
-        <img src="{{ url_for('static', filename='sub_logo.png') }}" alt="Sub Logo">
+        <h1>🏛️ SISTEMA DE VALIDACIÓN VEHICULAR</h1>
     </header>
 
     <div class="titulo">Secretaría de Movilidad</div>
@@ -103,10 +94,6 @@
           {% endif %}
         {% endwith %}
     </div>
-
-    <footer>
-        <img src="{{ url_for('static', filename='footer.png') }}" alt="Footer">
-    </footer>
 
 </body>
 </html>

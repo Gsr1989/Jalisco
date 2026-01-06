@@ -8,7 +8,7 @@ import qrcode
 import pdf417gen
 from PIL import Image
 from io import BytesIO
-import random
+import time
 import re
 
 app = Flask(__name__)
@@ -58,7 +58,7 @@ coords_qr_dinamico = {
 
 PRECIO_FIJO_PAGINA2 = 1080
 
-# ============ SISTEMA DE FOLIOS ANTI-DUPLICADOS ============
+# ============ SISTEMA DE FOLIOS ANTI-DUPLICADOS - VERSIÓN SEGURA ============
 PREFIJO_CDMX = 122000000
 
 def _leer_ultimo_folio_cdmx_db():
@@ -69,6 +69,7 @@ def _leer_ultimo_folio_cdmx_db():
         
         resp = supabase.table("folios_registrados")\
             .select("folio")\
+            .eq("entidad", "cdmx")\
             .gte("folio", str(inicio))\
             .lt("folio", str(fin))\
             .order("folio", desc=True)\
@@ -90,24 +91,44 @@ def _leer_ultimo_folio_cdmx_db():
 def generar_folio_cdmx():
     """Genera el siguiente folio disponible consultando SIEMPRE la DB"""
     ultimo = _leer_ultimo_folio_cdmx_db()
-    siguiente = ultimo + 1
     
-    # Asegurar que no empiece con 0
-    while str(siguiente)[0] == '0':
-        siguiente += 1
+    # Si el último es menor que el prefijo, empezar desde el prefijo
+    if ultimo < PREFIJO_CDMX:
+        siguiente = PREFIJO_CDMX
+    else:
+        siguiente = ultimo + 1
+    
+    # Asegurar que no empiece con 0 y esté en rango válido
+    while str(siguiente)[0] == '0' or siguiente >= PREFIJO_CDMX + 100000000:
+        if siguiente >= PREFIJO_CDMX + 100000000:
+            siguiente = PREFIJO_CDMX
+        else:
+            siguiente += 1
     
     folio = f"{siguiente:09d}"
     print(f"[FOLIO CDMX] Generado: {folio}")
     return folio
 
 def guardar_folio_con_reintento(datos, username):
-    """Guarda con sistema de reintentos anti-duplicados - SOLO CAMPOS BÁSICOS"""
-    max_intentos = 10000
+    """Guarda con sistema de reintentos anti-duplicados - LÍMITE SEGURO"""
+    max_intentos = 100
     
     for intento in range(max_intentos):
         # Generar folio si no viene o es inválido
         if "folio" not in datos or not datos.get("folio") or not re.fullmatch(r"\d{9}", str(datos.get("folio", ""))):
             datos["folio"] = generar_folio_cdmx()
+        
+        # Validar que el folio está en el rango correcto
+        try:
+            folio_num = int(datos["folio"])
+            if folio_num < PREFIJO_CDMX or folio_num >= PREFIJO_CDMX + 100000000:
+                print(f"[ERROR] Folio {datos['folio']} fuera de rango, regenerando...")
+                datos["folio"] = None
+                continue
+        except:
+            print(f"[ERROR] Folio inválido: {datos.get('folio')}")
+            datos["folio"] = None
+            continue
         
         try:
             # SOLO CAMPOS BÁSICOS QUE YA EXISTEN EN SUPABASE
@@ -134,7 +155,8 @@ def guardar_folio_con_reintento(datos, username):
             em = str(e).lower()
             if "duplicate" in em or "unique constraint" in em or "23505" in em:
                 print(f"[DUPLICADO] {datos['folio']} existe, generando siguiente (intento {intento + 1}/{max_intentos})")
-                datos["folio"] = None  # Forzar regeneración
+                datos["folio"] = None
+                time.sleep(0.05)
                 continue
             
             print(f"[ERROR BD] {e}")
@@ -146,7 +168,6 @@ def guardar_folio_con_reintento(datos, username):
 # ============ FOLIOS PÁGINA 2 - VALORES INCREMENTALES SIMPLES ============
 def generar_folios_pagina2() -> dict:
     """Genera folios incrementales simples para página 2"""
-    import time
     timestamp = int(time.time())
     
     return {
@@ -158,7 +179,6 @@ def generar_folios_pagina2() -> dict:
 
 def obtener_folio_representativo():
     """Genera folio representativo simple basado en timestamp"""
-    import time
     return 21385 + int(time.time()) % 100000
 
 # ============ FUNCIONES GENERACIÓN PDF ============
@@ -456,18 +476,14 @@ def registro_usuario():
         }
 
         try:
-            # Guardar primero en BD
             ok = guardar_folio_con_reintento(datos, session['username'])
             if not ok:
                 flash("❌ No se pudo registrar el folio. Intenta de nuevo.", "error")
                 return render_template('registro_usuario.html', folios_info=folios_info)
 
             folio_final = datos["folio"]
-
-            # Generar PDF después
             pdf_path = generar_pdf_unificado(datos)
 
-            # Incrementar folios usados
             supabase.table("verificaciondigitalcdmx")\
                 .update({"folios_usados": folios_usados + 1})\
                 .eq("username", session['username'])\

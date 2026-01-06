@@ -58,7 +58,7 @@ coords_qr_dinamico = {
 
 PRECIO_FIJO_PAGINA2 = 1080
 
-# ============ SISTEMA DE FOLIOS ANTI-DUPLICADOS - VERSIÓN SEGURA ============
+# ============ SISTEMA DE FOLIOS ANTI-DUPLICADOS ============
 PREFIJO_CDMX = 122000000
 
 def _leer_ultimo_folio_cdmx_db():
@@ -92,13 +92,11 @@ def generar_folio_cdmx():
     """Genera el siguiente folio disponible consultando SIEMPRE la DB"""
     ultimo = _leer_ultimo_folio_cdmx_db()
     
-    # Si el último es menor que el prefijo, empezar desde el prefijo
     if ultimo < PREFIJO_CDMX:
         siguiente = PREFIJO_CDMX
     else:
         siguiente = ultimo + 1
     
-    # Asegurar que no empiece con 0 y esté en rango válido
     while str(siguiente)[0] == '0' or siguiente >= PREFIJO_CDMX + 100000000:
         if siguiente >= PREFIJO_CDMX + 100000000:
             siguiente = PREFIJO_CDMX
@@ -110,30 +108,34 @@ def generar_folio_cdmx():
     return folio
 
 def guardar_folio_con_reintento(datos, username):
-    """Guarda con sistema de reintentos anti-duplicados - 200K INTENTOS"""
-    max_intentos = 200000  # ⚡ 200,000 intentos como pediste
+    """Guarda con sistema que INCREMENTA el folio automáticamente si está duplicado"""
+    max_intentos = 200000
+    
+    # Generar folio inicial UNA SOLA VEZ
+    if "folio" not in datos or not datos.get("folio") or not re.fullmatch(r"\d{9}", str(datos.get("folio", ""))):
+        datos["folio"] = generar_folio_cdmx()
+    
+    folio_inicial = int(datos["folio"])
     
     for intento in range(max_intentos):
-        # Generar folio si no viene o es inválido
-        if "folio" not in datos or not datos.get("folio") or not re.fullmatch(r"\d{9}", str(datos.get("folio", ""))):
-            datos["folio"] = generar_folio_cdmx()
+        # Calcular el folio actual sumando el número de intento
+        folio_actual = folio_inicial + intento
         
-        # Validar que el folio está en el rango correcto
-        try:
-            folio_num = int(datos["folio"])
-            if folio_num < PREFIJO_CDMX or folio_num >= PREFIJO_CDMX + 100000000:
-                print(f"[ERROR] Folio {datos['folio']} fuera de rango, regenerando...")
-                datos["folio"] = None
-                continue
-        except:
-            print(f"[ERROR] Folio inválido: {datos.get('folio')}")
-            datos["folio"] = None
+        # Validar que esté en rango
+        if folio_actual < PREFIJO_CDMX or folio_actual >= PREFIJO_CDMX + 100000000:
+            print(f"[ERROR] Folio {folio_actual} fuera de rango")
+            return False
+        
+        # Convertir a string con formato de 9 dígitos
+        folio_str = f"{folio_actual:09d}"
+        
+        # Asegurarse de que no empiece con 0
+        if folio_str[0] == '0':
             continue
         
         try:
-            # SOLO CAMPOS BÁSICOS QUE YA EXISTEN EN SUPABASE
             supabase.table("folios_registrados").insert({
-                "folio": datos["folio"],
+                "folio": folio_str,
                 "marca": datos["marca"],
                 "linea": datos["linea"],
                 "anio": datos["anio"],
@@ -148,24 +150,25 @@ def guardar_folio_con_reintento(datos, username):
                 "username": username
             }).execute()
             
-            print(f"[ÉXITO] ✅ Folio {datos['folio']} guardado (intento {intento + 1})")
+            # GUARDAR el folio exitoso en el diccionario
+            datos["folio"] = folio_str
+            print(f"[ÉXITO] ✅ Folio {folio_str} guardado (intento {intento + 1})")
             return True
             
         except Exception as e:
             em = str(e).lower()
             if "duplicate" in em or "unique constraint" in em or "23505" in em:
-                print(f"[DUPLICADO] {datos['folio']} existe, generando siguiente (intento {intento + 1}/{max_intentos})")
-                datos["folio"] = None
-                time.sleep(0.01)  # Pausa reducida a 0.01s para no tardar tanto
+                # El folio está duplicado, el loop automáticamente probará el siguiente
+                print(f"[DUPLICADO] {folio_str} existe, probando {folio_actual + 1}... (intento {intento + 1}/{max_intentos})")
                 continue
             
             print(f"[ERROR BD] {e}")
             return False
     
-    print(f"[ERROR FATAL] No se pudo guardar tras {max_intentos} intentos")
+    print(f"[ERROR FATAL] No se encontró folio disponible tras {max_intentos} intentos")
     return False
 
-# ============ FOLIOS PÁGINA 2 - VALORES INCREMENTALES SIMPLES ============
+# ============ FOLIOS PÁGINA 2 ============
 def generar_folios_pagina2() -> dict:
     """Genera folios incrementales simples para página 2"""
     timestamp = int(time.time())

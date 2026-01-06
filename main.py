@@ -110,8 +110,8 @@ def generar_folio_cdmx():
     return folio
 
 def guardar_folio_con_reintento(datos, username):
-    """Guarda con sistema de reintentos anti-duplicados - LÍMITE SEGURO"""
-    max_intentos = 100
+    """Guarda con sistema de reintentos anti-duplicados - 200K INTENTOS"""
+    max_intentos = 200000  # ⚡ 200,000 intentos como pediste
     
     for intento in range(max_intentos):
         # Generar folio si no viene o es inválido
@@ -156,7 +156,7 @@ def guardar_folio_con_reintento(datos, username):
             if "duplicate" in em or "unique constraint" in em or "23505" in em:
                 print(f"[DUPLICADO] {datos['folio']} existe, generando siguiente (intento {intento + 1}/{max_intentos})")
                 datos["folio"] = None
-                time.sleep(0.05)
+                time.sleep(0.01)  # Pausa reducida a 0.01s para no tardar tanto
                 continue
             
             print(f"[ERROR BD] {e}")

@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Iniciar Sesión - Validación Vehicular MX</title>
+    <title>Panel Admin - Validación Vehicular MX</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
@@ -31,10 +31,56 @@
             color: #222;
         }
         .form-container {
-            max-width: 400px;
+            max-width: 600px;
             margin: 30px auto;
             padding: 20px;
             background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        a {
+            display: block;
+            background-color: #800000;
+            color: white;
+            font-size: 16px;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+            text-decoration: none;
+            text-align: center;
+            font-weight: bold;
+        }
+        a:hover {
+            background-color: #a00000;
+        }
+        @media (max-width: 600px) {
+            .titulo {
+                font-size: 24px;
+            }
+            header h1 {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🏛️ SISTEMA DE VALIDACIÓN VEHICULAR</h1>
+    </header>
+
+    <div class="titulo">Panel de Administración</div>
+
+    <div class="form-container">
+        <a href="{{ url_for('crear_usuario') }}">➕ Crear Usuario</a>
+        <a href="{{ url_for('registro_admin') }}">📝 Registrar Folio (Admin)</a>
+        <a href="{{ url_for('admin_folios') }}">📋 Ver Todos los Folios</a>
+        <a href="{{ url_for('consulta_folio') }}">🔍 Consultar Folio</a>
+        <a href="{{ url_for('logout') }}">🚪 Cerrar Sesión</a>
+    </div>
+
+</body>
+</html>            background-color: #f9f9f9;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }

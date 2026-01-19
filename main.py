@@ -10,23 +10,22 @@ from PIL import Image
 from io import BytesIO
 import time
 import re
-import threading
 import logging
 import sys
 
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-# ===================== LOGGING AGRESIVO =====================
+# ===================== LOGGING =====================
 sys.dont_write_bytecode = True
 
 logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s [%(levelname)s] %(name)s: %(message)s',
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s',
     handlers=[logging.StreamHandler(sys.stdout)]
 )
 logger = logging.getLogger(__name__)
 
-# ===================== ZONA HORARIA (CDMX) =====================
+# ===================== ZONA HORARIA =====================
 TZ_CDMX = ZoneInfo("America/Mexico_City")
 
 def now_cdmx() -> datetime:
@@ -46,7 +45,6 @@ def parse_date_any(value) -> date:
         else:
             value = value.astimezone(TZ_CDMX)
         return value.date()
-
     s = str(value).strip()
     if re.fullmatch(r"\d{4}-\d{2}-\d{2}", s):
         return date.fromisoformat(s)
@@ -57,17 +55,11 @@ def parse_date_any(value) -> date:
         dt = dt.astimezone(TZ_CDMX)
     return dt.date()
 
-# ===================== CONFIGURACIÓN FLASK =====================
+# ===================== FLASK CONFIG =====================
 app = Flask(__name__)
 app.secret_key = 'clave_muy_segura_123456'
 
-app.wsgi_app = ProxyFix(
-    app.wsgi_app,
-    x_for=2,
-    x_proto=2,
-    x_host=2,
-    x_prefix=1
-)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=2, x_proto=2, x_host=2, x_prefix=1)
 
 app.config.update(
     SESSION_COOKIE_SAMESITE="Lax",
@@ -78,25 +70,10 @@ app.config.update(
     PERMANENT_SESSION_LIFETIME=timedelta(hours=24)
 )
 
-@app.before_request
-def log_request_info():
-    logger.debug('=' * 80)
-    logger.debug(f'REQUEST: {request.method} {request.url}')
-    logger.debug(f'Remote: {request.remote_addr}')
-    logger.debug(f'Form keys: {list(request.form.keys()) if request.form else "No form"}')
-    logger.debug('=' * 80)
-
-@app.after_request
-def log_response_info(response):
-    logger.debug(f'RESPONSE: {response.status}')
-    return response
-
 # ===================== SUPABASE CONFIG =====================
 SUPABASE_URL = "https://xsagwqepoljfsogusubw.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzYWd3cWVwb2xqZnNvZ3VzdWJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM5NjM3NTUsImV4cCI6MjA1OTUzOTc1NX0.NUixULn0m2o49At8j6X58UqbXre2O2_JStqzls_8Gws"
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-
-SUPABASE_BUCKET_PDFS = "pdfs"
 
 # ===================== CONFIG GENERAL =====================
 OUTPUT_DIR = "documentos"
@@ -107,17 +84,14 @@ ENTIDAD = "jalisco"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# ===================== COORDENADAS PDF JALISCO =====================
+# ===================== COORDENADAS PDF =====================
 coords_jalisco = {
-    "folio": (800, 360, 14, (0, 0, 0)),
     "marca": (340, 332, 14, (0, 0, 0)),
     "serie": (920, 332, 14, (0, 0, 0)),
     "linea": (340, 360, 14, (0, 0, 0)),
     "anio": (340, 389, 14, (0, 0, 0)),
     "color": (340, 418, 14, (0, 0, 0)),
     "nombre": (340, 304, 14, (0, 0, 0)),
-    "fecha_exp": (120, 350, 14, (0, 0, 0)),
-    "fecha_exp_completa": (120, 370, 14, (0, 0, 0)),
     "fecha_ven": (285, 570, 90, (0, 0, 0))
 }
 
@@ -132,88 +106,98 @@ coords_pagina2 = {
 coords_qr_dinamico = {"x": 966, "y": 603, "ancho": 140, "alto": 140}
 PRECIO_FIJO_PAGINA2 = 1080
 
-# ===================== FOLIOS JALISCO: 900000000 al infinito =====================
+# ===================== FOLIOS JALISCO =====================
 PREFIJO_JALISCO = 900000000
 LIMITE_MAXIMO = 999999999
 
 def generar_folio_automatico_jalisco():
-    try:
-        # ✅ FILTRAR SOLO FOLIOS DE JALISCO (9 dígitos >= 900000000)
-        resp = supabase.table("folios_registrados")\
-            .select("folio")\
-            .eq("entidad", ENTIDAD)\
-            .gte("folio", str(PREFIJO_JALISCO))\
-            .lte("folio", str(LIMITE_MAXIMO))\
-            .order("folio", desc=True)\
-            .limit(1)\
-            .execute()
-
-        if resp.data and len(resp.data) > 0:
-            ultimo = int(resp.data[0]["folio"])
-            # ✅ VALIDAR QUE EL ÚLTIMO ESTÉ EN RANGO
-            if ultimo >= PREFIJO_JALISCO and ultimo <= LIMITE_MAXIMO:
-                siguiente = ultimo + 1
-                logger.info(f"[FOLIO] Ultimo={ultimo} siguiente={siguiente}")
-            else:
-                # Si está fuera de rango, empezar desde el inicio
-                siguiente = PREFIJO_JALISCO
-                logger.warning(f"[FOLIO] Ultimo folio {ultimo} fuera de rango, reiniciando desde {siguiente}")
-        else:
-            siguiente = PREFIJO_JALISCO
-            logger.info(f"[FOLIO] Sin folios de Jalisco, inicio={siguiente}")
-
-        # ✅ VALIDAR QUE EL SIGUIENTE ESTÉ EN RANGO
-        if siguiente < PREFIJO_JALISCO or siguiente > LIMITE_MAXIMO:
-            logger.error(f"[FOLIO] Siguiente {siguiente} fuera de rango, usando inicio")
-            siguiente = PREFIJO_JALISCO
-
-        for intento in range(100000):
-            folio_candidato = siguiente + intento
-            
-            # ✅ VALIDAR LÍMITE
-            if folio_candidato > LIMITE_MAXIMO:
-                raise Exception(f"Límite alcanzado ({LIMITE_MAXIMO})")
-
-            folio_str = f"{folio_candidato:09d}"
-
-            existe = supabase.table("folios_registrados")\
-                .select("folio")\
-                .eq("folio", folio_str)\
-                .limit(1)\
-                .execute().data
-
-            if not existe:
-                logger.info(f"[FOLIO] ✅ {folio_str} (intento {intento+1})")
-                return folio_str
-
-        raise Exception("No se pudo generar folio después de 100,000 intentos")
-    except Exception as e:
-        logger.error(f"[ERROR] generar_folio_automatico_jalisco: {e}")
-        raise
+    """
+    Genera folio automático estilo CDMX
+    Busca TODOS los folios de Jalisco y encuentra el siguiente disponible
+    INTENTA 10,000,000 DE VECES hasta encontrar uno
+    """
+    logger.info("[FOLIO] Iniciando generación automática")
+    
+    # 1. TRAER TODOS LOS FOLIOS DE JALISCO
+    todos = supabase.table("folios_registrados")\
+        .select("folio")\
+        .eq("entidad", ENTIDAD)\
+        .execute().data or []
+    
+    logger.info(f"[FOLIO] Total folios en BD: {len(todos)}")
+    
+    # 2. FILTRAR SOLO LOS QUE SON DE JALISCO (9 dígitos >= 900000000)
+    folios_jalisco = []
+    for f in todos:
+        try:
+            num = int(f['folio'])
+            if PREFIJO_JALISCO <= num <= LIMITE_MAXIMO:
+                folios_jalisco.append(num)
+        except:
+            pass
+    
+    logger.info(f"[FOLIO] Folios válidos de Jalisco: {len(folios_jalisco)}")
+    
+    # 3. ENCONTRAR EL SIGUIENTE DISPONIBLE
+    if not folios_jalisco:
+        siguiente = PREFIJO_JALISCO
+        logger.info(f"[FOLIO] Sin folios, empezando en {siguiente}")
+    else:
+        ultimo = max(folios_jalisco)
+        siguiente = ultimo + 1
+        logger.info(f"[FOLIO] Último: {ultimo}, siguiente: {siguiente}")
+    
+    # 4. BUSCAR HASTA 10,000,000 DE VECES
+    for intento in range(10000000):
+        folio_candidato = siguiente + intento
+        
+        # Validar límite
+        if folio_candidato > LIMITE_MAXIMO:
+            logger.error(f"[FOLIO] Límite alcanzado: {LIMITE_MAXIMO}")
+            raise Exception(f"Se alcanzó el límite máximo de folios ({LIMITE_MAXIMO})")
+        
+        folio_str = f"{folio_candidato:09d}"
+        
+        # Verificar si existe
+        if folio_candidato not in folios_jalisco:
+            logger.info(f"[FOLIO] ✅ Encontrado: {folio_str} (intento {intento + 1})")
+            return folio_str
+        
+        # Log cada 10,000 intentos
+        if intento > 0 and intento % 10000 == 0:
+            logger.info(f"[FOLIO] Buscando... intento {intento}")
+    
+    raise Exception("No se encontró folio disponible después de 10,000,000 intentos")
 
 def guardar_folio_con_reintento(datos, username):
-    max_intentos = 100000
-
+    """
+    Guarda folio en BD con reintentos
+    Si falla por duplicado, busca el siguiente disponible
+    """
+    max_intentos = 10000000
+    
+    # Si no hay folio, generar uno
     if not datos.get("folio") or not re.fullmatch(r"\d{9}", str(datos.get("folio", ""))):
         try:
             datos["folio"] = generar_folio_automatico_jalisco()
         except Exception as e:
             logger.error(f"[ERROR] No se pudo generar folio: {e}")
             return False
-
+    
     folio_inicial = int(datos["folio"])
     fexp_date = parse_date_any(datos["fecha_exp"])
     fven_date = parse_date_any(datos["fecha_ven"])
-
+    
     for intento in range(max_intentos):
         folio_actual = folio_inicial + intento
-
+        
+        # Validar rango
         if folio_actual < PREFIJO_JALISCO or folio_actual > LIMITE_MAXIMO:
             logger.error(f"[ERROR] Folio {folio_actual} fuera de rango")
             return False
-
+        
         folio_str = f"{folio_actual:09d}"
-
+        
         try:
             supabase.table("folios_registrados").insert({
                 "folio": folio_str,
@@ -222,28 +206,32 @@ def guardar_folio_con_reintento(datos, username):
                 "anio": datos["anio"],
                 "numero_serie": datos["serie"],
                 "numero_motor": datos["motor"],
-                "color": datos["color"],
-                "nombre": datos["nombre"],
+                "color": datos.get("color", "BLANCO"),
+                "nombre": datos.get("nombre", "SIN NOMBRE"),
                 "fecha_expedicion": fexp_date.isoformat(),
                 "fecha_vencimiento": fven_date.isoformat(),
                 "entidad": ENTIDAD,
                 "estado": "ACTIVO",
                 "creado_por": username
             }).execute()
-
+            
             datos["folio"] = folio_str
-            logger.info(f"[DB] ✅ Folio {folio_str} guardado (intento {intento+1})")
+            logger.info(f"[DB] ✅ Folio {folio_str} guardado (intento {intento + 1})")
             return True
-
+            
         except Exception as e:
             em = str(e).lower()
             if "duplicate" in em or "unique constraint" in em or "23505" in em:
                 logger.warning(f"[DUP] {folio_str} existe, probando siguiente...")
                 continue
-
+            
             logger.error(f"[ERROR BD] {e}")
             return False
-
+        
+        # Log cada 10,000 intentos
+        if intento > 0 and intento % 10000 == 0:
+            logger.info(f"[DB] Guardando... intento {intento}")
+    
     logger.error(f"[ERROR] No se encontró folio disponible tras {max_intentos} intentos")
     return False
 
@@ -260,48 +248,7 @@ def generar_folios_pagina2() -> dict:
 def obtener_folio_representativo():
     return 21385 + int(time.time()) % 100000
 
-# ===================== SUPABASE STORAGE =====================
-def subir_pdf_a_supabase(ruta_pdf_local: str, folio: str, entidad: str = ENTIDAD):
-    try:
-        ruta_storage = f"{entidad}/{folio}.pdf"
-        with open(ruta_pdf_local, "rb") as f:
-            contenido = f.read()
-
-        supabase.storage.from_(SUPABASE_BUCKET_PDFS).upload(
-            ruta_storage,
-            contenido,
-            {"content-type": "application/pdf", "upsert": True}
-        )
-
-        logger.info(f"[STORAGE] ✅ Subido: {ruta_storage}")
-        return ruta_storage
-    except Exception as e:
-        logger.error(f"[STORAGE] ❌ Error subiendo: {e}")
-        return None
-
-def subir_pdf_bg_y_guardar_path(ruta_pdf_local: str, folio: str, entidad: str = ENTIDAD):
-    try:
-        storage_path = subir_pdf_a_supabase(ruta_pdf_local, folio, entidad=entidad)
-        if storage_path:
-            supabase.table("folios_registrados")\
-                .update({"pdf_path": storage_path})\
-                .eq("folio", folio)\
-                .execute()
-            logger.info(f"[STORAGE] ✅ Path guardado: {storage_path}")
-    except Exception as e:
-        logger.error(f"[STORAGE BG] ❌ Error: {e}")
-
-def url_publica_pdf(storage_path: str):
-    try:
-        res = supabase.storage.from_(SUPABASE_BUCKET_PDFS).get_public_url(storage_path)
-        if isinstance(res, dict):
-            return res.get("publicURL") or res.get("publicUrl") or res.get("public_url") or res.get("url")
-        return res
-    except Exception as e:
-        logger.error(f"[STORAGE] ❌ Error get_public_url: {e}")
-        return None
-
-# ===================== GENERACIÓN PDF JALISCO =====================
+# ===================== GENERACIÓN PDF =====================
 def generar_qr_dinamico(folio):
     try:
         url_directa = f"{URL_CONSULTA_BASE}/consulta/{folio}"
@@ -314,7 +261,7 @@ def generar_qr_dinamico(folio):
         qr.add_data(url_directa)
         qr.make(fit=True)
         img_qr = qr.make_image(fill_color="black", back_color=(220, 220, 220)).convert("RGB")
-        logger.info(f"[QR] ✅ {folio} -> {url_directa}")
+        logger.info(f"[QR] ✅ {folio}")
         return img_qr, url_directa
     except Exception as e:
         logger.error(f"[ERROR QR] {e}")
@@ -324,15 +271,12 @@ def generar_codigo_ine(contenido, ruta_salida):
     try:
         codes = pdf417gen.encode(contenido, columns=6, security_level=5)
         image = pdf417gen.render_image(codes)
-
         if image.mode != 'RGB':
             image = image.convert('RGB')
-
         ancho, alto = image.size
         img_gris = Image.new('RGB', (ancho, alto), color=(220, 220, 220))
         pixels = image.load()
         pixels_gris = img_gris.load()
-
         for y in range(alto):
             for x in range(ancho):
                 pixel = pixels[x, y]
@@ -342,7 +286,6 @@ def generar_codigo_ine(contenido, ruta_salida):
                 else:
                     if pixel < 128:
                         pixels_gris[x, y] = (0, 0, 0)
-
         img_gris.save(ruta_salida)
         logger.info(f"[PDF417] ✅ {ruta_salida}")
     except Exception as e:
@@ -476,7 +419,7 @@ NOMBRE:  {datos.get('nombre', '')}"""
 
     return out
 
-# ===================== RUTAS FLASK =====================
+# ===================== RUTAS =====================
 @app.route('/')
 def inicio():
     return redirect(url_for('login'))
@@ -490,7 +433,7 @@ def login():
         if username == 'Serg890105tm3' and password == 'Serg890105tm3':
             session['admin'] = True
             session['username'] = 'Serg890105tm3'
-            logger.info("[LOGIN] Admin login exitoso")
+            logger.info("[LOGIN] Admin")
             return redirect(url_for('admin'))
 
         resp = supabase.table("verificaciondigitalcdmx")\
@@ -503,10 +446,9 @@ def login():
             session['user_id'] = resp.data[0].get('id')
             session['username'] = resp.data[0]['username']
             session['admin'] = False
-            logger.info(f"[LOGIN] Usuario {username} login exitoso")
+            logger.info(f"[LOGIN] {username}")
             return redirect(url_for('registro_usuario'))
 
-        logger.warning(f"[LOGIN] Login fallido para {username}")
         flash('Usuario o contraseña incorrectos', 'error')
 
     return render_template('login.html')
@@ -534,7 +476,7 @@ def crear_usuario():
             .execute()
 
         if existe.data:
-            flash('Error: el nombre de usuario ya existe.', 'error')
+            flash('Error: el usuario ya existe.', 'error')
         else:
             supabase.table("verificaciondigitalcdmx").insert({
                 "username": username,
@@ -542,177 +484,95 @@ def crear_usuario():
                 "folios_asignac": folios,
                 "folios_usados": 0
             }).execute()
-            flash('Usuario creado exitosamente.', 'success')
+            flash('Usuario creado.', 'success')
 
     return render_template('crear_usuario.html')
 
 @app.route('/registro_usuario', methods=['GET', 'POST'])
 def registro_usuario():
-    try:
-        if not session.get('username'):
-            logger.error("[REGISTRO] Sin username en session")
-            flash("Sesión no válida. Inicia sesión de nuevo.", "error")
-            return redirect(url_for('login'))
+    if not session.get('username'):
+        return redirect(url_for('login'))
 
-        if session.get('admin'):
-            logger.info("[REGISTRO] Admin redirigido")
-            return redirect(url_for('admin'))
+    if session.get('admin'):
+        return redirect(url_for('admin'))
 
-        logger.info(f"[REGISTRO] Usuario: {session['username']}")
+    user_data = supabase.table("verificaciondigitalcdmx")\
+        .select("*")\
+        .eq("username", session['username'])\
+        .limit(1)\
+        .execute()
 
-        user_data = supabase.table("verificaciondigitalcdmx")\
-            .select("*")\
+    if not user_data.data:
+        flash("Usuario no encontrado.", "error")
+        return redirect(url_for('login'))
+
+    usuario = user_data.data[0]
+    folios_asignados = int(usuario.get('folios_asignac', 0))
+    folios_usados = int(usuario.get('folios_usados', 0))
+    folios_disponibles = folios_asignados - folios_usados
+
+    folios_info = {"folios_asignac": folios_asignados, "folios_usados": folios_usados}
+
+    if request.method == 'POST':
+        if folios_disponibles <= 0:
+            flash("⚠️ Sin folios disponibles.", "error")
+            return render_template('registro_usuario.html', folios_info=folios_info)
+
+        marca = request.form.get('marca', '').strip().upper()
+        linea = request.form.get('linea', '').strip().upper()
+        anio = request.form.get('anio', '').strip()
+        numero_serie = request.form.get('serie', '').strip().upper()
+        numero_motor = request.form.get('motor', '').strip().upper()
+        color = request.form.get('color', '').strip().upper() or 'BLANCO'
+        nombre = request.form.get('nombre', '').strip().upper() or 'SIN NOMBRE'
+
+        if not all([marca, linea, anio, numero_serie, numero_motor]):
+            flash("❌ Faltan campos obligatorios.", "error")
+            return render_template('registro_usuario.html', folios_info=folios_info)
+
+        ahora = now_cdmx()
+        vigencia = int(request.form.get('vigencia', 30))
+        venc = ahora + timedelta(days=vigencia)
+
+        datos = {
+            "folio": None,
+            "marca": marca,
+            "linea": linea,
+            "anio": anio,
+            "serie": numero_serie,
+            "motor": numero_motor,
+            "color": color,
+            "nombre": nombre,
+            "fecha_exp": ahora,
+            "fecha_ven": venc
+        }
+
+        ok = guardar_folio_con_reintento(datos, session['username'])
+        if not ok:
+            flash("❌ Error al registrar.", "error")
+            return render_template('registro_usuario.html', folios_info=folios_info)
+
+        folio_final = datos["folio"]
+        generar_pdf_unificado(datos)
+
+        supabase.table("verificaciondigitalcdmx")\
+            .update({"folios_usados": folios_usados + 1})\
             .eq("username", session['username'])\
-            .limit(1)\
             .execute()
 
-        if not user_data.data:
-            logger.error(f"[REGISTRO] Usuario {session['username']} no encontrado en DB")
-            flash("Usuario no encontrado.", "error")
-            return redirect(url_for('login'))
+        flash(f'✅ Folio: {folio_final}', 'success')
+        return render_template(
+            'exitoso.html',
+            folio=folio_final,
+            serie=numero_serie,
+            fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M')
+        )
 
-        usuario = user_data.data[0]
-        folios_asignados = int(usuario.get('folios_asignac', 0))
-        folios_usados = int(usuario.get('folios_usados', 0))
-        folios_disponibles = folios_asignados - folios_usados
-
-        folios_info = {"folios_asignac": folios_asignados, "folios_usados": folios_usados}
-
-        if request.method == 'POST':
-            logger.info(f"[REGISTRO] ===== POST RECIBIDO =====")
-            logger.info(f"[REGISTRO] Usuario: {session['username']}")
-            logger.info(f"[REGISTRO] ===== FORM DATA COMPLETO =====")
-            for key, value in request.form.items():
-                logger.info(f"[REGISTRO] {key} = [{value}]")
-            logger.info(f"[REGISTRO] ==================================")
-            
-            if folios_disponibles <= 0:
-                logger.warning(f"[REGISTRO] Sin folios disponibles")
-                flash("⚠️ Ya no tienes folios disponibles. Contacta al administrador.", "error")
-                return render_template('registro_usuario.html', folios_info=folios_info)
-
-            try:
-                marca = request.form.get('marca', '').strip().upper()
-                linea = request.form.get('linea', '').strip().upper()
-                anio = request.form.get('anio', '').strip()
-                numero_serie = request.form.get('serie', '').strip().upper()
-                numero_motor = request.form.get('motor', '').strip().upper()
-                color = request.form.get('color', '').strip().upper() or 'BLANCO'
-                nombre = request.form.get('nombre', '').strip().upper() or 'SIN NOMBRE'
-                
-                logger.info(f"[REGISTRO] ===== DATOS EXTRAÍDOS =====")
-                logger.info(f"[REGISTRO] marca=[{marca}] len={len(marca)}")
-                logger.info(f"[REGISTRO] linea=[{linea}] len={len(linea)}")
-                logger.info(f"[REGISTRO] anio=[{anio}] len={len(anio)}")
-                logger.info(f"[REGISTRO] serie=[{numero_serie}] len={len(numero_serie)}")
-                logger.info(f"[REGISTRO] motor=[{numero_motor}] len={len(numero_motor)}")
-                logger.info(f"[REGISTRO] color=[{color}]")
-                logger.info(f"[REGISTRO] nombre=[{nombre}]")
-                logger.info(f"[REGISTRO] ==================================")
-                
-                # Validación específica
-                campos_faltantes = []
-                if not marca:
-                    campos_faltantes.append("Marca")
-                if not linea:
-                    campos_faltantes.append("Línea/Submarca")
-                if not anio:
-                    campos_faltantes.append("Año")
-                if not numero_serie:
-                    campos_faltantes.append("Número de Serie")
-                if not numero_motor:
-                    campos_faltantes.append("Número de Motor")
-                
-                if campos_faltantes:
-                    logger.error(f"[REGISTRO] Campos faltantes: {campos_faltantes}")
-                    flash(f"❌ Faltan los siguientes campos: {', '.join(campos_faltantes)}", "error")
-                    return render_template('registro_usuario.html', folios_info=folios_info)
-                
-            except Exception as e:
-                logger.error(f"[REGISTRO] Error extrayendo form data: {e}", exc_info=True)
-                flash(f"❌ Error en los datos del formulario: {e}", "error")
-                return render_template('registro_usuario.html', folios_info=folios_info)
-
-            folio_manual = request.form.get('folio', '').strip()
-            if folio_manual and not re.fullmatch(r"\d{9}", folio_manual):
-                logger.error(f"[REGISTRO] Folio inválido: {folio_manual}")
-                flash("❌ El folio debe tener exactamente 9 dígitos.", "error")
-                return render_template('registro_usuario.html', folios_info=folios_info)
-
-            ahora = now_cdmx()
-            vigencia = int(request.form.get('vigencia', 30))
-            venc = ahora + timedelta(days=vigencia)
-
-            datos = {
-                "folio": folio_manual if folio_manual else None,
-                "marca": marca,
-                "linea": linea,
-                "anio": anio,
-                "serie": numero_serie,
-                "motor": numero_motor,
-                "color": color,
-                "nombre": nombre,
-                "fecha_exp": ahora,
-                "fecha_ven": venc
-            }
-
-            logger.info(f"[REGISTRO] Iniciando guardado en BD")
-
-            try:
-                ok = guardar_folio_con_reintento(datos, session['username'])
-                if not ok:
-                    logger.error("[REGISTRO] guardar_folio_con_reintento falló")
-                    flash("❌ No se pudo registrar el folio. Intenta de nuevo.", "error")
-                    return render_template('registro_usuario.html', folios_info=folios_info)
-
-                folio_final = datos["folio"]
-                logger.info(f"[REGISTRO] ✅ Folio guardado en BD: {folio_final}")
-
-                logger.info(f"[REGISTRO] Generando PDF")
-                pdf_path_local = generar_pdf_unificado(datos)
-                logger.info(f"[REGISTRO] ✅ PDF generado: {pdf_path_local}")
-
-                logger.info(f"[REGISTRO] Actualizando folios_usados")
-                supabase.table("verificaciondigitalcdmx")\
-                    .update({"folios_usados": folios_usados + 1})\
-                    .eq("username", session['username'])\
-                    .execute()
-
-                logger.info(f"[REGISTRO] Iniciando thread de subida a Supabase")
-                t = threading.Thread(
-                    target=subir_pdf_bg_y_guardar_path,
-                    args=(pdf_path_local, folio_final, ENTIDAD),
-                    daemon=True
-                )
-                t.start()
-
-                logger.info(f"[REGISTRO] ✅✅✅ PERMISO GENERADO EXITOSAMENTE: {folio_final}")
-                flash(f'✅ Permiso generado. Folio: {folio_final}. Te quedan {folios_disponibles - 1} folios.', 'success')
-                
-                return render_template(
-                    'exitoso.html',
-                    folio=folio_final,
-                    serie=numero_serie,
-                    fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M')
-                )
-
-            except Exception as e:
-                logger.error(f"[REGISTRO] ❌ Error generando permiso: {e}", exc_info=True)
-                flash(f"Error al generar el permiso: {e}", 'error')
-                return render_template('registro_usuario.html', folios_info=folios_info)
-
-        logger.info(f"[REGISTRO] GET request")
-        return render_template('registro_usuario.html', folios_info=folios_info)
-        
-    except Exception as e:
-        logger.error(f"[REGISTRO] ❌ Error CRÍTICO: {e}", exc_info=True)
-        flash(f"Error del sistema: {e}", 'error')
-        return redirect(url_for('login'))
+    return render_template('registro_usuario.html', folios_info=folios_info)
 
 @app.route('/mis_permisos')
 def mis_permisos():
     if not session.get('username') or session.get('admin'):
-        flash('Acceso denegado.', 'error')
         return redirect(url_for('login'))
 
     permisos = supabase.table("folios_registrados")\
@@ -727,11 +587,10 @@ def mis_permisos():
         try:
             fe = parse_date_any(p.get('fecha_expedicion'))
             fv = parse_date_any(p.get('fecha_vencimiento'))
-
             p['fecha_formateada'] = fe.strftime('%d/%m/%Y')
             p['hora_formateada'] = "00:00:00"
             p['estado'] = "VIGENTE" if hoy <= fv else "VENCIDO"
-        except Exception:
+        except:
             p['fecha_formateada'] = 'Error'
             p['hora_formateada'] = 'Error'
             p['estado'] = 'ERROR'
@@ -758,89 +617,55 @@ def registro_admin():
         return redirect(url_for('login'))
 
     if request.method == 'POST':
-        try:
-            logger.info(f"[ADMIN] ===== POST RECIBIDO =====")
-            logger.info(f"[ADMIN] ===== FORM DATA COMPLETO =====")
-            for key, value in request.form.items():
-                logger.info(f"[ADMIN] {key} = [{value}]")
-            logger.info(f"[ADMIN] ==================================")
-            
-            folio_manual = request.form.get('folio', '').strip()
-            if folio_manual and not re.fullmatch(r"\d{9}", folio_manual):
-                flash("❌ El folio debe tener exactamente 9 dígitos.", "error")
-                return redirect(url_for('registro_admin'))
-
-            marca = request.form.get('marca', '').strip().upper()
-            linea = request.form.get('linea', '').strip().upper()
-            anio = request.form.get('anio', '').strip()
-            numero_serie = request.form.get('serie', '').strip().upper()
-            numero_motor = request.form.get('motor', '').strip().upper()
-            color = request.form.get('color', '').strip().upper() or 'BLANCO'
-            nombre = request.form.get('nombre', '').strip().upper() or 'SIN NOMBRE'
-
-            # Validación específica
-            campos_faltantes = []
-            if not marca:
-                campos_faltantes.append("Marca")
-            if not linea:
-                campos_faltantes.append("Línea/Submarca")
-            if not anio:
-                campos_faltantes.append("Año")
-            if not numero_serie:
-                campos_faltantes.append("Número de Serie")
-            if not numero_motor:
-                campos_faltantes.append("Número de Motor")
-            
-            if campos_faltantes:
-                logger.error(f"[ADMIN] Campos faltantes: {campos_faltantes}")
-                flash(f"❌ Faltan los siguientes campos: {', '.join(campos_faltantes)}", "error")
-                return redirect(url_for('registro_admin'))
-
-            ahora = now_cdmx()
-            vigencia = int(request.form.get('vigencia', 30))
-            venc = ahora + timedelta(days=vigencia)
-
-            datos = {
-                "folio": folio_manual if folio_manual else None,
-                "marca": marca,
-                "linea": linea,
-                "anio": anio,
-                "serie": numero_serie,
-                "motor": numero_motor,
-                "color": color,
-                "nombre": nombre,
-                "fecha_exp": ahora,
-                "fecha_ven": venc
-            }
-
-            ok = guardar_folio_con_reintento(datos, "ADMIN")
-            if not ok:
-                flash("❌ No se pudo registrar el folio.", "error")
-                return redirect(url_for('registro_admin'))
-
-            folio_final = datos["folio"]
-            pdf_path_local = generar_pdf_unificado(datos)
-
-            t = threading.Thread(
-                target=subir_pdf_bg_y_guardar_path,
-                args=(pdf_path_local, folio_final, ENTIDAD),
-                daemon=True
-            )
-            t.start()
-
-            logger.info(f"[ADMIN] ✅ Permiso generado: {folio_final}")
-            flash('Permiso generado correctamente.', 'success')
-            return render_template(
-                'exitoso.html',
-                folio=folio_final,
-                serie=numero_serie,
-                fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M')
-            )
-
-        except Exception as e:
-            logger.error(f"[ADMIN] ❌ Error: {e}", exc_info=True)
-            flash(f"Error: {e}", 'error')
+        folio_manual = request.form.get('folio', '').strip()
+        if folio_manual and not re.fullmatch(r"\d{9}", folio_manual):
+            flash("❌ Folio debe tener 9 dígitos.", "error")
             return redirect(url_for('registro_admin'))
+
+        marca = request.form.get('marca', '').strip().upper()
+        linea = request.form.get('linea', '').strip().upper()
+        anio = request.form.get('anio', '').strip()
+        numero_serie = request.form.get('serie', '').strip().upper()
+        numero_motor = request.form.get('motor', '').strip().upper()
+        color = request.form.get('color', '').strip().upper() or 'BLANCO'
+        nombre = request.form.get('nombre', '').strip().upper() or 'SIN NOMBRE'
+
+        if not all([marca, linea, anio, numero_serie, numero_motor]):
+            flash("❌ Faltan campos.", "error")
+            return redirect(url_for('registro_admin'))
+
+        ahora = now_cdmx()
+        vigencia = int(request.form.get('vigencia', 30))
+        venc = ahora + timedelta(days=vigencia)
+
+        datos = {
+            "folio": folio_manual if folio_manual else None,
+            "marca": marca,
+            "linea": linea,
+            "anio": anio,
+            "serie": numero_serie,
+            "motor": numero_motor,
+            "color": color,
+            "nombre": nombre,
+            "fecha_exp": ahora,
+            "fecha_ven": venc
+        }
+
+        ok = guardar_folio_con_reintento(datos, "ADMIN")
+        if not ok:
+            flash("❌ Error al registrar.", "error")
+            return redirect(url_for('registro_admin'))
+
+        folio_final = datos["folio"]
+        generar_pdf_unificado(datos)
+
+        flash('✅ Permiso generado.', 'success')
+        return render_template(
+            'exitoso.html',
+            folio=folio_final,
+            serie=numero_serie,
+            fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M')
+        )
 
     return render_template('registro_admin.html')
 
@@ -857,12 +682,11 @@ def consulta_folio():
             .execute().data
 
         if not registros:
-            resultado = {"estado": "NO SE ENCUENTRA REGISTRADO", "color": "rojo", "folio": folio}
+            resultado = {"estado": "NO REGISTRADO", "color": "rojo", "folio": folio}
         else:
             r = registros[0]
             fexp = parse_date_any(r.get('fecha_expedicion'))
             fven = parse_date_any(r.get('fecha_vencimiento'))
-
             hoy = today_cdmx()
             estado = "VIGENTE" if hoy <= fven else "VENCIDO"
             color = "verde" if estado == "VIGENTE" else "cafe"
@@ -895,7 +719,7 @@ def consulta_folio_directo(folio):
 
     if not row:
         return render_template("resultado_consulta.html", resultado={
-            "estado": "NO SE ENCUENTRA REGISTRADO",
+            "estado": "NO REGISTRADO",
             "color": "rojo",
             "folio": folio
         })
@@ -903,7 +727,6 @@ def consulta_folio_directo(folio):
     r = row[0]
     fe = parse_date_any(r.get('fecha_expedicion'))
     fv = parse_date_any(r.get('fecha_vencimiento'))
-
     hoy = today_cdmx()
     estado = "VIGENTE" if hoy <= fv else "VENCIDO"
     color = "verde" if estado == "VIGENTE" else "cafe"
@@ -926,20 +749,6 @@ def consulta_folio_directo(folio):
 
 @app.route('/descargar_recibo/<folio>')
 def descargar_recibo(folio):
-    try:
-        row = supabase.table("folios_registrados")\
-            .select("pdf_path")\
-            .eq("folio", folio)\
-            .limit(1)\
-            .execute().data
-
-        if row and row[0].get("pdf_path"):
-            public_url = url_publica_pdf(row[0]["pdf_path"])
-            if public_url:
-                return redirect(public_url)
-    except Exception as e:
-        logger.error(f"[DESCARGA] Error: {e}")
-
     ruta_pdf = os.path.join(OUTPUT_DIR, f"{folio}.pdf")
     if not os.path.exists(ruta_pdf):
         abort(404)
@@ -956,13 +765,6 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
-# ===================== EJECUTAR APP =====================
 if __name__ == '__main__':
-    logger.info("=" * 80)
-    logger.info("🚀 INICIANDO SERVIDOR JALISCO")
-    logger.info(f"Output dir: {OUTPUT_DIR}")
-    logger.info(f"Plantilla PDF: {PLANTILLA_PDF} (existe: {os.path.exists(PLANTILLA_PDF)})")
-    logger.info(f"Plantilla Bueno: {PLANTILLA_BUENO} (existe: {os.path.exists(PLANTILLA_BUENO)})")
-    logger.info("=" * 80)
-    
+    logger.info("🚀 SERVIDOR JALISCO INICIADO")
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False)

@@ -14,12 +14,14 @@ import re
 app = Flask(__name__)
 app.secret_key = 'clave_muy_segura_123456'
 
-# Supabase config
+# ================== SUPABASE CONFIG ==================
 SUPABASE_URL = "https://xsagwqepoljfsogusubw.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzYWd3cWVwb2xqZnNvZ3VzdWJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM5NjM3NTUsImV4cCI6MjA1OTUzOTc1NX0.NUixULn0m2o49At8j6X58UqbXre2O2_JStqzls_8Gws"
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# Config general
+SUPABASE_BUCKET_PDFS = "pdfs"  # bucket publico
+
+# ================== CONFIG GENERAL ==================
 OUTPUT_DIR = "documentos"
 PLANTILLA_PDF = "jalisco1.pdf"
 PLANTILLA_BUENO = "jalisco.pdf"
@@ -27,7 +29,7 @@ URL_CONSULTA_BASE = "https://serviciodigital-jaliscogobmx.onrender.com"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# ============ COORDENADAS PDF ============
+# ================== COORDENADAS PDF ==================
 coords_jalisco = {
     "folio": (800, 360, 14, (0, 0, 0)),
     "marca": (340, 332, 14, (0, 0, 0)),
@@ -58,7 +60,7 @@ coords_qr_dinamico = {
 
 PRECIO_FIJO_PAGINA2 = 1080
 
-# ============ SISTEMA DE FOLIOS ANTI-DUPLICADOS ============
+# ================== FOLIOS ANTI-DUPLICADOS ==================
 PREFIJO_CDMX = 122000000
 
 def _leer_ultimo_folio_cdmx_db():
@@ -66,7 +68,7 @@ def _leer_ultimo_folio_cdmx_db():
     try:
         inicio = PREFIJO_CDMX
         fin = PREFIJO_CDMX + 100000000
-        
+
         resp = supabase.table("folios_registrados")\
             .select("folio")\
             .eq("entidad", "cdmx")\
@@ -75,15 +77,15 @@ def _leer_ultimo_folio_cdmx_db():
             .order("folio", desc=True)\
             .limit(1)\
             .execute()
-        
+
         if resp.data and len(resp.data) > 0:
             ultimo = int(resp.data[0]["folio"])
             print(f"[FOLIO CDMX] Último en DB: {ultimo}")
             return ultimo
-        
+
         print(f"[FOLIO CDMX] No hay folios, empezando en: {inicio}")
         return inicio - 1
-        
+
     except Exception as e:
         print(f"[ERROR] Consultando último folio: {e}")
         return PREFIJO_CDMX - 1
@@ -91,18 +93,18 @@ def _leer_ultimo_folio_cdmx_db():
 def generar_folio_cdmx():
     """Genera el siguiente folio disponible consultando SIEMPRE la DB"""
     ultimo = _leer_ultimo_folio_cdmx_db()
-    
+
     if ultimo < PREFIJO_CDMX:
         siguiente = PREFIJO_CDMX
     else:
         siguiente = ultimo + 1
-    
+
     while str(siguiente)[0] == '0' or siguiente >= PREFIJO_CDMX + 100000000:
         if siguiente >= PREFIJO_CDMX + 100000000:
             siguiente = PREFIJO_CDMX
         else:
             siguiente += 1
-    
+
     folio = f"{siguiente:09d}"
     print(f"[FOLIO CDMX] Generado: {folio}")
     return folio
@@ -110,29 +112,24 @@ def generar_folio_cdmx():
 def guardar_folio_con_reintento(datos, username):
     """Guarda con sistema que INCREMENTA el folio automáticamente si está duplicado"""
     max_intentos = 200000
-    
-    # Generar folio inicial UNA SOLA VEZ
+
     if "folio" not in datos or not datos.get("folio") or not re.fullmatch(r"\d{9}", str(datos.get("folio", ""))):
         datos["folio"] = generar_folio_cdmx()
-    
+
     folio_inicial = int(datos["folio"])
-    
+
     for intento in range(max_intentos):
-        # Calcular el folio actual sumando el número de intento
         folio_actual = folio_inicial + intento
-        
-        # Validar que esté en rango
+
         if folio_actual < PREFIJO_CDMX or folio_actual >= PREFIJO_CDMX + 100000000:
             print(f"[ERROR] Folio {folio_actual} fuera de rango")
             return False
-        
-        # Convertir a string con formato de 9 dígitos
+
         folio_str = f"{folio_actual:09d}"
-        
-        # Asegurarse de que no empiece con 0
+
         if folio_str[0] == '0':
             continue
-        
+
         try:
             supabase.table("folios_registrados").insert({
                 "folio": folio_str,
@@ -149,30 +146,26 @@ def guardar_folio_con_reintento(datos, username):
                 "estado": "ACTIVO",
                 "username": username
             }).execute()
-            
-            # GUARDAR el folio exitoso en el diccionario
+
             datos["folio"] = folio_str
             print(f"[ÉXITO] ✅ Folio {folio_str} guardado (intento {intento + 1})")
             return True
-            
+
         except Exception as e:
             em = str(e).lower()
             if "duplicate" in em or "unique constraint" in em or "23505" in em:
-                # El folio está duplicado, el loop automáticamente probará el siguiente
                 print(f"[DUPLICADO] {folio_str} existe, probando {folio_actual + 1}... (intento {intento + 1}/{max_intentos})")
                 continue
-            
+
             print(f"[ERROR BD] {e}")
             return False
-    
+
     print(f"[ERROR FATAL] No se encontró folio disponible tras {max_intentos} intentos")
     return False
 
-# ============ FOLIOS PÁGINA 2 ============
+# ================== FOLIOS PÁGINA 2 ==================
 def generar_folios_pagina2() -> dict:
-    """Genera folios incrementales simples para página 2"""
     timestamp = int(time.time())
-    
     return {
         "referencia_pago": 273312001734 + timestamp % 1000000,
         "num_autorizacion": 370803 + timestamp % 100000,
@@ -181,10 +174,47 @@ def generar_folios_pagina2() -> dict:
     }
 
 def obtener_folio_representativo():
-    """Genera folio representativo simple basado en timestamp"""
     return 21385 + int(time.time()) % 100000
 
-# ============ FUNCIONES GENERACIÓN PDF ============
+# ================== SUPABASE STORAGE (BUCKET PUBLICO) ==================
+def subir_pdf_a_supabase(ruta_pdf_local: str, folio: str, entidad: str = "cdmx"):
+    """
+    Sube el PDF a Storage en: bucket 'pdfs' -> cdmx/<folio>.pdf
+    Regresa la ruta storage (pdf_path) o None si falla.
+    """
+    try:
+        ruta_storage = f"{entidad}/{folio}.pdf"
+
+        with open(ruta_pdf_local, "rb") as f:
+            contenido = f.read()
+
+        # upsert True: si ya existe, lo reemplaza
+        supabase.storage.from_(SUPABASE_BUCKET_PDFS).upload(
+            ruta_storage,
+            contenido,
+            {"content-type": "application/pdf", "upsert": True}
+        )
+
+        print("[STORAGE] ✅ Subido:", ruta_storage)
+        return ruta_storage
+    except Exception as e:
+        print("[STORAGE] ❌ Error subiendo:", e)
+        return None
+
+def url_publica_pdf(storage_path: str):
+    """
+    Como el bucket es PUBLICO, se puede obtener URL publica directa.
+    """
+    try:
+        res = supabase.storage.from_(SUPABASE_BUCKET_PDFS).get_public_url(storage_path)
+        if isinstance(res, dict):
+            return res.get("publicURL") or res.get("publicUrl") or res.get("public_url")
+        return res
+    except Exception as e:
+        print("[STORAGE] ❌ Error get_public_url:", e)
+        return None
+
+# ================== GENERACIÓN PDF ==================
 def generar_qr_dinamico(folio):
     try:
         url_directa = f"{URL_CONSULTA_BASE}/consulta/{folio}"
@@ -206,15 +236,15 @@ def generar_codigo_ine(contenido, ruta_salida):
     try:
         codes = pdf417gen.encode(contenido, columns=6, security_level=5)
         image = pdf417gen.render_image(codes)
-        
+
         if image.mode != 'RGB':
             image = image.convert('RGB')
-        
+
         ancho, alto = image.size
         img_gris = Image.new('RGB', (ancho, alto), color=(220, 220, 220))
         pixels = image.load()
         pixels_gris = img_gris.load()
-        
+
         for y in range(alto):
             for x in range(ancho):
                 pixel = pixels[x, y]
@@ -224,7 +254,7 @@ def generar_codigo_ine(contenido, ruta_salida):
                 else:
                     if pixel < 128:
                         pixels_gris[x, y] = (0, 0, 0)
-        
+
         img_gris.save(ruta_salida)
         print(f"[PDF417] Código generado: {ruta_salida}")
     except Exception as e:
@@ -236,50 +266,42 @@ def generar_pdf_unificado(datos: dict) -> str:
     fol = datos["folio"]
     fecha_exp = datos["fecha_exp"]
     fecha_ven = datos["fecha_ven"]
-    
+
     zona_mexico = ZoneInfo("America/Mexico_City")
     ahora_cdmx = datetime.now(zona_mexico)
-    
+
     out = os.path.join(OUTPUT_DIR, f"{fol}.pdf")
-    
+
     try:
         # PÁGINA 1
         doc1 = fitz.open(PLANTILLA_PDF)
         pg1 = doc1[0]
-        
-        # Insertar datos básicos
+
         for campo in ["marca", "linea", "anio", "serie", "nombre", "color"]:
             if campo in coords_jalisco and campo in datos:
                 x, y, s, col = coords_jalisco[campo]
                 pg1.insert_text((x, y), datos.get(campo, ""), fontsize=s, color=col, fontname="hebo")
-        
-        # Fecha vencimiento
+
         pg1.insert_text(coords_jalisco["fecha_ven"][:2], fecha_ven.strftime("%d/%m/%Y"),
                        fontsize=coords_jalisco["fecha_ven"][2], color=coords_jalisco["fecha_ven"][3])
-        
-        # Folio principal
+
         pg1.insert_text((860, 364), fol, fontsize=14, color=(0, 0, 0), fontname="hebo")
-        
-        # Fecha actual
+
         fecha_actual_str = fecha_exp.strftime("%d/%m/%Y")
         pg1.insert_text((475, 830), fecha_actual_str, fontsize=32, color=(0, 0, 0), fontname="hebo")
-        
-        # Folio representativo
+
         fol_rep = obtener_folio_representativo()
         folio_grande = f"4A-DVM/{fol_rep}"
         pg1.insert_text((240, 830), folio_grande, fontsize=32, color=(0, 0, 0), fontname="hebo")
         pg1.insert_text((480, 182), folio_grande, fontsize=63, color=(0, 0, 0), fontname="hebo")
-        
-        # Folio chico con fecha y hora
+
         fecha_str = ahora_cdmx.strftime("%d/%m/%Y")
         hora_str = ahora_cdmx.strftime("%H:%M:%S")
         folio_chico = f"DVM-{fol_rep}   {fecha_str}  {hora_str}"
         pg1.insert_text((915, 760), folio_chico, fontsize=14, color=(0, 0, 0), fontname="hebo")
-        
-        # Código de barras simple
+
         pg1.insert_text((935, 600), f"*{fol}*", fontsize=30, color=(0, 0, 0), fontname="Courier")
-        
-        # Código PDF417
+
         contenido_ine = f"""FOLIO:  {fol}
 MARCA:  {datos.get('marca', '')}
 SUBMARCA:  {datos.get('linea', '')}
@@ -288,17 +310,16 @@ SERIE:  {datos.get('serie', '')}
 MOTOR:  {datos.get('motor', '')}
 COLOR:  {datos.get('color', '')}
 NOMBRE:  {datos.get('nombre', '')}"""
-        
+
         ine_img_path = os.path.join(OUTPUT_DIR, f"{fol}_inecode.png")
         generar_codigo_ine(contenido_ine, ine_img_path)
-        
+
         pg1.insert_image(fitz.Rect(932.65, 807, 1141.395, 852.127),
                         filename=ine_img_path, keep_proportion=False, overlay=True)
-        
+
         pg1.insert_text((915, 775), "EXPEDICION: VENTANILLA DIGITAL", fontsize=12, color=(0, 0, 0), fontname="hebo")
-        
-        # QR dinámico
-        img_qr, url_qr = generar_qr_dinamico(fol)
+
+        img_qr, _ = generar_qr_dinamico(fol)
         if img_qr:
             buf = BytesIO()
             img_qr.save(buf, format="PNG")
@@ -313,45 +334,43 @@ NOMBRE:  {datos.get('nombre', '')}"""
                 pixmap=qr_pix,
                 overlay=True
             )
-        
+
         # PÁGINA 2
         doc2 = fitz.open(PLANTILLA_BUENO)
         pg2 = doc2[0]
-        
+
         fecha_hora_str = fecha_exp.strftime("%d/%m/%Y %H:%M")
         pg2.insert_text((380, 195), fecha_hora_str, fontsize=10, fontname="helv", color=(0, 0, 0))
         pg2.insert_text((380, 290), datos['serie'], fontsize=10, fontname="helv", color=(0, 0, 0))
-        
-        # Folios página 2
+
         folios_pag2 = generar_folios_pagina2()
-        
+
         pg2.insert_text(coords_pagina2["referencia_pago"][:2], str(folios_pag2["referencia_pago"]),
                        fontsize=coords_pagina2["referencia_pago"][2], color=coords_pagina2["referencia_pago"][3])
-        
+
         pg2.insert_text(coords_pagina2["num_autorizacion"][:2], str(folios_pag2["num_autorizacion"]),
                        fontsize=coords_pagina2["num_autorizacion"][2], color=coords_pagina2["num_autorizacion"][3])
-        
+
         pg2.insert_text(coords_pagina2["total_pagado"][:2], f"${PRECIO_FIJO_PAGINA2}.00 MN",
                        fontsize=coords_pagina2["total_pagado"][2], color=coords_pagina2["total_pagado"][3])
-        
+
         pg2.insert_text(coords_pagina2["folio_seguimiento"][:2], folios_pag2["folio_seguimiento"],
                        fontsize=coords_pagina2["folio_seguimiento"][2], color=coords_pagina2["folio_seguimiento"][3])
-        
+
         pg2.insert_text(coords_pagina2["linea_captura"][:2], str(folios_pag2["linea_captura"]),
                        fontsize=coords_pagina2["linea_captura"][2], color=coords_pagina2["linea_captura"][3])
-        
-        # Unificar PDFs
+
         doc_final = fitz.open()
         doc_final.insert_pdf(doc1)
         doc_final.insert_pdf(doc2)
         doc_final.save(out)
-        
+
         doc_final.close()
         doc1.close()
         doc2.close()
-        
-        print(f"[PDF UNIFICADO] Generado: {out}")
-        
+
+        print(f"[PDF UNIFICADO] ✅ Generado: {out}")
+
     except Exception as e:
         print(f"[ERROR PDF] {e}")
         doc_fallback = fitz.open()
@@ -359,10 +378,10 @@ NOMBRE:  {datos.get('nombre', '')}"""
         page.insert_text((50, 50), f"ERROR - Folio: {fol}", fontsize=12)
         doc_fallback.save(out)
         doc_fallback.close()
-    
+
     return out
 
-# ============ RUTAS FLASK ============
+# ================== RUTAS FLASK ==================
 @app.route('/')
 def inicio():
     return redirect(url_for('login'))
@@ -372,7 +391,7 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        
+
         if username == 'Serg890105tm3' and password == 'Serg890105tm3':
             session['admin'] = True
             return redirect(url_for('admin'))
@@ -391,7 +410,7 @@ def login():
         flash('Usuario o contraseña incorrectos', 'error')
         return render_template('login.html')
     return render_template('login.html')
-    
+
 @app.route('/admin')
 def admin():
     if not session.get('admin'):
@@ -432,11 +451,11 @@ def registro_usuario():
         .select("*")\
         .eq("username", session['username'])\
         .execute()
-    
+
     if not user_data.data:
         flash("Usuario no encontrado.", "error")
         return redirect(url_for('login'))
-    
+
     usuario = user_data.data[0]
     folios_asignados = usuario['folios_asignac']
     folios_usados = usuario['folios_usados']
@@ -485,7 +504,15 @@ def registro_usuario():
                 return render_template('registro_usuario.html', folios_info=folios_info)
 
             folio_final = datos["folio"]
-            pdf_path = generar_pdf_unificado(datos)
+            pdf_path_local = generar_pdf_unificado(datos)
+
+            # ===== SUBIR A SUPABASE STORAGE Y GUARDAR pdf_path =====
+            storage_path = subir_pdf_a_supabase(pdf_path_local, folio_final, entidad="cdmx")
+            if storage_path:
+                supabase.table("folios_registrados")\
+                    .update({"pdf_path": storage_path})\
+                    .eq("folio", folio_final)\
+                    .execute()
 
             supabase.table("verificaciondigitalcdmx")\
                 .update({"folios_usados": folios_usados + 1})\
@@ -493,9 +520,9 @@ def registro_usuario():
                 .execute()
 
             flash(f'✅ Permiso generado. Folio: {folio_final}. Te quedan {folios_disponibles - 1} folios.', 'success')
-            return render_template('exitoso.html', 
-                                 folio=folio_final, 
-                                 serie=numero_serie, 
+            return render_template('exitoso.html',
+                                 folio=folio_final,
+                                 serie=numero_serie,
                                  fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M'))
 
         except Exception as e:
@@ -503,14 +530,13 @@ def registro_usuario():
             return render_template('registro_usuario.html', folios_info=folios_info)
 
     return render_template('registro_usuario.html', folios_info=folios_info)
-    
+
 @app.route('/mis_folios')
 def mis_folios():
     if 'username' not in session or not session['username']:
         flash("Sesión no válida. Inicia sesión de nuevo.", "error")
         return redirect(url_for('login'))
 
-    # Traer los folios generados por este usuario
     registros = supabase.table("folios_registrados")\
         .select("*")\
         .eq("username", session['username'])\
@@ -519,7 +545,6 @@ def mis_folios():
 
     hoy = datetime.now()
 
-    # Agregar estado VIGENTE / VENCIDO para mostrar bonito
     for r in registros:
         try:
             fv = datetime.fromisoformat(r["fecha_vencimiento"])
@@ -567,7 +592,15 @@ def registro_admin():
                 return redirect(url_for('registro_admin'))
 
             folio_final = datos["folio"]
-            pdf_path = generar_pdf_unificado(datos)
+            pdf_path_local = generar_pdf_unificado(datos)
+
+            # ===== SUBIR A SUPABASE STORAGE Y GUARDAR pdf_path =====
+            storage_path = subir_pdf_a_supabase(pdf_path_local, folio_final, entidad="cdmx")
+            if storage_path:
+                supabase.table("folios_registrados")\
+                    .update({"pdf_path": storage_path})\
+                    .eq("folio", folio_final)\
+                    .execute()
 
             flash('Permiso generado correctamente.', 'success')
             return render_template('exitoso.html',
@@ -614,20 +647,20 @@ def consulta_folio():
 @app.route('/consulta/<folio>')
 def consulta_folio_directo(folio):
     row = supabase.table("folios_registrados").select("*").eq("folio", folio).execute().data
-    
+
     if not row:
         return render_template("resultado_consulta.html", resultado={
             "estado": "NO SE ENCUENTRA REGISTRADO",
             "color": "rojo",
             "folio": folio
         })
-    
+
     r = row[0]
     fe = datetime.fromisoformat(r['fecha_expedicion'])
     fv = datetime.fromisoformat(r['fecha_vencimiento'])
     estado = "VIGENTE" if datetime.now() <= fv else "VENCIDO"
     color = "verde" if estado == "VIGENTE" else "cafe"
-    
+
     resultado = {
         "estado": estado,
         "color": color,
@@ -641,33 +674,33 @@ def consulta_folio_directo(folio):
         "numero_motor": r['numero_motor'],
         "entidad": r.get('entidad', 'cdmx')
     }
-    
+
     return render_template("resultado_consulta.html", resultado=resultado)
 
 @app.route('/admin_folios')
 def admin_folios():
     if not session.get('admin'):
         return redirect(url_for('login'))
-    
+
     filtro = request.args.get('filtro','').strip()
     criterio = request.args.get('criterio','folio')
     ordenar = request.args.get('ordenar','desc')
     estado_filtro = request.args.get('estado','todos')
     fecha_inicio = request.args.get('fecha_inicio','')
     fecha_fin = request.args.get('fecha_fin','')
-    
+
     query = supabase.table("folios_registrados").select("*")
-    
+
     if filtro:
         if criterio=="folio":
             query = query.ilike("folio",f"%{filtro}%")
         elif criterio=="numero_serie":
             query = query.ilike("numero_serie",f"%{filtro}%")
-    
+
     registros = query.execute().data or []
     hoy = datetime.now()
     filtrados=[]
-    
+
     for fol in registros:
         try:
             fe = datetime.fromisoformat(fol['fecha_expedicion'])
@@ -688,9 +721,9 @@ def admin_folios():
                 if fe>ff: continue
             except: pass
         filtrados.append(fol)
-    
+
     filtrados.sort(key=lambda x:x['fecha_expedicion'],reverse=(ordenar=='desc'))
-    
+
     return render_template('admin_folios.html',
         folios=filtrados,
         filtro=filtro,
@@ -750,16 +783,39 @@ def eliminar_folios_masivo():
 
 @app.route('/descargar_recibo/<folio>')
 def descargar_recibo(folio):
+    """
+    Como el bucket es PUBLICO:
+    - Busca pdf_path en la DB
+    - Si existe, redirige al URL publico del Storage
+    - Si no existe, intenta local (documentos/<folio>.pdf)
+    """
+    try:
+        row = supabase.table("folios_registrados")\
+            .select("pdf_path")\
+            .eq("folio", folio)\
+            .limit(1)\
+            .execute().data
+
+        if row and row[0].get("pdf_path"):
+            storage_path = row[0]["pdf_path"]
+            public_url = url_publica_pdf(storage_path)
+            if public_url:
+                return redirect(public_url)
+    except Exception as e:
+        print("[DESCARGA] Error DB/Storage:", e)
+
+    # fallback local
     ruta_pdf = f"documentos/{folio}.pdf"
     if not os.path.exists(ruta_pdf):
         abort(404)
+
     return send_file(
         ruta_pdf,
         as_attachment=True,
         download_name=f"{folio}_jalisco.pdf",
         mimetype='application/pdf'
     )
-    
+
 @app.route('/logout')
 def logout():
     session.clear()

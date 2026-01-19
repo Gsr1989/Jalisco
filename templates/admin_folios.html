@@ -1,93 +1,569 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Administrar Folios</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
-            padding: 20px;
+    <meta charset="utf-8">
+    <title>Secretaría de Transporte | Administrar Folios</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Administración de Folios - Secretaría de Transporte">
+    <meta name="author" content="Jalisco">
+
+    <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+    
+    <!-- Montserrat Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+
+    <style type="text/css">
+        /* ========== VARIABLES CSS ========== */
+        :root {
+            --bg: #fafafa;
+            --txt: #67737a;
+            --muted: #6e6b7b;
+            --verde-jalisco: #28a745;
+            --primary-card: #4a5568;
+            --vigente: #28c76f;
+            --vencido: #ea5455;
         }
+
+        /* ========== RESET ========== */
+        *, *:before, *:after {
+            box-sizing: border-box;
+        }
+
+        html {
+            font-family: sans-serif;
+            font-size: 14px;
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Montserrat", Helvetica, Arial, serif !important;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.45;
+            color: var(--muted);
+            background-color: var(--bg);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* ========== HEADER ========== */
+        .top-bar {
+            background-color: var(--verde-jalisco);
+            height: 8px;
+            width: 100%;
+        }
+
+        .header-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+            max-height: 250px;
+        }
+
+        @media (max-width: 767px) {
+            .header-image {
+                max-height: 150px;
+            }
+        }
+
+        /* ========== BOTÓN ACCESIBILIDAD ========== */
+        #float-button {
+            position: fixed;
+            bottom: 5%;
+            left: 5%;
+            z-index: 999;
+            border-radius: 100%;
+            height: 55px;
+            width: 55px;
+            padding: 0;
+            border: none;
+            background-color: #f6f6f6;
+            box-shadow: 0 .125rem .25rem rgba(34, 41, 47, .075);
+            cursor: pointer;
+        }
+
+        #float-button:hover {
+            transform: scale(1.05);
+        }
+
+        /* ========== CONTENEDOR ========== */
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
+            padding: 2rem 1rem;
         }
-        h1 { text-align: center; color: #333; }
+
+        .page-title {
+            text-align: center;
+            font: normal normal bold 40px/45px Montserrat;
+            color: var(--txt);
+            margin: 2rem 0 1rem;
+        }
+
+        @media (max-width: 767px) {
+            .page-title {
+                font-size: 28px;
+                line-height: 32px;
+            }
+        }
+
+        /* ========== FILTROS ========== */
+        .filters-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #4b4b4b;
+            margin-bottom: 0.5rem;
+            font-size: 13px;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 0.75rem;
+            border: 1px solid #d8d6de;
+            border-radius: 0.357rem;
+            font-family: inherit;
+            font-size: 0.95rem;
+            color: var(--muted);
+            background: white;
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: var(--verde-jalisco);
+            box-shadow: 0 0 0 3px rgba(40, 199, 111, 0.1);
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.357rem;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--verde-jalisco);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #24a643;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(40, 199, 111, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f6f6f6;
+            color: var(--txt);
+            border: 1px solid #e3e3e3;
+        }
+
+        .btn-secondary:hover {
+            background: #e3e3e3;
+        }
+
+        .btn-danger {
+            background: var(--vencido);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #d93030;
+        }
+
+        /* ========== TABLA ========== */
+        .table-wrapper {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
         }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
+
+        thead {
+            background: var(--primary-card);
         }
+
         th {
-            background: #800000;
+            padding: 1rem;
+            text-align: left;
             color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        tr:hover {
-            background: #f5f5f5;
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.95rem;
         }
-        .vigente { color: green; font-weight: bold; }
-        .vencido { color: red; font-weight: bold; }
-        a {
+
+        tbody tr {
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .estado-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
             display: inline-block;
-            margin-top: 20px;
-            color: #800000;
-            text-decoration: none;
         }
-        button {
-            padding: 8px 16px;
-            background: #800000;
-            color: white;
-            border: none;
-            border-radius: 5px;
+
+        .vigente {
+            background: rgba(40, 199, 111, 0.15);
+            color: var(--vigente);
+        }
+
+        .vencido {
+            background: rgba(234, 84, 85, 0.15);
+            color: var(--vencido);
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
+
+        /* ========== CHECKBOX ========== */
+        .checkbox-cell {
+            width: 50px;
+            text-align: center;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
             cursor: pointer;
         }
-        button:hover {
-            background: #a00000;
+
+        /* ========== STATS ========== */
+        .stats-bar {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        .stats-bar p {
+            margin: 0;
+            color: var(--txt);
+            font-size: 1rem;
+        }
+
+        /* ========== BACK LINK ========== */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            color: var(--txt);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--verde-jalisco);
+        }
+
+        /* ========== FOOTER ========== */
+        footer {
+            margin-top: auto;
+            width: 100%;
+        }
+
+        .footer-image {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 767px) {
+            .container {
+                padding: 1rem 0.5rem;
+            }
+
+            .filters-section {
+                padding: 1rem;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .filter-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.85rem;
+            }
+
+            .action-btns {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>📋 Administrar Folios</h1>
-        
-        <table>
-            <thead>
-                <tr>
-                    <th>Folio</th>
-                    <th>Marca</th>
-                    <th>Serie</th>
-                    <th>Expedición</th>
-                    <th>Vencimiento</th>
-                    <th>Estado</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for fol in folios %}
-                <tr>
-                    <td>{{ fol.folio }}</td>
-                    <td>{{ fol.marca }}</td>
-                    <td>{{ fol.numero_serie }}</td>
-                    <td>{{ fol.fecha_expedicion }}</td>
-                    <td>{{ fol.fecha_vencimiento }}</td>
-                    <td class="{{ 'vigente' if fol.estado == 'VIGENTE' else 'vencido' }}">
-                        {{ fol.estado }}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        
-        <a href="{{ url_for('admin') }}">← Volver al Panel</a>
-    </div>
+    <!-- Barra Verde Superior -->
+    <div class="top-bar"></div>
+
+    <!-- HEADER CON IMAGEN -->
+    <header>
+        <img src="{{ url_for('static', filename='assets/images/header.jpg') }}" 
+             alt="Secretaría de Transporte Jalisco" 
+             class="header-image">
+    </header>
+
+    <!-- Botón Accesibilidad -->
+    <button id="float-button" type="button" aria-label="Abrir Menu de Accesibilidad">
+        <img src="{{ url_for('static', filename='assets/images/ico_accesibilidad.svg') }}" 
+             alt="Accesibilidad">
+    </button>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main>
+        <div class="container">
+            <h1 class="page-title">📋 Administración de Folios</h1>
+
+            <!-- ESTADÍSTICAS -->
+            <div class="stats-bar">
+                <p><strong>Total de folios:</strong> {{ folios|length }}</p>
+            </div>
+
+            <!-- FILTROS -->
+            <div class="filters-section">
+                <form method="GET" action="{{ url_for('admin_folios') }}">
+                    <div class="filters-grid">
+                        <!-- Búsqueda -->
+                        <div class="filter-group">
+                            <label for="filtro">Buscar</label>
+                            <input type="text" 
+                                   id="filtro" 
+                                   name="filtro" 
+                                   placeholder="Folio o Serie" 
+                                   value="{{ filtro }}">
+                        </div>
+
+                        <!-- Criterio -->
+                        <div class="filter-group">
+                            <label for="criterio">Buscar por</label>
+                            <select id="criterio" name="criterio">
+                                <option value="folio" {% if criterio == 'folio' %}selected{% endif %}>Folio</option>
+                                <option value="numero_serie" {% if criterio == 'numero_serie' %}selected{% endif %}>Número de Serie</option>
+                            </select>
+                        </div>
+
+                        <!-- Ordenar -->
+                        <div class="filter-group">
+                            <label for="ordenar">Ordenar</label>
+                            <select id="ordenar" name="ordenar">
+                                <option value="desc" {% if ordenar == 'desc' %}selected{% endif %}>Más reciente</option>
+                                <option value="asc" {% if ordenar == 'asc' %}selected{% endif %}>Más antiguo</option>
+                            </select>
+                        </div>
+
+                        <!-- Estado -->
+                        <div class="filter-group">
+                            <label for="estado">Estado</label>
+                            <select id="estado" name="estado">
+                                <option value="todos" {% if estado == 'todos' %}selected{% endif %}>Todos</option>
+                                <option value="vigente" {% if estado == 'vigente' %}selected{% endif %}>Vigentes</option>
+                                <option value="vencido" {% if estado == 'vencido' %}selected{% endif %}>Vencidos</option>
+                            </select>
+                        </div>
+
+                        <!-- Fecha Inicio -->
+                        <div class="filter-group">
+                            <label for="fecha_inicio">Desde</label>
+                            <input type="date" 
+                                   id="fecha_inicio" 
+                                   name="fecha_inicio" 
+                                   value="{{ fecha_inicio }}">
+                        </div>
+
+                        <!-- Fecha Fin -->
+                        <div class="filter-group">
+                            <label for="fecha_fin">Hasta</label>
+                            <input type="date" 
+                                   id="fecha_fin" 
+                                   name="fecha_fin" 
+                                   value="{{ fecha_fin }}">
+                        </div>
+                    </div>
+
+                    <div class="filter-actions">
+                        <button type="submit" class="btn btn-primary">🔍 Buscar</button>
+                        <a href="{{ url_for('admin_folios') }}" class="btn btn-secondary">🔄 Limpiar</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- ACCIONES MASIVAS -->
+            <form method="POST" action="{{ url_for('eliminar_folios_masivo') }}" onsubmit="return confirm('¿Estás seguro de eliminar los folios seleccionados?');">
+                <div class="filter-actions" style="margin-bottom: 1.5rem;">
+                    <button type="submit" class="btn btn-danger">🗑️ Eliminar Seleccionados</button>
+                </div>
+
+                <!-- TABLA -->
+                <div class="table-wrapper">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="checkbox-cell">
+                                        <input type="checkbox" id="selectAll" onclick="toggleAll(this)">
+                                    </th>
+                                    <th>Folio</th>
+                                    <th>Marca</th>
+                                    <th>Línea</th>
+                                    <th>Serie</th>
+                                    <th>Expedición</th>
+                                    <th>Vencimiento</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if folios %}
+                                    {% for fol in folios %}
+                                    <tr>
+                                        <td class="checkbox-cell">
+                                            <input type="checkbox" name="folios" value="{{ fol.folio }}">
+                                        </td>
+                                        <td><strong>{{ fol.folio }}</strong></td>
+                                        <td>{{ fol.marca }}</td>
+                                        <td>{{ fol.linea }}</td>
+                                        <td>{{ fol.numero_serie }}</td>
+                                        <td>{{ fol.fecha_expedicion }}</td>
+                                        <td>{{ fol.fecha_vencimiento }}</td>
+                                        <td>
+                                            <span class="estado-badge {{ 'vigente' if fol.estado == 'VIGENTE' else 'vencido' }}">
+                                                {{ fol.estado }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="action-btns">
+                                                <a href="{{ url_for('editar_folio', folio=fol.folio) }}" 
+                                                   class="btn btn-sm btn-secondary">✏️ Editar</a>
+                                                <a href="{{ url_for('descargar_recibo', folio=fol.folio) }}" 
+                                                   class="btn btn-sm btn-primary">📥 PDF</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="9" style="text-align: center; padding: 3rem; color: var(--muted);">
+                                            <p style="font-size: 1.2rem; margin: 0;">No se encontraron folios</p>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </form>
+
+            <!-- VOLVER -->
+            <a href="{{ url_for('admin') }}" class="back-link">
+                <span>←</span>
+                <span>Volver al Panel</span>
+            </a>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <img src="{{ url_for('static', filename='assets/images/1000008793.png') }}" 
+             alt="Gobierno de Jalisco" 
+             class="footer-image">
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script>
+        // Seleccionar/deseleccionar todos los checkboxes
+        function toggleAll(source) {
+            const checkboxes = document.querySelectorAll('input[name="folios"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = source.checked;
+            });
+        }
+    </script>
 </body>
 </html>

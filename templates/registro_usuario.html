@@ -470,23 +470,14 @@
              class="footer-image">
     </footer>
 
+    <!-- ✅ JAVASCRIPT SIMPLE - SOLO BLOQUEO Y UX -->
     <script>
         let formularioEnviado = false;
-        let requestToken = null;
 
         const form = document.getElementById('formularioPermiso');
         const btnGenerar = document.getElementById('btnGenerar');
         const btnText = document.getElementById('btnText');
         const overlay = document.getElementById('processingOverlay');
-
-        function generarToken() {
-            return 'token_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        }
-
-        if (form) {
-            requestToken = generarToken();
-            console.log('[TOKEN] ✅ Token generado al cargar:', requestToken);
-        }
 
         function bloquearFormulario() {
             btnGenerar.disabled = true;
@@ -502,48 +493,21 @@
 
         if (form) {
             form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
                 if (formularioEnviado) {
-                    console.log('[SUBMIT] ⚠️ Formulario ya enviado, bloqueando reenvío');
+                    e.preventDefault();
                     alert('⚠️ El permiso ya se está generando. Por favor espera...');
                     return false;
                 }
 
-                console.log('[SUBMIT] 🚀 Preparando envío...');
-
-                let tokenInput = form.querySelector('input[name="request_token"]');
-                if (!tokenInput) {
-                    tokenInput = document.createElement('input');
-                    tokenInput.type = 'hidden';
-                    tokenInput.name = 'request_token';
-                    form.appendChild(tokenInput);
-                    console.log('[TOKEN] ✅ Campo hidden creado');
-                }
-                tokenInput.value = requestToken;
-                
-                console.log('[TOKEN] ✅ Token agregado:', requestToken);
-                
-                const formData = new FormData(form);
-                console.log('[FORM] 📋 Campos que se enviarán:');
-                for (let [key, value] of formData.entries()) {
-                    console.log(`  ✓ ${key}: ${value}`);
-                }
-
                 formularioEnviado = true;
                 bloquearFormulario();
-                
-                console.log('[SUBMIT] ✅ Enviando formulario ahora...');
-                
-                setTimeout(function() {
-                    form.submit();
-                }, 100);
+                return true;
             });
         }
 
+        // Rehabilitar si vuelven a la página
         window.addEventListener('pageshow', function(event) {
             if (event.persisted || formularioEnviado) {
-                requestToken = generarToken();
                 formularioEnviado = false;
                 
                 if (btnGenerar) {
@@ -562,8 +526,6 @@
                         el.disabled = false;
                     });
                 }
-                
-                console.log('[TOKEN] 🔄 Página recargada, nuevo token:', requestToken);
             }
         });
     </script>

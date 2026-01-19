@@ -16,7 +16,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
 
     <style type="text/css">
-        /* ========== VARIABLES CSS ========== */
         :root {
             --bg: #fafafa;
             --txt: #67737a;
@@ -24,7 +23,6 @@
             --verde-jalisco: #28a745;
         }
 
-        /* ========== RESET ========== */
         *, *:before, *:after { box-sizing: border-box; }
 
         html { font-family: sans-serif; font-size: 14px; height: 100%; }
@@ -46,7 +44,6 @@
 
         img { max-width: 100%; height: auto; }
 
-        /* ========== HEADER ========== */
         .top-bar { background-color: var(--verde-jalisco); height: 8px; width: 100%; }
 
         .header-image {
@@ -61,7 +58,6 @@
             .header-image { max-height: 150px; }
         }
 
-        /* ========== BOTON ACCESIBILIDAD ========== */
         #float-button {
             position: fixed;
             bottom: 5%;
@@ -77,7 +73,6 @@
             cursor: pointer;
         }
 
-        /* ========== CONTENEDOR ========== */
         .container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
 
         .page-title {
@@ -98,7 +93,6 @@
             .page-title { font-size: 28px; line-height: 32px; }
         }
 
-        /* ========== TARJETA FORMULARIO ========== */
         .form-card {
             background: white;
             padding: 2.5rem;
@@ -108,7 +102,6 @@
 
         @media (max-width: 767px) { .form-card { padding: 1.5rem; } }
 
-        /* ========== FORMULARIO ========== */
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -145,7 +138,6 @@
             box-shadow: 0 0 0 3px rgba(40, 199, 111, 0.1);
         }
 
-        /* ========== BOTONES ========== */
         .btn {
             width: 100%;
             padding: 0.786rem 1.5rem;
@@ -193,7 +185,6 @@
 
         @keyframes spinner { to { transform: rotate(360deg); } }
 
-        /* ========== FLASH MESSAGES ========== */
         .flash-messages { margin-bottom: 1.5rem; }
 
         .alert {
@@ -206,11 +197,9 @@
             font-weight: 600;
         }
 
-        /* ✅ backend manda category 'error'/'success' */
         .alert-error { color: #ea5455; background-color: rgba(234, 84, 85, 0.12); border-color: rgba(234, 84, 85, 0.3); }
         .alert-success { color: #28c76f; background-color: rgba(40, 199, 111, 0.12); border-color: rgba(40, 199, 111, 0.3); }
 
-        /* ========== BACK LINK ========== */
         .back-link {
             display: inline-flex;
             align-items: center;
@@ -224,10 +213,8 @@
 
         .back-link:hover { color: var(--verde-jalisco); }
 
-        /* ========== HINTS ========== */
         .hint-text { font-size: 13px; color: #b9b9c3; margin-top: 0.5rem; }
 
-        /* ========== SECCIONES ========== */
         .section-title {
             font-weight: 700;
             color: var(--txt);
@@ -237,7 +224,6 @@
             border-bottom: 2px solid var(--verde-jalisco);
         }
 
-        /* ========== OVERLAY PROCESANDO ========== */
         .processing-overlay {
             display: none;
             position: fixed;
@@ -276,7 +262,6 @@
         .processing-content h3 { color: var(--txt); margin-bottom: 1rem; }
         .processing-content p { color: var(--muted); font-size: 0.95rem; }
 
-        /* ========== FOOTER ========== */
         footer { margin-top: auto; width: 100%; }
         .footer-image { width: 100%; height: auto; display: block; }
     </style>
@@ -324,7 +309,6 @@
                 {% endwith %}
 
                 <form method="POST" action="{{ url_for('registro_admin') }}" id="formularioPermiso" autocomplete="off">
-                    <!-- ✅ FIX: tu backend lee 'vigencia' del form (default 30 si no viene). La dejamos fija. -->
                     <input type="hidden" name="vigencia" value="30">
 
                     <div class="form-group form-group-full">
@@ -407,18 +391,13 @@
         const btnText = document.getElementById('btnText');
         const overlay = document.getElementById('processingOverlay');
 
-        function bloquearFormulario() {
-            if (!form || !btnGenerar || !btnText || !overlay) return;
+        function bloquearBoton() {
+            if (!btnGenerar || !btnText || !overlay) return;
 
             btnGenerar.disabled = true;
             btnGenerar.classList.add('btn-loading');
             btnText.textContent = '⏳ Generando...';
             overlay.classList.add('active');
-
-            const elements = form.querySelectorAll('input, textarea, select, button');
-            elements.forEach(el => {
-                if (el !== btnGenerar) el.disabled = true;
-            });
         }
 
         if (form) {
@@ -430,7 +409,7 @@
                 }
 
                 formularioEnviado = true;
-                bloquearFormulario();
+                bloquearBoton();
                 return true;
             });
         }
@@ -446,11 +425,6 @@
                 }
 
                 if (overlay) overlay.classList.remove('active');
-
-                if (form) {
-                    const elements = form.querySelectorAll('input, textarea, select, button');
-                    elements.forEach(el => { el.disabled = false; });
-                }
             }
         });
     </script>

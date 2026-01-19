@@ -9,7 +9,7 @@
     <meta name="author" content="Jalisco">
 
     <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
-    
+
     <!-- Montserrat Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,15 +25,9 @@
         }
 
         /* ========== RESET ========== */
-        *, *:before, *:after {
-            box-sizing: border-box;
-        }
+        *, *:before, *:after { box-sizing: border-box; }
 
-        html {
-            font-family: sans-serif;
-            font-size: 14px;
-            height: 100%;
-        }
+        html { font-family: sans-serif; font-size: 14px; height: 100%; }
 
         body {
             margin: 0;
@@ -48,21 +42,12 @@
             min-height: 100vh;
         }
 
-        main {
-            flex: 1;
-        }
+        main { flex: 1; }
 
-        img {
-            max-width: 100%;
-            height: auto;
-        }
+        img { max-width: 100%; height: auto; }
 
         /* ========== HEADER ========== */
-        .top-bar {
-            background-color: var(--verde-jalisco);
-            height: 8px;
-            width: 100%;
-        }
+        .top-bar { background-color: var(--verde-jalisco); height: 8px; width: 100%; }
 
         .header-image {
             width: 100%;
@@ -73,12 +58,10 @@
         }
 
         @media (max-width: 767px) {
-            .header-image {
-                max-height: 150px;
-            }
+            .header-image { max-height: 150px; }
         }
 
-        /* ========== BOTÓN ACCESIBILIDAD ========== */
+        /* ========== BOTON ACCESIBILIDAD ========== */
         #float-button {
             position: fixed;
             bottom: 5%;
@@ -95,11 +78,7 @@
         }
 
         /* ========== CONTENEDOR ========== */
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 2rem 1rem;
-        }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
 
         .page-title {
             text-align: center;
@@ -116,10 +95,7 @@
         }
 
         @media (max-width: 767px) {
-            .page-title {
-                font-size: 28px;
-                line-height: 32px;
-            }
+            .page-title { font-size: 28px; line-height: 32px; }
         }
 
         /* ========== TARJETA FORMULARIO ========== */
@@ -130,11 +106,7 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
-        @media (max-width: 767px) {
-            .form-card {
-                padding: 1.5rem;
-            }
-        }
+        @media (max-width: 767px) { .form-card { padding: 1.5rem; } }
 
         /* ========== FORMULARIO ========== */
         .form-grid {
@@ -143,13 +115,8 @@
             gap: 1.5rem;
         }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group-full {
-            grid-column: 1 / -1;
-        }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group-full { grid-column: 1 / -1; }
 
         label {
             display: block;
@@ -159,8 +126,7 @@
             font-size: 14px;
         }
 
-        input[type="text"],
-        input[type="number"] {
+        input[type="text"], input[type="number"] {
             width: 100%;
             padding: 0.786rem 1rem;
             border: 1px solid #d8d6de;
@@ -174,8 +140,7 @@
             text-transform: uppercase;
         }
 
-        input[type="text"]:focus,
-        input[type="number"]:focus {
+        input[type="text"]:focus, input[type="number"]:focus {
             border-color: var(--verde-jalisco);
             box-shadow: 0 0 0 3px rgba(40, 199, 111, 0.1);
         }
@@ -194,10 +159,7 @@
             position: relative;
         }
 
-        .btn-primary {
-            background: var(--verde-jalisco);
-            color: white;
-        }
+        .btn-primary { background: var(--verde-jalisco); color: white; }
 
         .btn-primary:hover:not(:disabled) {
             background: #24a643;
@@ -212,9 +174,7 @@
             opacity: 0.7;
         }
 
-        .btn-loading {
-            pointer-events: none;
-        }
+        .btn-loading { pointer-events: none; }
 
         .btn-loading::after {
             content: "";
@@ -231,14 +191,10 @@
             animation: spinner 0.6s linear infinite;
         }
 
-        @keyframes spinner {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spinner { to { transform: rotate(360deg); } }
 
         /* ========== FLASH MESSAGES ========== */
-        .flash-messages {
-            margin-bottom: 1.5rem;
-        }
+        .flash-messages { margin-bottom: 1.5rem; }
 
         .alert {
             padding: 0.75rem 1rem;
@@ -250,17 +206,9 @@
             font-weight: 600;
         }
 
-        .alert-error {
-            color: #ea5455;
-            background-color: rgba(234, 84, 85, 0.12);
-            border-color: rgba(234, 84, 85, 0.3);
-        }
-
-        .alert-success {
-            color: #28c76f;
-            background-color: rgba(40, 199, 111, 0.12);
-            border-color: rgba(40, 199, 111, 0.3);
-        }
+        /* ✅ backend manda category 'error'/'success' */
+        .alert-error { color: #ea5455; background-color: rgba(234, 84, 85, 0.12); border-color: rgba(234, 84, 85, 0.3); }
+        .alert-success { color: #28c76f; background-color: rgba(40, 199, 111, 0.12); border-color: rgba(40, 199, 111, 0.3); }
 
         /* ========== BACK LINK ========== */
         .back-link {
@@ -274,16 +222,10 @@
             transition: color 0.2s;
         }
 
-        .back-link:hover {
-            color: var(--verde-jalisco);
-        }
+        .back-link:hover { color: var(--verde-jalisco); }
 
         /* ========== HINTS ========== */
-        .hint-text {
-            font-size: 13px;
-            color: #b9b9c3;
-            margin-top: 0.5rem;
-        }
+        .hint-text { font-size: 13px; color: #b9b9c3; margin-top: 0.5rem; }
 
         /* ========== SECCIONES ========== */
         .section-title {
@@ -309,9 +251,7 @@
             align-items: center;
         }
 
-        .processing-overlay.active {
-            display: flex;
-        }
+        .processing-overlay.active { display: flex; }
 
         .processing-content {
             background: white;
@@ -331,52 +271,31 @@
             margin: 0 auto 2rem;
         }
 
-        @keyframes spinner2 {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spinner2 { to { transform: rotate(360deg); } }
 
-        .processing-content h3 {
-            color: var(--txt);
-            margin-bottom: 1rem;
-        }
-
-        .processing-content p {
-            color: var(--muted);
-            font-size: 0.95rem;
-        }
+        .processing-content h3 { color: var(--txt); margin-bottom: 1rem; }
+        .processing-content p { color: var(--muted); font-size: 0.95rem; }
 
         /* ========== FOOTER ========== */
-        footer {
-            margin-top: auto;
-            width: 100%;
-        }
-
-        .footer-image {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
+        footer { margin-top: auto; width: 100%; }
+        .footer-image { width: 100%; height: auto; display: block; }
     </style>
 </head>
 
 <body>
-    <!-- Barra Verde Superior -->
     <div class="top-bar"></div>
 
-    <!-- HEADER CON IMAGEN -->
     <header>
-        <img src="{{ url_for('static', filename='assets/images/header.jpg') }}" 
-             alt="Secretaría de Transporte Jalisco" 
+        <img src="{{ url_for('static', filename='assets/images/header.jpg') }}"
+             alt="Secretaría de Transporte Jalisco"
              class="header-image">
     </header>
 
-    <!-- Botón Accesibilidad -->
     <button id="float-button" type="button" aria-label="Abrir Menu de Accesibilidad">
-        <img src="{{ url_for('static', filename='assets/images/ico_accesibilidad.svg') }}" 
+        <img src="{{ url_for('static', filename='assets/images/ico_accesibilidad.svg') }}"
              alt="Accesibilidad">
     </button>
 
-    <!-- OVERLAY PROCESANDO -->
     <div class="processing-overlay" id="processingOverlay">
         <div class="processing-content">
             <div class="processing-spinner"></div>
@@ -386,14 +305,12 @@
         </div>
     </div>
 
-    <!-- CONTENIDO PRINCIPAL -->
     <main>
         <div class="container">
             <h1 class="page-title">📄 Generar Permiso</h1>
             <p class="page-subtitle">Administrador - Sin límite de folios</p>
 
             <div class="form-card">
-                <!-- Flash Messages -->
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
                         <div class="flash-messages">
@@ -406,100 +323,63 @@
                     {% endif %}
                 {% endwith %}
 
-                <!-- Formulario -->
-                <form method="POST" action="{{ url_for('registro_admin') }}" id="formularioPermiso">
-                    
-                    <!-- Folio (opcional) -->
+                <form method="POST" action="{{ url_for('registro_admin') }}" id="formularioPermiso" autocomplete="off">
+                    <!-- ✅ FIX: tu backend lee 'vigencia' del form (default 30 si no viene). La dejamos fija. -->
+                    <input type="hidden" name="vigencia" value="30">
+
                     <div class="form-group form-group-full">
                         <label for="folio">Folio (Opcional)</label>
-                        <input type="text" 
-                               id="folio" 
-                               name="folio" 
+                        <input type="text"
+                               id="folio"
+                               name="folio"
                                placeholder="Deja vacío para generar automáticamente"
                                maxlength="9"
+                               inputmode="numeric"
                                pattern="[0-9]{9}">
                         <p class="hint-text">Si lo dejas vacío, se generará automáticamente</p>
                     </div>
 
                     <h3 class="section-title">🚗 Datos del Vehículo</h3>
-                    
+
                     <div class="form-grid">
-                        <!-- Marca -->
                         <div class="form-group">
                             <label for="marca">Marca *</label>
-                            <input type="text" 
-                                   id="marca" 
-                                   name="marca" 
-                                   placeholder="Ej: NISSAN"
-                                   required>
+                            <input type="text" id="marca" name="marca" placeholder="Ej: NISSAN" required>
                         </div>
 
-                        <!-- Línea -->
                         <div class="form-group">
                             <label for="linea">Línea / Submarca *</label>
-                            <input type="text" 
-                                   id="linea" 
-                                   name="linea" 
-                                   placeholder="Ej: VERSA"
-                                   required>
+                            <input type="text" id="linea" name="linea" placeholder="Ej: VERSA" required>
                         </div>
 
-                        <!-- Año -->
                         <div class="form-group">
                             <label for="anio">Año *</label>
-                            <input type="number" 
-                                   id="anio" 
-                                   name="anio" 
-                                   placeholder="Ej: 2020"
-                                   min="1900"
-                                   max="2030"
-                                   required>
+                            <input type="number" id="anio" name="anio" placeholder="Ej: 2020" min="1900" max="2030" required>
                         </div>
 
-                        <!-- Color -->
                         <div class="form-group">
                             <label for="color">Color *</label>
-                            <input type="text" 
-                                   id="color" 
-                                   name="color" 
-                                   placeholder="Ej: BLANCO"
-                                   required>
+                            <input type="text" id="color" name="color" placeholder="Ej: BLANCO" required>
                         </div>
 
-                        <!-- Serie -->
                         <div class="form-group">
                             <label for="serie">Número de Serie *</label>
-                            <input type="text" 
-                                   id="serie" 
-                                   name="serie" 
-                                   placeholder="No. de Serie (VIN)"
-                                   required>
+                            <input type="text" id="serie" name="serie" placeholder="No. de Serie (VIN)" required>
                         </div>
 
-                        <!-- Motor -->
                         <div class="form-group">
                             <label for="motor">Número de Motor *</label>
-                            <input type="text" 
-                                   id="motor" 
-                                   name="motor" 
-                                   placeholder="No. de Motor"
-                                   required>
+                            <input type="text" id="motor" name="motor" placeholder="No. de Motor" required>
                         </div>
                     </div>
 
                     <h3 class="section-title">👤 Datos del Propietario</h3>
 
-                    <!-- Nombre -->
                     <div class="form-group form-group-full">
                         <label for="nombre">Nombre Completo del Propietario *</label>
-                        <input type="text" 
-                               id="nombre" 
-                               name="nombre" 
-                               placeholder="Nombre completo"
-                               required>
+                        <input type="text" id="nombre" name="nombre" placeholder="Nombre completo" required>
                     </div>
 
-                    <!-- Botón Submit -->
                     <button type="submit" class="btn btn-primary" id="btnGenerar">
                         <span id="btnText">✅ Generar Permiso</span>
                     </button>
@@ -513,14 +393,12 @@
         </div>
     </main>
 
-    <!-- FOOTER -->
     <footer>
-        <img src="{{ url_for('static', filename='assets/images/1000008793.png') }}" 
-             alt="Gobierno de Jalisco" 
+        <img src="{{ url_for('static', filename='assets/images/1000008793.png') }}"
+             alt="Gobierno de Jalisco"
              class="footer-image">
     </footer>
 
-    <!-- ✅ JAVASCRIPT SIMPLE - SOLO BLOQUEO Y UX -->
     <script>
         let formularioEnviado = false;
 
@@ -530,6 +408,8 @@
         const overlay = document.getElementById('processingOverlay');
 
         function bloquearFormulario() {
+            if (!form || !btnGenerar || !btnText || !overlay) return;
+
             btnGenerar.disabled = true;
             btnGenerar.classList.add('btn-loading');
             btnText.textContent = '⏳ Generando...';
@@ -555,26 +435,21 @@
             });
         }
 
-        // Rehabilitar si vuelven a la página
         window.addEventListener('pageshow', function(event) {
             if (event.persisted || formularioEnviado) {
                 formularioEnviado = false;
-                
-                if (btnGenerar) {
+
+                if (btnGenerar && btnText) {
                     btnGenerar.disabled = false;
                     btnGenerar.classList.remove('btn-loading');
                     btnText.textContent = '✅ Generar Permiso';
                 }
-                
-                if (overlay) {
-                    overlay.classList.remove('active');
-                }
-                
+
+                if (overlay) overlay.classList.remove('active');
+
                 if (form) {
                     const elements = form.querySelectorAll('input, textarea, select, button');
-                    elements.forEach(el => {
-                        el.disabled = false;
-                    });
+                    elements.forEach(el => { el.disabled = false; });
                 }
             }
         });

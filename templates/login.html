@@ -49,13 +49,77 @@
             background-color: #fff;
             padding: 1rem 2rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header a.logo-link {
+            display: inline-block;
         }
 
         header img {
             height: 80px;
+            transition: transform 0.2s;
+        }
+
+        header img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Navigation Menu */
+        nav {
+            background-color: var(--color-dep);
+            padding: 0;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        .nav-menu {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 0;
+        }
+
+        .nav-menu li {
+            position: relative;
+        }
+
+        .nav-menu a {
+            display: block;
+            padding: 1rem 1.5rem;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: background-color 0.2s;
+        }
+
+        .nav-menu a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--color-dep);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
         }
 
         /* Main Container */
@@ -114,6 +178,26 @@
             font-size: 1.125rem;
             color: #67737a;
             line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .title-section .info-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .title-section .info-links a {
+            color: var(--color-dep);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .title-section .info-links a:hover {
+            text-decoration: underline;
         }
 
         /* Form Container */
@@ -192,6 +276,56 @@
             background-color: #fff;
         }
 
+        .footer-links {
+            background-color: #f5f5f5;
+            padding: 2rem 0;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .footer-section h3 {
+            color: var(--color-dep);
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 0 0 1rem 0;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: #67737a;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .footer-section a:hover {
+            color: var(--color-dep);
+            text-decoration: underline;
+        }
+
         footer img {
             width: 100%;
             display: block;
@@ -219,8 +353,35 @@
                 font-size: 2rem;
             }
 
+            .title-section .info-links {
+                justify-content: center;
+            }
+
             header img {
                 height: 60px;
+            }
+
+            .nav-menu {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: var(--color-dep);
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            nav {
+                position: relative;
             }
         }
 
@@ -239,6 +400,10 @@
 
             .title-section p {
                 font-size: 1rem;
+            }
+
+            .footer-content {
+                flex-direction: column;
             }
         }
 
@@ -285,8 +450,25 @@
     </div>
 
     <header>
-        <img src="{{ url_for('static', filename='logotipo.png') }}" alt="Logo Gobierno de Jalisco">
+        <div class="header-content">
+            <a href="https://www.jalisco.gob.mx" class="logo-link" target="_blank" rel="noopener">
+                <img src="{{ url_for('static', filename='logotipo.png') }}" alt="Logo Gobierno de Jalisco">
+            </a>
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">☰</button>
+        </div>
     </header>
+
+    <nav>
+        <div class="nav-container">
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="https://www.jalisco.gob.mx/es/gobierno/dependencias/movilidad" target="_blank" rel="noopener">Inicio</a></li>
+                <li><a href="https://tramites.jalisco.gob.mx" target="_blank" rel="noopener">Trámites</a></li>
+                <li><a href="https://www.jalisco.gob.mx/es/gobierno/dependencias/movilidad/servicios" target="_blank" rel="noopener">Servicios</a></li>
+                <li><a href="https://www.jalisco.gob.mx/es/transparencia" target="_blank" rel="noopener">Transparencia</a></li>
+                <li><a href="https://www.jalisco.gob.mx/es/contacto" target="_blank" rel="noopener">Contacto</a></li>
+            </ul>
+        </div>
+    </nav>
 
     <main>
         <div class="container">
@@ -294,6 +476,14 @@
                 <div class="col col-lg-6 title-section">
                     <h1>Sistema de Validación Vehicular</h1>
                     <p>Accede al sistema oficial de la Secretaría de Movilidad para la gestión y validación de permisos vehiculares del Estado de Jalisco.</p>
+                    <div class="info-links">
+                        <a href="https://www.jalisco.gob.mx/es/gobierno/dependencias/movilidad" target="_blank" rel="noopener">
+                            <span>📋</span> Información de trámites
+                        </a>
+                        <a href="https://tramites.jalisco.gob.mx" target="_blank" rel="noopener">
+                            <span>🔍</span> Consulta tu folio
+                        </a>
+                    </div>
                 </div>
                 <div class="col col-lg-6">
                     <div class="form-container">
@@ -317,12 +507,54 @@
     </main>
 
     <footer>
+        <div class="footer-links">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Secretaría de Movilidad</h3>
+                    <ul>
+                        <li><a href="https://www.jalisco.gob.mx/es/gobierno/dependencias/movilidad/acerca" target="_blank" rel="noopener">Acerca de</a></li>
+                        <li><a href="https://www.jalisco.gob.mx/es/gobierno/dependencias/movilidad/estructura" target="_blank" rel="noopener">Estructura</a></li>
+                        <li><a href="https://www.jalisco.gob.mx/es/gobierno/dependencias/movilidad/directorio" target="_blank" rel="noopener">Directorio</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Trámites y Servicios</h3>
+                    <ul>
+                        <li><a href="https://tramites.jalisco.gob.mx" target="_blank" rel="noopener">Licencias</a></li>
+                        <li><a href="https://tramites.jalisco.gob.mx" target="_blank" rel="noopener">Placas</a></li>
+                        <li><a href="https://tramites.jalisco.gob.mx" target="_blank" rel="noopener">Verificación</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Atención Ciudadana</h3>
+                    <ul>
+                        <li><a href="https://www.jalisco.gob.mx/es/contacto" target="_blank" rel="noopener">Contacto</a></li>
+                        <li><a href="https://www.jalisco.gob.mx/es/preguntas-frecuentes" target="_blank" rel="noopener">Preguntas frecuentes</a></li>
+                        <li><a href="tel:33-3030-3000">Tel: 33 3030 3000</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Información Legal</h3>
+                    <ul>
+                        <li><a href="https://www.jalisco.gob.mx/es/transparencia" target="_blank" rel="noopener">Transparencia</a></li>
+                        <li><a href="https://www.jalisco.gob.mx/es/gobierno/aviso-privacidad" target="_blank" rel="noopener">Aviso de privacidad</a></li>
+                        <li><a href="https://www.jalisco.gob.mx/es/gobierno/terminos-condiciones" target="_blank" rel="noopener">Términos y condiciones</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
         <img src="{{ url_for('static', filename='footer.png') }}" alt="Footer Gobierno de Jalisco">
     </footer>
 
     <script>
+        // Loading overlay
         document.getElementById('loginForm').addEventListener('submit', function() {
             document.getElementById('loadingOverlay').classList.add('active');
+        });
+
+        // Mobile menu toggle
+        document.getElementById('mobileMenuToggle').addEventListener('click', function() {
+            document.getElementById('navMenu').classList.toggle('active');
         });
     </script>
 </body>

@@ -138,6 +138,7 @@ LIMITE_MAXIMO = 999999999
 
 def generar_folio_automatico_jalisco():
     try:
+        # ✅ FILTRAR SOLO FOLIOS DE JALISCO (9 dígitos >= 900000000)
         resp = supabase.table("folios_registrados")\
             .select("folio")\
             .eq("entidad", ENTIDAD)\
@@ -147,16 +148,29 @@ def generar_folio_automatico_jalisco():
             .limit(1)\
             .execute()
 
-        if resp.data:
+        if resp.data and len(resp.data) > 0:
             ultimo = int(resp.data[0]["folio"])
-            siguiente = ultimo + 1
-            logger.info(f"[FOLIO] Ultimo={ultimo} siguiente={siguiente}")
+            # ✅ VALIDAR QUE EL ÚLTIMO ESTÉ EN RANGO
+            if ultimo >= PREFIJO_JALISCO and ultimo <= LIMITE_MAXIMO:
+                siguiente = ultimo + 1
+                logger.info(f"[FOLIO] Ultimo={ultimo} siguiente={siguiente}")
+            else:
+                # Si está fuera de rango, empezar desde el inicio
+                siguiente = PREFIJO_JALISCO
+                logger.warning(f"[FOLIO] Ultimo folio {ultimo} fuera de rango, reiniciando desde {siguiente}")
         else:
             siguiente = PREFIJO_JALISCO
-            logger.info(f"[FOLIO] Sin folios, inicio={siguiente}")
+            logger.info(f"[FOLIO] Sin folios de Jalisco, inicio={siguiente}")
+
+        # ✅ VALIDAR QUE EL SIGUIENTE ESTÉ EN RANGO
+        if siguiente < PREFIJO_JALISCO or siguiente > LIMITE_MAXIMO:
+            logger.error(f"[FOLIO] Siguiente {siguiente} fuera de rango, usando inicio")
+            siguiente = PREFIJO_JALISCO
 
         for intento in range(100000):
             folio_candidato = siguiente + intento
+            
+            # ✅ VALIDAR LÍMITE
             if folio_candidato > LIMITE_MAXIMO:
                 raise Exception(f"Límite alcanzado ({LIMITE_MAXIMO})")
 

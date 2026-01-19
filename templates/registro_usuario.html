@@ -209,6 +209,7 @@
             text-align: center;
             font-weight: 600;
         }
+        /* ✅ FIX: tus flash usan category 'error'/'success' (no 'alert-error') */
         .alert-error { color: #ea5455; background-color: rgba(234, 84, 85, 0.12); border-color: rgba(234, 84, 85, 0.3); }
         .alert-success { color: #28c76f; background-color: rgba(40, 199, 111, 0.12); border-color: rgba(40, 199, 111, 0.3); }
 
@@ -323,6 +324,7 @@
                 {% if messages %}
                     <div class="flash-messages">
                         {% for category, message in messages %}
+                            <!-- ✅ FIX: category es 'error' o 'success' en tu backend -->
                             <div class="alert alert-{{ category }}">
                                 {{ message }}
                             </div>
@@ -352,8 +354,15 @@
                     </div>
                 </div>
 
-                {% set porcentaje = (folios_info.folios_usados * 100 / folios_info.folios_asignac) | round | int %}
-                {% set restantes = folios_info.folios_asignac - folios_info.folios_usados %}
+                {# ✅ FIX: evitar división entre 0 por si acaso #}
+                {% set total = folios_info.folios_asignac | int %}
+                {% set usados = folios_info.folios_usados | int %}
+                {% set restantes = total - usados %}
+                {% if total > 0 %}
+                    {% set porcentaje = (usados * 100 / total) | round | int %}
+                {% else %}
+                    {% set porcentaje = 0 %}
+                {% endif %}
 
                 <div class="progress-container">
                     <div class="progress-bar {% if porcentaje >= 90 %}danger{% elif porcentaje >= 70 %}warning{% endif %}"
@@ -387,9 +396,9 @@
 
             {% if folios_info and (folios_info.folios_asignac - folios_info.folios_usados) > 0 %}
             <div class="form-card">
-                <form method="POST" action="{{ url_for('registro_usuario') }}" id="formularioPermiso">
-                    <input type="hidden" name="entidad" value="cdmx">
-                    <input type="hidden" name="telefono" value="0">
+                <form method="POST" action="{{ url_for('registro_usuario') }}" id="formularioPermiso" autocomplete="off">
+                    {# ✅ FIX: en tu backend NO usas entidad/telefono y vigencia la lees del form (default 30).
+                       Mantengo vigencia como hidden, pero la dejo editable si luego agregas select. #}
                     <input type="hidden" name="vigencia" value="30">
 
                     <div class="form-group form-group-full">
@@ -399,6 +408,7 @@
                                name="folio"
                                placeholder="Deja vacío para generar automáticamente"
                                maxlength="9"
+                               inputmode="numeric"
                                pattern="[0-9]{9}">
                         <p class="hint-text">Si lo dejas vacío, se generará automáticamente</p>
                     </div>
@@ -457,7 +467,8 @@
             {% endif %}
 
             <div class="actions">
-                <a href="{{ url_for('mis_folios') }}" class="btn-action">📋 Ver Mis Folios</a>
+                {# ✅ FIX: tu ruta en Python se llama /mis_permisos, NO mis_folios #}
+                <a href="{{ url_for('mis_permisos') }}" class="btn-action">📋 Ver Mis Permisos</a>
                 <a href="{{ url_for('consulta_folio') }}" class="btn-action">🔍 Consultar Folio</a>
                 <a href="{{ url_for('logout') }}" class="btn-action">🚪 Cerrar Sesión</a>
             </div>
@@ -480,6 +491,8 @@
         const overlay = document.getElementById('processingOverlay');
 
         function bloquearFormulario() {
+            if (!btnGenerar || !btnText || !overlay || !form) return;
+
             btnGenerar.disabled = true;
             btnGenerar.classList.add('btn-loading');
             btnText.textContent = '⏳ Generando...';
@@ -505,21 +518,21 @@
             });
         }
 
-        // Rehabilitar si vuelven a la página
+        // Rehabilitar si vuelven a la página (back/forward cache)
         window.addEventListener('pageshow', function(event) {
             if (event.persisted || formularioEnviado) {
                 formularioEnviado = false;
-                
-                if (btnGenerar) {
+
+                if (btnGenerar && btnText) {
                     btnGenerar.disabled = false;
                     btnGenerar.classList.remove('btn-loading');
                     btnText.textContent = '🚗 Generar Permiso';
                 }
-                
+
                 if (overlay) {
                     overlay.classList.remove('active');
                 }
-                
+
                 if (form) {
                     const elements = form.querySelectorAll('input, textarea, select, button');
                     elements.forEach(el => {
@@ -530,4 +543,4 @@
         });
     </script>
 </body>
-</html>
+                </html>

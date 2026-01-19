@@ -1,91 +1,445 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Resultado de Consulta</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
+    <meta charset="utf-8">
+    <title>Secretaría de Transporte | Resultado de Consulta</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Resultado de Consulta - Secretaría de Transporte">
+    <meta name="author" content="Jalisco">
+
+    <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+    
+    <!-- Montserrat Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+
+    <style type="text/css">
+        /* ========== VARIABLES CSS ========== */
+        :root {
+            --bg: #fafafa;
+            --txt: #67737a;
+            --muted: #6e6b7b;
+            --verde-jalisco: #28a745;
+            --vigente: #28c76f;
+            --vencido: #ea5455;
+            --no-registrado: #ea5455;
+        }
+
+        /* ========== RESET ========== */
+        *, *:before, *:after {
+            box-sizing: border-box;
+        }
+
+        html {
+            font-family: sans-serif;
+            font-size: 14px;
+            height: 100%;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
-            padding: 20px;
+            margin: 0;
+            font-family: "Montserrat", Helvetica, Arial, serif !important;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.45;
+            color: var(--muted);
+            background-color: var(--bg);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
+
+        main {
+            flex: 1;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* ========== HEADER ========== */
+        .top-bar {
+            background-color: var(--verde-jalisco);
+            height: 8px;
+            width: 100%;
+        }
+
+        .header-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+            max-height: 250px;
+        }
+
+        @media (max-width: 767px) {
+            .header-image {
+                max-height: 150px;
+            }
+        }
+
+        /* ========== BOTÓN ACCESIBILIDAD ========== */
+        #float-button {
+            position: fixed;
+            bottom: 5%;
+            left: 5%;
+            z-index: 999;
+            border-radius: 100%;
+            height: 55px;
+            width: 55px;
+            padding: 0;
+            border: none;
+            background-color: #f6f6f6;
+            box-shadow: 0 .125rem .25rem rgba(34, 41, 47, .075);
+            cursor: pointer;
+        }
+
+        /* ========== CONTENEDOR ========== */
         .container {
-            max-width: 700px;
+            max-width: 800px;
             margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
+            padding: 2rem 1rem;
         }
-        h1 { text-align: center; color: #333; }
-        .resultado {
-            padding: 20px;
-            border-radius: 5px;
-            margin: 20px 0;
+
+        .page-title {
+            text-align: center;
+            font: normal normal bold 40px/45px Montserrat;
+            color: var(--txt);
+            margin: 2rem 0 2rem;
         }
-        .verde { background: #4caf50; color: white; }
-        .rojo { background: #f44336; color: white; }
-        .cafe { background: #ff9800; color: white; }
-        .info-item {
-            margin: 10px 0;
-            padding: 10px;
-            background: #f9f9f9;
-            border-radius: 5px;
+
+        @media (max-width: 767px) {
+            .page-title {
+                font-size: 28px;
+                line-height: 32px;
+            }
         }
-        a {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background: #800000;
+
+        /* ========== RESULTADO ESTADO ========== */
+        .resultado-estado {
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* COLORES SEGÚN ESTADO */
+        .resultado-verde {
+            background: linear-gradient(135deg, #28c76f 0%, #20a85f 100%);
             color: white;
-            text-decoration: none;
-            border-radius: 5px;
         }
-        a:hover { background: #a00000; }
+
+        .resultado-rojo {
+            background: linear-gradient(135deg, #ea5455 0%, #d93030 100%);
+            color: white;
+        }
+
+        .resultado-estado h2 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .resultado-icono {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 767px) {
+            .resultado-estado h2 {
+                font-size: 1.5rem;
+            }
+            .resultado-icono {
+                font-size: 3rem;
+            }
+        }
+
+        /* ========== TARJETA DETALLES ========== */
+        .detalles-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 767px) {
+            .detalles-card {
+                padding: 1.5rem;
+            }
+        }
+
+        /* ========== INFO ITEMS ========== */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .info-item {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid var(--verde-jalisco);
+        }
+
+        .info-label {
+            font-weight: 700;
+            color: #4b4b4b;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            color: var(--txt);
+            font-weight: 500;
+        }
+
+        .folio-destacado {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, rgba(40, 199, 111, 0.1) 0%, rgba(40, 199, 111, 0.05) 100%);
+            border-left-color: var(--verde-jalisco);
+            border-left-width: 6px;
+        }
+
+        .folio-destacado .info-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--verde-jalisco);
+        }
+
+        /* ========== BOTONES ========== */
+        .actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.786rem 1.5rem;
+            border: none;
+            border-radius: 0.357rem;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--verde-jalisco);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #24a643;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(40, 199, 111, 0.3);
+        }
+
+        .btn-secondary {
+            background: #4a5568;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #3a4454;
+        }
+
+        @media (max-width: 767px) {
+            .actions {
+                flex-direction: column;
+            }
+        }
+
+        /* ========== MENSAJE NO ENCONTRADO ========== */
+        .mensaje-vacio {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--txt);
+        }
+
+        .mensaje-vacio p {
+            font-size: 1.1rem;
+            margin: 1rem 0;
+        }
+
+        /* ========== FOOTER ========== */
+        footer {
+            margin-top: auto;
+            width: 100%;
+        }
+
+        .footer-image {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>🔍 Resultado de Consulta</h1>
-        
-        {% if resultado %}
-        <div class="resultado {{ resultado.color }}">
-            <h2 style="margin: 0; text-align: center;">{{ resultado.estado }}</h2>
+    <!-- Barra Verde Superior -->
+    <div class="top-bar"></div>
+
+    <!-- HEADER CON IMAGEN -->
+    <header>
+        <img src="{{ url_for('static', filename='assets/images/header.jpg') }}" 
+             alt="Secretaría de Transporte Jalisco" 
+             class="header-image">
+    </header>
+
+    <!-- Botón Accesibilidad -->
+    <button id="float-button" type="button" aria-label="Abrir Menu de Accesibilidad">
+        <img src="{{ url_for('static', filename='assets/images/ico_accesibilidad.svg') }}" 
+             alt="Accesibilidad">
+    </button>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main>
+        <div class="container">
+            <h1 class="page-title">🔍 Resultado de Consulta</h1>
+
+            {% if resultado %}
+                <!-- ESTADO DEL FOLIO -->
+                <div class="resultado-estado {% if resultado.estado == 'VIGENTE' %}resultado-verde{% else %}resultado-rojo{% endif %}">
+                    <div class="resultado-icono">
+                        {% if resultado.estado == 'VIGENTE' %}
+                            ✅
+                        {% elif resultado.estado == 'NO SE ENCUENTRA REGISTRADO' %}
+                            ❌
+                        {% else %}
+                            ⚠️
+                        {% endif %}
+                    </div>
+                    <h2>{{ resultado.estado }}</h2>
+                </div>
+
+                <!-- DETALLES DEL FOLIO -->
+                <div class="detalles-card">
+                    {% if resultado.estado == 'NO SE ENCUENTRA REGISTRADO' %}
+                        <!-- MENSAJE CUANDO NO EXISTE -->
+                        <div class="info-item folio-destacado">
+                            <div class="info-label">Folio Consultado</div>
+                            <div class="info-value">{{ resultado.folio }}</div>
+                        </div>
+                        
+                        <div class="mensaje-vacio">
+                            <p>Este folio <strong>no se encuentra registrado</strong> en el sistema.</p>
+                            <p>Verifica que hayas ingresado el número correcto o contacta con la dependencia.</p>
+                        </div>
+                    {% else %}
+                        <!-- INFORMACIÓN COMPLETA DEL FOLIO -->
+                        <div class="info-grid">
+                            <!-- Folio Destacado -->
+                            <div class="info-item folio-destacado">
+                                <div class="info-label">Folio</div>
+                                <div class="info-value">{{ resultado.folio }}</div>
+                            </div>
+
+                            <!-- Fechas -->
+                            <div class="info-item">
+                                <div class="info-label">Fecha de Expedición</div>
+                                <div class="info-value">{{ resultado.fecha_expedicion }}</div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-label">Fecha de Vencimiento</div>
+                                <div class="info-value">{{ resultado.fecha_vencimiento }}</div>
+                            </div>
+
+                            <!-- Datos del Vehículo -->
+                            <div class="info-item">
+                                <div class="info-label">Marca</div>
+                                <div class="info-value">{{ resultado.marca }}</div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-label">Línea / Submarca</div>
+                                <div class="info-value">{{ resultado.linea }}</div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-label">Año</div>
+                                <div class="info-value">{{ resultado.año }}</div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-label">Número de Serie</div>
+                                <div class="info-value">{{ resultado.numero_serie }}</div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-label">Número de Motor</div>
+                                <div class="info-value">{{ resultado.numero_motor }}</div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-label">Entidad</div>
+                                <div class="info-value">{{ resultado.entidad | upper }}</div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- BOTONES DE ACCIÓN -->
+                <div class="actions">
+                    <a href="{{ url_for('consulta_folio') }}" class="btn btn-primary">
+                        🔄 Nueva Consulta
+                    </a>
+                    {% if resultado.estado == 'VIGENTE' %}
+                        <a href="{{ url_for('descargar_recibo', folio=resultado.folio) }}" class="btn btn-secondary">
+                            📥 Descargar PDF
+                        </a>
+                    {% endif %}
+                </div>
+
+            {% else %}
+                <!-- SI NO HAY RESULTADO -->
+                <div class="detalles-card">
+                    <div class="mensaje-vacio">
+                        <p>No se encontró información para mostrar.</p>
+                    </div>
+                    <div class="actions">
+                        <a href="{{ url_for('consulta_folio') }}" class="btn btn-primary">
+                            🔄 Realizar Consulta
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
         </div>
-        
-        <div class="info-item">
-            <strong>Folio:</strong> {{ resultado.folio }}
-        </div>
-        
-        {% if resultado.estado != 'NO SE ENCUENTRA REGISTRADO' %}
-        <div class="info-item">
-            <strong>Fecha Expedición:</strong> {{ resultado.fecha_expedicion }}
-        </div>
-        <div class="info-item">
-            <strong>Fecha Vencimiento:</strong> {{ resultado.fecha_vencimiento }}
-        </div>
-        <div class="info-item">
-            <strong>Marca:</strong> {{ resultado.marca }}
-        </div>
-        <div class="info-item">
-            <strong>Línea:</strong> {{ resultado.linea }}
-        </div>
-        <div class="info-item">
-            <strong>Año:</strong> {{ resultado.año }}
-        </div>
-        <div class="info-item">
-            <strong>No. Serie:</strong> {{ resultado.numero_serie }}
-        </div>
-        <div class="info-item">
-            <strong>No. Motor:</strong> {{ resultado.numero_motor }}
-        </div>
-        <div class="info-item">
-            <strong>Entidad:</strong> {{ resultado.entidad | upper }}
-        </div>
-        {% endif %}
-        {% endif %}
-        
-        <a href="{{ url_for('consulta_folio') }}">← Nueva Consulta</a>
-    </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <img src="{{ url_for('static', filename='assets/images/1000008793.png') }}" 
+             alt="Gobierno de Jalisco" 
+             class="footer-image">
+    </footer>
 </body>
-</html
+</html>

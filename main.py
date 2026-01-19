@@ -11,6 +11,7 @@ from io import BytesIO
 import time
 import re
 import threading
+import secrets
 
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -18,14 +19,11 @@ app = Flask(__name__)
 app.secret_key = 'clave_muy_segura_123456'
 
 # ====== FIX PROXY (Render) ======
-# Evita 400 "Solicitud incorrecta" y problemas de https/host detrás del proxy
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
 
-# En Render normalmente estás detrás de HTTPS.
-# Estas flags ayudan a que la cookie de sesión no se rompa con proxy.
 app.config.update(
     SESSION_COOKIE_SAMESITE="Lax",
-    SESSION_COOKIE_SECURE=True,     # Render usa https
+    SESSION_COOKIE_SECURE=True,
 )
 
 # ================== SUPABASE CONFIG ==================
@@ -33,7 +31,7 @@ SUPABASE_URL = "https://xsagwqepoljfsogusubw.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzYWd3cWVwb2xqZnNvZ3VzdWJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM5NjM3NTUsImV4cCI6MjA1OTUzOTc1NX0.NUixULn0m2o49At8j6X58UqbXre2O2_JStqzls_8Gws"
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-SUPABASE_BUCKET_PDFS = "pdfs"  # bucket publico
+SUPABASE_BUCKET_PDFS = "pdfs"
 
 # ================== CONFIG GENERAL ==================
 OUTPUT_DIR = "documentos"
@@ -42,6 +40,22 @@ PLANTILLA_BUENO = "jalisco.pdf"
 URL_CONSULTA_BASE = "https://serviciodigital-jaliscogobmx.onrender.com"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+# ================== PROTECCIÓN ANTI-DUPLICADOS ==================
+# Diccionario para guardar tokens procesados (en memoria)
+TOKENS_PROCESADOS = {}
+
+def limpiar_tokens_viejos():
+    """Limpia tokens de más de 5 minutos"""
+    ahora = time.time()
+    tokens_a_eliminar = [
+        token for token, timestamp in TOKENS_PROCESADOS.items()
+        if ahora - timestamp > 300  # 5 minutos
+    ]
+    for token in tokens_a_eliminar:
+        del TOKENS_PROCESADOS[token]
+    if tokens_a_eliminar:
+        print(f"[TOKEN CLEANUP] Eliminados {len(tokens_a_eliminar)} tokens viejos")
 
 # ================== COORDENADAS PDF ==================
 coords_jalisco = {
@@ -178,9 +192,6 @@ def obtener_folio_representativo():
 
 # ================== SUPABASE STORAGE ==================
 def subir_pdf_a_supabase(ruta_pdf_local: str, folio: str, entidad: str = "cdmx"):
-    """
-    Sube el PDF a Storage: bucket 'pdfs' -> cdmx/<folio>.pdf
-    """
     try:
         ruta_storage = f"{entidad}/{folio}.pdf"
         with open(ruta_pdf_local, "rb") as f:
@@ -199,11 +210,6 @@ def subir_pdf_a_supabase(ruta_pdf_local: str, folio: str, entidad: str = "cdmx")
         return None
 
 def subir_pdf_bg_y_guardar_path(ruta_pdf_local: str, folio: str, entidad: str = "cdmx"):
-    """
-    Hilo en segundo plano:
-    - sube a storage
-    - guarda pdf_path en folios_registrados
-    """
     try:
         storage_path = subir_pdf_a_supabase(ruta_pdf_local, folio, entidad=entidad)
         if storage_path:
@@ -215,13 +221,9 @@ def subir_pdf_bg_y_guardar_path(ruta_pdf_local: str, folio: str, entidad: str = 
         print("[STORAGE BG] ❌ Error:", e)
 
 def url_publica_pdf(storage_path: str):
-    """
-    Normaliza get_public_url (a veces devuelve dict, a veces string)
-    """
     try:
         res = supabase.storage.from_(SUPABASE_BUCKET_PDFS).get_public_url(storage_path)
         if isinstance(res, dict):
-            # python libs cambian keys según version
             return res.get("publicURL") or res.get("publicUrl") or res.get("public_url") or res.get("url")
         return res
     except Exception as e:
@@ -287,7 +289,6 @@ def generar_pdf_unificado(datos: dict) -> str:
     out = os.path.join(OUTPUT_DIR, f"{fol}.pdf")
 
     try:
-        # PÁGINA 1
         doc1 = fitz.open(PLANTILLA_PDF)
         pg1 = doc1[0]
 
@@ -349,7 +350,6 @@ NOMBRE:  {datos.get('nombre', '')}"""
                 overlay=True
             )
 
-        # PÁGINA 2
         doc2 = fitz.open(PLANTILLA_BUENO)
         pg2 = doc2[0]
 
@@ -481,7 +481,36 @@ def registro_usuario():
     }
 
     if request.method == 'POST':
+        # ===== PROTECCIÓN CONTRA CLICS MÚLTIPLES =====
+        
+        # 1. Limpiar tokens viejos
+        limpiar_tokens_viejos()
+        
+        # 2. Obtener o generar token de la solicitud
+        request_token = request.form.get('request_token', '').strip()
+        
+        if not request_token:
+            # Primera vez - generar token
+            request_token = secrets.token_urlsafe(16)
+            print(f"[TOKEN] Generado nuevo token: {request_token}")
+        
+        # 3. Verificar si este token ya fue procesado
+        if request_token in TOKENS_PROCESADOS:
+            tiempo_transcurrido = time.time() - TOKENS_PROCESADOS[request_token]
+            print(f"[TOKEN] ⚠️ Token {request_token} ya procesado hace {tiempo_transcurrido:.1f}s")
+            flash("⚠️ Esta solicitud ya fue procesada. No hagas clic múltiples veces.", "error")
+            return redirect(url_for('registro_usuario'))
+        
+        # 4. Marcar token como procesado INMEDIATAMENTE
+        TOKENS_PROCESADOS[request_token] = time.time()
+        print(f"[TOKEN] ✅ Token {request_token} marcado como procesado")
+        
+        # ===== CONTINÚA CON EL CÓDIGO ORIGINAL =====
+        
         if folios_disponibles <= 0:
+            # Liberar token si no hay folios
+            if request_token in TOKENS_PROCESADOS:
+                del TOKENS_PROCESADOS[request_token]
             flash("⚠️ Ya no tienes folios disponibles. Contacta al administrador.", "error")
             return render_template('registro_usuario.html', folios_info=folios_info)
 
@@ -514,6 +543,9 @@ def registro_usuario():
         try:
             ok = guardar_folio_con_reintento(datos, session['username'])
             if not ok:
+                # Si falla, liberar el token
+                if request_token in TOKENS_PROCESADOS:
+                    del TOKENS_PROCESADOS[request_token]
                 flash("❌ No se pudo registrar el folio. Intenta de nuevo.", "error")
                 return render_template('registro_usuario.html', folios_info=folios_info)
 
@@ -537,12 +569,18 @@ def registro_usuario():
             t.start()
 
             flash(f'✅ Permiso generado. Folio: {folio_final}. Te quedan {folios_disponibles - 1} folios.', 'success')
+            
+            # Token se limpiará automáticamente después de 5 minutos
+            
             return render_template('exitoso.html',
                                  folio=folio_final,
                                  serie=numero_serie,
                                  fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M'))
 
         except Exception as e:
+            # Si hay error, liberar el token
+            if request_token in TOKENS_PROCESADOS:
+                del TOKENS_PROCESADOS[request_token]
             flash(f"Error al generar el permiso: {e}", 'error')
             return render_template('registro_usuario.html', folios_info=folios_info)
 
@@ -696,10 +734,6 @@ def consulta_folio_directo(folio):
 
 @app.route('/descargar_recibo/<folio>')
 def descargar_recibo(folio):
-    """
-    - Si ya existe pdf_path en DB, redirige a URL pública de Storage
-    - Si aún no (porque se está subiendo), hace fallback al local
-    """
     try:
         row = supabase.table("folios_registrados")\
             .select("pdf_path")\
@@ -732,5 +766,4 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    # En Render no uses debug=True
     app.run(host='0.0.0.0', port=5000)

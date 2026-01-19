@@ -171,6 +171,7 @@
             background: #fff;
             color: var(--muted);
             transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            text-transform: uppercase;
         }
 
         input[type="text"]:focus,
@@ -190,6 +191,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
+            position: relative;
         }
 
         .btn-primary {
@@ -197,10 +199,40 @@
             color: white;
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             background: #24a643;
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(40, 199, 111, 0.3);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            opacity: 0.7;
+        }
+
+        .btn-loading {
+            pointer-events: none;
+        }
+
+        .btn-loading::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spinner 0.6s linear infinite;
+        }
+
+        @keyframes spinner {
+            to { transform: rotate(360deg); }
         }
 
         /* ========== FLASH MESSAGES ========== */
@@ -214,6 +246,8 @@
             border: 1px solid transparent;
             border-radius: 0.357rem;
             font-size: 0.95rem;
+            text-align: center;
+            font-weight: 600;
         }
 
         .alert-error {
@@ -261,6 +295,56 @@
             border-bottom: 2px solid var(--verde-jalisco);
         }
 
+        /* ========== OVERLAY PROCESANDO ========== */
+        .processing-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .processing-overlay.active {
+            display: flex;
+        }
+
+        .processing-content {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .processing-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(40, 167, 69, 0.2);
+            border-top-color: #28a745;
+            border-radius: 50%;
+            animation: spinner2 0.8s linear infinite;
+            margin: 0 auto 2rem;
+        }
+
+        @keyframes spinner2 {
+            to { transform: rotate(360deg); }
+        }
+
+        .processing-content h3 {
+            color: var(--txt);
+            margin-bottom: 1rem;
+        }
+
+        .processing-content p {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
         /* ========== FOOTER ========== */
         footer {
             margin-top: auto;
@@ -292,6 +376,16 @@
              alt="Accesibilidad">
     </button>
 
+    <!-- OVERLAY PROCESANDO -->
+    <div class="processing-overlay" id="processingOverlay">
+        <div class="processing-content">
+            <div class="processing-spinner"></div>
+            <h3>⏳ Generando Permiso...</h3>
+            <p>Por favor espera, estamos procesando tu solicitud.</p>
+            <p><strong>¡NO cierres esta ventana!</strong></p>
+        </div>
+    </div>
+
     <!-- CONTENIDO PRINCIPAL -->
     <main>
         <div class="container">
@@ -313,7 +407,7 @@
                 {% endwith %}
 
                 <!-- Formulario -->
-                <form method="POST" action="{{ url_for('registro_admin') }}">
+                <form method="POST" action="{{ url_for('registro_admin') }}" id="formularioPermiso">
                     
                     <!-- Folio (opcional) -->
                     <div class="form-group form-group-full">
@@ -406,7 +500,9 @@
                     </div>
 
                     <!-- Botón Submit -->
-                    <button type="submit" class="btn btn-primary">✅ Generar Permiso</button>
+                    <button type="submit" class="btn btn-primary" id="btnGenerar">
+                        <span id="btnText">✅ Generar Permiso</span>
+                    </button>
                 </form>
 
                 <a href="{{ url_for('admin') }}" class="back-link">
@@ -423,5 +519,65 @@
              alt="Gobierno de Jalisco" 
              class="footer-image">
     </footer>
+
+    <!-- ✅ JAVASCRIPT SIMPLE - SOLO BLOQUEO Y UX -->
+    <script>
+        let formularioEnviado = false;
+
+        const form = document.getElementById('formularioPermiso');
+        const btnGenerar = document.getElementById('btnGenerar');
+        const btnText = document.getElementById('btnText');
+        const overlay = document.getElementById('processingOverlay');
+
+        function bloquearFormulario() {
+            btnGenerar.disabled = true;
+            btnGenerar.classList.add('btn-loading');
+            btnText.textContent = '⏳ Generando...';
+            overlay.classList.add('active');
+
+            const elements = form.querySelectorAll('input, textarea, select, button');
+            elements.forEach(el => {
+                if (el !== btnGenerar) el.disabled = true;
+            });
+        }
+
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                if (formularioEnviado) {
+                    e.preventDefault();
+                    alert('⚠️ El permiso ya se está generando. Por favor espera...');
+                    return false;
+                }
+
+                formularioEnviado = true;
+                bloquearFormulario();
+                return true;
+            });
+        }
+
+        // Rehabilitar si vuelven a la página
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted || formularioEnviado) {
+                formularioEnviado = false;
+                
+                if (btnGenerar) {
+                    btnGenerar.disabled = false;
+                    btnGenerar.classList.remove('btn-loading');
+                    btnText.textContent = '✅ Generar Permiso';
+                }
+                
+                if (overlay) {
+                    overlay.classList.remove('active');
+                }
+                
+                if (form) {
+                    const elements = form.querySelectorAll('input, textarea, select, button');
+                    elements.forEach(el => {
+                        el.disabled = false;
+                    });
+                }
+            }
+        });
+    </script>
 </body>
 </html>

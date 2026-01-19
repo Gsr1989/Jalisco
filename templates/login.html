@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8">
     <title>Iniciar Sesión - Secretaría de Transporte</title>
-    <base href="/" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Secretaría de Transporte - Sistema de Validación Vehicular" />
-    <meta name="keywords" content="Secretaría de Transporte, Jalisco, Validación Vehicular" />
-    <meta property="og:image" content="{{ url_for('static', filename='logo_jal_meta_2024_2030.png') }}" />
-    <meta name="author" content="Jalisco" />
-    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Secretaría de Transporte - Sistema de Validación Vehicular">
+    <meta name="keywords" content="Secretaría de Transporte, Jalisco">
+    <meta property="og:image" content="{{ url_for('static', filename='logo_jal_meta_2024_2030.png') }}">
+    <meta name="author" content="Jalisco">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css">
+    
+    <!-- Fuentes de Google - Montserrat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     
     <style type="text/css">
@@ -45,7 +48,8 @@
       }
 
       .loading .effect-1,
-      .loading .effect-2 {
+      .loading .effect-2,
+      .loading .effect-3 {
         position: absolute;
         width: 100%;
         height: 100%;
@@ -63,20 +67,8 @@
         animation: rotateOpacity 1s ease infinite 0.1s;
       }
 
-      .stop-scrolling {
-        height: 100%;
-        overflow: hidden;
-      }
-
       .loading .effect-3 {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        border: 3px solid transparent;
-        border-left: 3px solid var(--color-dep);
         animation: rotateOpacity 1s ease infinite 0.2s;
-        border-radius: 50%;
-        box-sizing: border-box;
       }
 
       .loading .effects {
@@ -160,6 +152,9 @@
 
       main {
         display: block;
+        width: 100%;
+        max-width: 100%;
+        min-height: 100vh;
       }
 
       p {
@@ -181,7 +176,6 @@
         line-height: inherit;
         overflow: visible;
         text-transform: none;
-        -webkit-appearance: button;
       }
 
       button:focus:not(:focus-visible) {
@@ -281,14 +275,8 @@
         font-size: 1rem;
         line-height: 1;
         border-radius: .358rem;
-        transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out, background 0s, border 0s;
+        transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
         box-shadow: none;
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        .btn {
-          transition: none;
-        }
       }
 
       .btn:hover {
@@ -310,10 +298,6 @@
         cursor: pointer;
       }
 
-      .btn:not(:disabled):not(.disabled):active:focus {
-        box-shadow: none !important;
-      }
-
       .btn-light {
         color: #2a2e30;
         background-color: #f6f6f6;
@@ -330,18 +314,6 @@
         color: #2a2e30;
         background-color: #e3e3e3;
         border-color: #ddd;
-      }
-
-      .btn-light:disabled {
-        color: #2a2e30;
-        background-color: #f6f6f6;
-        border-color: #f6f6f6;
-      }
-
-      .btn-light:not(:disabled):not(.disabled):active {
-        color: #2a2e30;
-        background-color: #ddd;
-        border-color: #d6d6d6;
       }
 
       .bg-white {
@@ -389,14 +361,27 @@
         }
       }
 
-      /* Header Styles */
+      /* Accessibility Button */
+      #float-button {
+        position: fixed;
+        bottom: 5%;
+        left: 5%;
+        z-index: 999;
+        border-radius: 100%;
+        height: 55px;
+        width: 55px;
+        padding: 0;
+      }
+
+      #float-button:focus {
+        border: 5px solid var(--color-dep);
+      }
+
+      /* Header */
       header {
         background-color: #fff;
-        padding: 1rem 2rem;
+        padding: 1.5rem 2rem;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        position: sticky;
-        top: 0;
-        z-index: 1000;
       }
 
       .header-content {
@@ -424,9 +409,6 @@
       nav {
         background-color: var(--color-dep);
         padding: 0;
-        position: sticky;
-        top: 80px;
-        z-index: 999;
       }
 
       .nav-container {
@@ -472,19 +454,13 @@
         padding: 0.5rem;
       }
 
-      /* Main Content */
-      main {
-        width: 100%;
-        max-width: 100%;
-        min-height: calc(100vh - 200px);
+      /* Main Content Section */
+      .main-content {
         padding: 3rem 0;
+        min-height: calc(100vh - 300px);
       }
 
-      /* Login Section */
-      .login-section {
-        padding: 2rem 0;
-      }
-
+      /* Title Section */
       .title-section h1 {
         font-size: 2.5rem;
         font-weight: 700;
@@ -535,7 +511,8 @@
         text-align: center;
       }
 
-      input {
+      input[type="text"],
+      input[type="password"] {
         width: 100%;
         padding: 0.786rem 1rem;
         margin: 0.5rem 0;
@@ -546,7 +523,8 @@
         transition: border-color 0.15s ease-in-out;
       }
 
-      input:focus {
+      input[type="text"]:focus,
+      input[type="password"]:focus {
         outline: none;
         border-color: var(--color-dep);
         box-shadow: 0 3px 10px 0 rgba(139, 31, 65, 0.1);
@@ -648,22 +626,6 @@
         display: block;
       }
 
-      /* Accessibility Button */
-      #float-button {
-        position: fixed;
-        bottom: 5%;
-        left: 5%;
-        z-index: 999;
-        border-radius: 100%;
-        height: 55px;
-        width: 55px;
-        padding: 0;
-      }
-
-      #float-button:focus {
-        border: 5px solid var(--color-dep);
-      }
-
       /* Responsive */
       @media (max-width: 991px) {
         .title-section {
@@ -707,6 +669,17 @@
         }
       }
 
+      @media (max-width: 767px) {
+        .padd {
+          padding-right: 0 !important;
+          padding-top: 0%;
+        }
+
+        .img {
+          width: 300px;
+        }
+      }
+
       @media (max-width: 576px) {
         header {
           padding: 1rem;
@@ -728,7 +701,7 @@
           flex-direction: column;
         }
 
-        main {
+        .main-content {
           padding: 1.5rem 0;
         }
       }
@@ -764,7 +737,7 @@
     </style>
 </head>
 
-<body>
+<body class="ng-tns-0-1">
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading">
@@ -776,7 +749,7 @@
 
     <!-- Accessibility Button -->
     <button id="float-button" type="button" aria-label="Abrir Menú de Accesibilidad" class="btn btn-light shadow-sm">
-        <img src="https://setran.jalisco.gob.mx/assets/images/ico_accesibilidad.svg" alt="Accesibilidad del Sitio" class="img-fluid" />
+        <img src="https://setran.jalisco.gob.mx/assets/images/ico_accesibilidad.svg" alt="Accesibilidad del Sitio" class="img-fluid">
     </button>
 
     <!-- Header -->
@@ -804,8 +777,8 @@
 
     <!-- Main Content -->
     <main id="main-content" class="container-fluid px-0 ml-0 py-2 py-sm-4 bg-white">
-        <div class="container mt-4">
-            <div class="row justify-content-center align-items-center login-section">
+        <div class="container mt-4 main-content">
+            <div class="row justify-content-center align-items-center" data-aos="fade-up">
                 <div class="col-lg-6 title-section">
                     <h1>Sistema de Validación Vehicular</h1>
                     <p>Accede al sistema oficial de la Secretaría de Transporte para la gestión y validación de permisos vehiculares del Estado de Jalisco.</p>
@@ -880,7 +853,12 @@
         <img src="{{ url_for('static', filename='footer.png') }}" alt="Footer Gobierno de Jalisco">
     </footer>
 
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script>
+        // Initialize AOS (Animate On Scroll)
+        AOS.init();
+
         // Loading overlay on form submit
         document.getElementById('loginForm').addEventListener('submit', function() {
             document.getElementById('loadingOverlay').classList.add('active');

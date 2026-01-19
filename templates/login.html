@@ -177,6 +177,21 @@
             }
         }
 
+        /* ========== HEADER CON IMAGEN ========== */
+        .header-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+            max-height: 250px;
+        }
+
+        @media (max-width: 767px) {
+            .header-image {
+                max-height: 150px;
+            }
+        }
+
         /* ========== ESTILOS ESPECÍFICOS ========== */
         .top-bar {
             background-color: var(--verde-jalisco);
@@ -417,6 +432,13 @@
 <body>
     <!-- Barra Verde Superior -->
     <div class="top-bar"></div>
+
+    <!-- HEADER CON IMAGEN -->
+    <header>
+        <img src="{{ url_for('static', filename='assets/images/header.jpg') }}" 
+             alt="Secretaría de Transporte Jalisco" 
+             class="header-image">
+    </header>
 
     <!-- Botón Accesibilidad Flotante -->
     <button id="float-button" type="button" aria-label="Abrir Menu de Accesibilidad" class="btn btn-light shadow-sm">

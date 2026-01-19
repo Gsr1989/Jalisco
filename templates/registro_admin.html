@@ -1,85 +1,427 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Generar Permiso - Admin</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
-            padding: 20px;
+    <meta charset="utf-8">
+    <title>Secretaría de Transporte | Generar Permiso</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Generar Permiso - Secretaría de Transporte">
+    <meta name="author" content="Jalisco">
+
+    <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+    
+    <!-- Montserrat Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+
+    <style type="text/css">
+        /* ========== VARIABLES CSS ========== */
+        :root {
+            --bg: #fafafa;
+            --txt: #67737a;
+            --muted: #6e6b7b;
+            --verde-jalisco: #28a745;
         }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-        }
-        h1 { text-align: center; color: #333; }
-        input, button {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+
+        /* ========== RESET ========== */
+        *, *:before, *:after {
             box-sizing: border-box;
-            font-size: 16px;
         }
-        button {
-            background: #800000;
-            color: white;
+
+        html {
+            font-family: sans-serif;
+            font-size: 14px;
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Montserrat", Helvetica, Arial, serif !important;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.45;
+            color: var(--muted);
+            background-color: var(--bg);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* ========== HEADER ========== */
+        .top-bar {
+            background-color: var(--verde-jalisco);
+            height: 8px;
+            width: 100%;
+        }
+
+        .header-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+            max-height: 250px;
+        }
+
+        @media (max-width: 767px) {
+            .header-image {
+                max-height: 150px;
+            }
+        }
+
+        /* ========== BOTÓN ACCESIBILIDAD ========== */
+        #float-button {
+            position: fixed;
+            bottom: 5%;
+            left: 5%;
+            z-index: 999;
+            border-radius: 100%;
+            height: 55px;
+            width: 55px;
+            padding: 0;
             border: none;
+            background-color: #f6f6f6;
+            box-shadow: 0 .125rem .25rem rgba(34, 41, 47, .075);
             cursor: pointer;
         }
-        button:hover { background: #a00000; }
+
+        /* ========== CONTENEDOR ========== */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .page-title {
+            text-align: center;
+            font: normal normal bold 40px/45px Montserrat;
+            color: var(--txt);
+            margin: 2rem 0 0.5rem;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            font: normal normal normal 16px/24px Montserrat;
+            color: var(--txt);
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 767px) {
+            .page-title {
+                font-size: 28px;
+                line-height: 32px;
+            }
+        }
+
+        /* ========== TARJETA FORMULARIO ========== */
+        .form-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        @media (max-width: 767px) {
+            .form-card {
+                padding: 1.5rem;
+            }
+        }
+
+        /* ========== FORMULARIO ========== */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group-full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #4b4b4b;
+            margin-bottom: 0.5rem;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 0.786rem 1rem;
+            border: 1px solid #d8d6de;
+            border-radius: 0.357rem;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            background: #fff;
+            color: var(--muted);
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            border-color: var(--verde-jalisco);
+            box-shadow: 0 0 0 3px rgba(40, 199, 111, 0.1);
+        }
+
+        /* ========== BOTONES ========== */
+        .btn {
+            width: 100%;
+            padding: 0.786rem 1.5rem;
+            border: none;
+            border-radius: 0.357rem;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--verde-jalisco);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #24a643;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(40, 199, 111, 0.3);
+        }
+
+        /* ========== FLASH MESSAGES ========== */
+        .flash-messages {
+            margin-bottom: 1.5rem;
+        }
+
         .alert {
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 5px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.357rem;
+            font-size: 0.95rem;
         }
-        .alert-success {
-            background: #4caf50;
-            color: white;
-        }
+
         .alert-error {
-            background: #f44336;
-            color: white;
+            color: #ea5455;
+            background-color: rgba(234, 84, 85, 0.12);
+            border-color: rgba(234, 84, 85, 0.3);
         }
-        a {
-            display: inline-block;
-            margin-top: 20px;
-            color: #800000;
+
+        .alert-success {
+            color: #28c76f;
+            background-color: rgba(40, 199, 111, 0.12);
+            border-color: rgba(40, 199, 111, 0.3);
+        }
+
+        /* ========== BACK LINK ========== */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            color: var(--txt);
             text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--verde-jalisco);
+        }
+
+        /* ========== HINTS ========== */
+        .hint-text {
+            font-size: 13px;
+            color: #b9b9c3;
+            margin-top: 0.5rem;
+        }
+
+        /* ========== SECCIONES ========== */
+        .section-title {
+            font-weight: 700;
+            color: var(--txt);
+            font-size: 1.1rem;
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--verde-jalisco);
+        }
+
+        /* ========== FOOTER ========== */
+        footer {
+            margin-top: auto;
+            width: 100%;
+        }
+
+        .footer-image {
+            width: 100%;
+            height: auto;
+            display: block;
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>📄 Generar Permiso (Administrador)</h1>
-        
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
 
-        <form method="POST">
-            <input type="text" name="folio" placeholder="Folio (opcional - se genera automático)">
-            <input type="text" name="marca" placeholder="Marca del Vehículo" required>
-            <input type="text" name="linea" placeholder="Línea/Modelo" required>
-            <input type="number" name="anio" placeholder="Año" min="1900" max="2030" required>
-            <input type="text" name="serie" placeholder="Número de Serie" required>
-            <input type="text" name="motor" placeholder="Número de Motor" required>
-            <input type="text" name="color" placeholder="Color" required>
-            <input type="text" name="nombre" placeholder="Nombre del Propietario" required>
-            <button type="submit">Generar Permiso</button>
-        </form>
-        
-        <a href="{{ url_for('admin') }}">← Volver al Panel</a>
-    </div>
+<body>
+    <!-- Barra Verde Superior -->
+    <div class="top-bar"></div>
+
+    <!-- HEADER CON IMAGEN -->
+    <header>
+        <img src="{{ url_for('static', filename='assets/images/header.jpg') }}" 
+             alt="Secretaría de Transporte Jalisco" 
+             class="header-image">
+    </header>
+
+    <!-- Botón Accesibilidad -->
+    <button id="float-button" type="button" aria-label="Abrir Menu de Accesibilidad">
+        <img src="{{ url_for('static', filename='assets/images/ico_accesibilidad.svg') }}" 
+             alt="Accesibilidad">
+    </button>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main>
+        <div class="container">
+            <h1 class="page-title">📄 Generar Permiso</h1>
+            <p class="page-subtitle">Administrador - Sin límite de folios</p>
+
+            <div class="form-card">
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="flash-messages">
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Formulario -->
+                <form method="POST" action="{{ url_for('registro_admin') }}">
+                    
+                    <!-- Folio (opcional) -->
+                    <div class="form-group form-group-full">
+                        <label for="folio">Folio (Opcional)</label>
+                        <input type="text" 
+                               id="folio" 
+                               name="folio" 
+                               placeholder="Deja vacío para generar automáticamente"
+                               maxlength="9"
+                               pattern="[0-9]{9}">
+                        <p class="hint-text">Si lo dejas vacío, se generará automáticamente</p>
+                    </div>
+
+                    <h3 class="section-title">🚗 Datos del Vehículo</h3>
+                    
+                    <div class="form-grid">
+                        <!-- Marca -->
+                        <div class="form-group">
+                            <label for="marca">Marca *</label>
+                            <input type="text" 
+                                   id="marca" 
+                                   name="marca" 
+                                   placeholder="Ej: NISSAN"
+                                   required>
+                        </div>
+
+                        <!-- Línea -->
+                        <div class="form-group">
+                            <label for="linea">Línea / Submarca *</label>
+                            <input type="text" 
+                                   id="linea" 
+                                   name="linea" 
+                                   placeholder="Ej: VERSA"
+                                   required>
+                        </div>
+
+                        <!-- Año -->
+                        <div class="form-group">
+                            <label for="anio">Año *</label>
+                            <input type="number" 
+                                   id="anio" 
+                                   name="anio" 
+                                   placeholder="Ej: 2020"
+                                   min="1900"
+                                   max="2030"
+                                   required>
+                        </div>
+
+                        <!-- Color -->
+                        <div class="form-group">
+                            <label for="color">Color *</label>
+                            <input type="text" 
+                                   id="color" 
+                                   name="color" 
+                                   placeholder="Ej: BLANCO"
+                                   required>
+                        </div>
+
+                        <!-- Serie -->
+                        <div class="form-group">
+                            <label for="serie">Número de Serie *</label>
+                            <input type="text" 
+                                   id="serie" 
+                                   name="serie" 
+                                   placeholder="No. de Serie (VIN)"
+                                   required>
+                        </div>
+
+                        <!-- Motor -->
+                        <div class="form-group">
+                            <label for="motor">Número de Motor *</label>
+                            <input type="text" 
+                                   id="motor" 
+                                   name="motor" 
+                                   placeholder="No. de Motor"
+                                   required>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">👤 Datos del Propietario</h3>
+
+                    <!-- Nombre -->
+                    <div class="form-group form-group-full">
+                        <label for="nombre">Nombre Completo del Propietario *</label>
+                        <input type="text" 
+                               id="nombre" 
+                               name="nombre" 
+                               placeholder="Nombre completo"
+                               required>
+                    </div>
+
+                    <!-- Botón Submit -->
+                    <button type="submit" class="btn btn-primary">✅ Generar Permiso</button>
+                </form>
+
+                <a href="{{ url_for('admin') }}" class="back-link">
+                    <span>←</span>
+                    <span>Volver al Panel</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <img src="{{ url_for('static', filename='assets/images/1000008793.png') }}" 
+             alt="Gobierno de Jalisco" 
+             class="footer-image">
+    </footer>
 </body>
 </html>

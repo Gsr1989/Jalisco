@@ -12,43 +12,44 @@ import time
 import re
 import threading
 import logging
+import sys
 
 from werkzeug.middleware.proxy_fix import ProxyFix
+
+# ===================== LOGGING AGRESIVO =====================
+sys.dont_write_bytecode = True
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s [%(levelname)s] %(name)s: %(message)s',
+    handlers=[logging.StreamHandler(sys.stdout)]
+)
+logger = logging.getLogger(__name__)
 
 # ===================== ZONA HORARIA (CDMX) =====================
 TZ_CDMX = ZoneInfo("America/Mexico_City")
 
 def now_cdmx() -> datetime:
-    """Datetime aware en zona CDMX."""
     return datetime.now(TZ_CDMX)
 
 def today_cdmx() -> date:
-    """Fecha (date) en zona CDMX."""
     return now_cdmx().date()
 
 def parse_date_any(value) -> date:
-    """
-    Convierte 'YYYY-MM-DD' o ISO datetime a date (CDMX-safe).
-    Tu DB hoy guarda 'YYYY-MM-DD' (date), pero por si cambia a timestamp.
-    """
     if not value:
         raise ValueError("Fecha vacía")
     if isinstance(value, date) and not isinstance(value, datetime):
         return value
     if isinstance(value, datetime):
-        # Si viniera aware/naive, lo pasamos a date en CDMX
         if value.tzinfo is None:
-            # Interpretamos naive como CDMX (consistente con tu app)
             value = value.replace(tzinfo=TZ_CDMX)
         else:
             value = value.astimezone(TZ_CDMX)
         return value.date()
 
     s = str(value).strip()
-    # 'YYYY-MM-DD'
     if re.fullmatch(r"\d{4}-\d{2}-\d{2}", s):
         return date.fromisoformat(s)
-    # ISO datetime 'YYYY-MM-DDTHH:MM:SS...' (con o sin tz)
     dt = datetime.fromisoformat(s.replace("Z", "+00:00"))
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=TZ_CDMX)
@@ -56,31 +57,46 @@ def parse_date_any(value) -> date:
         dt = dt.astimezone(TZ_CDMX)
     return dt.date()
 
-
 # ===================== CONFIGURACIÓN FLASK =====================
 app = Flask(__name__)
 app.secret_key = 'clave_muy_segura_123456'
 
-# ✅ FIX PROXY (Render)
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
-
-# ✅ Cookies HTTPS (Render)
-app.config.update(
-    SESSION_COOKIE_SAMESITE="Lax",
-    SESSION_COOKIE_SECURE=True,
-    MAX_CONTENT_LENGTH=16 * 1024 * 1024  # 16 MB
+app.wsgi_app = ProxyFix(
+    app.wsgi_app,
+    x_for=2,
+    x_proto=2,
+    x_host=2,
+    x_prefix=1
 )
 
-# ✅ Logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
-logger = logging.getLogger(__name__)
+app.config.update(
+    SESSION_COOKIE_SAMESITE="Lax",
+    SESSION_COOKIE_SECURE=False,
+    SESSION_COOKIE_HTTPONLY=True,
+    MAX_CONTENT_LENGTH=32 * 1024 * 1024,
+    SEND_FILE_MAX_AGE_DEFAULT=0,
+    PERMANENT_SESSION_LIFETIME=timedelta(hours=24)
+)
+
+@app.before_request
+def log_request_info():
+    logger.debug('=' * 80)
+    logger.debug(f'REQUEST: {request.method} {request.url}')
+    logger.debug(f'Remote: {request.remote_addr}')
+    logger.debug(f'Form keys: {list(request.form.keys()) if request.form else "No form"}')
+    logger.debug('=' * 80)
+
+@app.after_request
+def log_response_info(response):
+    logger.debug(f'RESPONSE: {response.status}')
+    return response
 
 # ===================== SUPABASE CONFIG =====================
 SUPABASE_URL = "https://xsagwqepoljfsogusubw.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzYWd3cWVwb2xqZnNvZ3VzdWJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM5NjM3NTUsImV4cCI6MjA1OTUzOTc1NX0.NUixULn0m2o49At8j6X58UqbXre2O2_JStqzls_8Gws"
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-SUPABASE_BUCKET_PDFS = "pdfs"  # bucket público
+SUPABASE_BUCKET_PDFS = "pdfs"
 
 # ===================== CONFIG GENERAL =====================
 OUTPUT_DIR = "documentos"
@@ -121,9 +137,6 @@ PREFIJO_JALISCO = 900000000
 LIMITE_MAXIMO = 999999999
 
 def generar_folio_automatico_jalisco():
-    """
-    900000000 ... 999999999
-    """
     try:
         resp = supabase.table("folios_registrados")\
             .select("folio")\
@@ -145,7 +158,7 @@ def generar_folio_automatico_jalisco():
         for intento in range(100000):
             folio_candidato = siguiente + intento
             if folio_candidato > LIMITE_MAXIMO:
-                raise Exception(f"Se alcanzó el límite de folios ({LIMITE_MAXIMO})")
+                raise Exception(f"Límite alcanzado ({LIMITE_MAXIMO})")
 
             folio_str = f"{folio_candidato:09d}"
 
@@ -165,10 +178,6 @@ def generar_folio_automatico_jalisco():
         raise
 
 def guardar_folio_con_reintento(datos, username):
-    """
-    Inserta en folios_registrados evitando duplicados.
-    ✅ Fechas se guardan como DATE (YYYY-MM-DD) SIEMPRE en CDMX.
-    """
     max_intentos = 100000
 
     if not datos.get("folio") or not re.fullmatch(r"\d{9}", str(datos.get("folio", ""))):
@@ -179,8 +188,6 @@ def guardar_folio_con_reintento(datos, username):
             return False
 
     folio_inicial = int(datos["folio"])
-
-    # Guardado CDMX date-only (estable y sin broncas de tz)
     fexp_date = parse_date_any(datos["fecha_exp"])
     fven_date = parse_date_any(datos["fecha_ven"])
 
@@ -330,14 +337,10 @@ def generar_codigo_ine(contenido, ruta_salida):
         img_fallback.save(ruta_salida)
 
 def generar_pdf_unificado(datos: dict) -> str:
-    """
-    ✅ Usa fechas aware CDMX para imprimir, pero DB guarda DATE.
-    """
     fol = datos["folio"]
     fecha_exp_dt: datetime = datos["fecha_exp"]
     fecha_ven_dt: datetime = datos["fecha_ven"]
 
-    # Asegurar aware CDMX
     if fecha_exp_dt.tzinfo is None:
         fecha_exp_dt = fecha_exp_dt.replace(tzinfo=TZ_CDMX)
     else:
@@ -352,7 +355,6 @@ def generar_pdf_unificado(datos: dict) -> str:
     out = os.path.join(OUTPUT_DIR, f"{fol}.pdf")
 
     try:
-        # ============ Pagina 1 ============
         doc1 = fitz.open(PLANTILLA_PDF)
         pg1 = doc1[0]
 
@@ -361,7 +363,6 @@ def generar_pdf_unificado(datos: dict) -> str:
                 x, y, s, col = coords_jalisco[campo]
                 pg1.insert_text((x, y), str(datos.get(campo, "")), fontsize=s, color=col, fontname="hebo")
 
-        # Vencimiento
         pg1.insert_text(
             coords_jalisco["fecha_ven"][:2],
             fecha_ven_dt.strftime("%d/%m/%Y"),
@@ -369,26 +370,19 @@ def generar_pdf_unificado(datos: dict) -> str:
             color=coords_jalisco["fecha_ven"][3]
         )
 
-        # Folio principal
         pg1.insert_text((860, 364), fol, fontsize=14, color=(0, 0, 0), fontname="hebo")
-
-        # Fecha expedición impresa
         pg1.insert_text((475, 830), fecha_exp_dt.strftime("%d/%m/%Y"), fontsize=32, color=(0, 0, 0), fontname="hebo")
 
-        # Folio representativo
         fol_rep = obtener_folio_representativo()
         folio_grande = f"4A-DVM/{fol_rep}"
         pg1.insert_text((240, 830), folio_grande, fontsize=32, color=(0, 0, 0), fontname="hebo")
         pg1.insert_text((480, 182), folio_grande, fontsize=63, color=(0, 0, 0), fontname="hebo")
 
-        # Timestamp CDMX
         folio_chico = f"DVM-{fol_rep}   {ahora_dt.strftime('%d/%m/%Y')}  {ahora_dt.strftime('%H:%M:%S')}"
         pg1.insert_text((915, 760), folio_chico, fontsize=14, color=(0, 0, 0), fontname="hebo")
 
-        # Barcode simple
         pg1.insert_text((935, 600), f"*{fol}*", fontsize=30, color=(0, 0, 0), fontname="Courier")
 
-        # PDF417
         contenido_ine = f"""FOLIO:  {fol}
 MARCA:  {datos.get('marca', '')}
 SUBMARCA:  {datos.get('linea', '')}
@@ -410,7 +404,6 @@ NOMBRE:  {datos.get('nombre', '')}"""
 
         pg1.insert_text((915, 775), "EXPEDICION: VENTANILLA DIGITAL", fontsize=12, color=(0, 0, 0), fontname="hebo")
 
-        # QR
         img_qr, _ = generar_qr_dinamico(fol)
         if img_qr:
             buf = BytesIO()
@@ -425,11 +418,9 @@ NOMBRE:  {datos.get('nombre', '')}"""
 
             pg1.insert_image(fitz.Rect(x_qr, y_qr, x_qr + w, y_qr + h), pixmap=qr_pix, overlay=True)
 
-        # ============ Pagina 2 ============
         doc2 = fitz.open(PLANTILLA_BUENO)
         pg2 = doc2[0]
 
-        # Fecha/Hora CDMX (la hora solo es para impresión, DB guarda date)
         pg2.insert_text((380, 195), fecha_exp_dt.strftime("%d/%m/%Y %H:%M"), fontsize=10, fontname="helv", color=(0, 0, 0))
         pg2.insert_text((380, 290), str(datos.get('serie', '')), fontsize=10, fontname="helv", color=(0, 0, 0))
 
@@ -450,7 +441,6 @@ NOMBRE:  {datos.get('nombre', '')}"""
         pg2.insert_text(coords_pagina2["linea_captura"][:2], str(folios_pag2["linea_captura"]),
                         fontsize=coords_pagina2["linea_captura"][2], color=coords_pagina2["linea_captura"][3])
 
-        # Combinar
         doc_final = fitz.open()
         doc_final.insert_pdf(doc1)
         doc_final.insert_pdf(doc2)
@@ -483,13 +473,12 @@ def login():
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '').strip()
 
-        # Admin
         if username == 'Serg890105tm3' and password == 'Serg890105tm3':
             session['admin'] = True
             session['username'] = 'Serg890105tm3'
+            logger.info("[LOGIN] Admin login exitoso")
             return redirect(url_for('admin'))
 
-        # Usuarios
         resp = supabase.table("verificaciondigitalcdmx")\
             .select("*")\
             .eq("username", username)\
@@ -500,8 +489,10 @@ def login():
             session['user_id'] = resp.data[0].get('id')
             session['username'] = resp.data[0]['username']
             session['admin'] = False
+            logger.info(f"[LOGIN] Usuario {username} login exitoso")
             return redirect(url_for('registro_usuario'))
 
+        logger.warning(f"[LOGIN] Login fallido para {username}")
         flash('Usuario o contraseña incorrectos', 'error')
 
     return render_template('login.html')
@@ -543,104 +534,141 @@ def crear_usuario():
 
 @app.route('/registro_usuario', methods=['GET', 'POST'])
 def registro_usuario():
-    if not session.get('username'):
-        flash("Sesión no válida. Inicia sesión de nuevo.", "error")
-        return redirect(url_for('login'))
+    try:
+        if not session.get('username'):
+            logger.error("[REGISTRO] Sin username en session")
+            flash("Sesión no válida. Inicia sesión de nuevo.", "error")
+            return redirect(url_for('login'))
 
-    if session.get('admin'):
-        return redirect(url_for('admin'))
+        if session.get('admin'):
+            logger.info("[REGISTRO] Admin redirigido")
+            return redirect(url_for('admin'))
 
-    user_data = supabase.table("verificaciondigitalcdmx")\
-        .select("*")\
-        .eq("username", session['username'])\
-        .limit(1)\
-        .execute()
+        logger.info(f"[REGISTRO] Usuario: {session['username']}")
 
-    if not user_data.data:
-        flash("Usuario no encontrado.", "error")
-        return redirect(url_for('login'))
+        user_data = supabase.table("verificaciondigitalcdmx")\
+            .select("*")\
+            .eq("username", session['username'])\
+            .limit(1)\
+            .execute()
 
-    usuario = user_data.data[0]
-    folios_asignados = int(usuario.get('folios_asignac', 0))
-    folios_usados = int(usuario.get('folios_usados', 0))
-    folios_disponibles = folios_asignados - folios_usados
+        if not user_data.data:
+            logger.error(f"[REGISTRO] Usuario {session['username']} no encontrado en DB")
+            flash("Usuario no encontrado.", "error")
+            return redirect(url_for('login'))
 
-    folios_info = {"folios_asignac": folios_asignados, "folios_usados": folios_usados}
+        usuario = user_data.data[0]
+        folios_asignados = int(usuario.get('folios_asignac', 0))
+        folios_usados = int(usuario.get('folios_usados', 0))
+        folios_disponibles = folios_asignados - folios_usados
 
-    if request.method == 'POST':
-        if folios_disponibles <= 0:
-            flash("⚠️ Ya no tienes folios disponibles. Contacta al administrador.", "error")
-            return render_template('registro_usuario.html', folios_info=folios_info)
+        folios_info = {"folios_asignac": folios_asignados, "folios_usados": folios_usados}
 
-        # Datos
-        marca = request.form['marca'].strip().upper()
-        linea = request.form['linea'].strip().upper()
-        anio = request.form['anio'].strip()
-        numero_serie = request.form['serie'].strip().upper()
-        numero_motor = request.form['motor'].strip().upper()
-        color = request.form.get('color', 'N/A').strip().upper()
-        nombre = request.form.get('nombre', 'N/A').strip().upper()
-
-        # Folio opcional
-        folio_manual = request.form.get('folio', '').strip()
-        if folio_manual and not re.fullmatch(r"\d{9}", folio_manual):
-            flash("❌ El folio debe tener exactamente 9 dígitos.", "error")
-            return render_template('registro_usuario.html', folios_info=folios_info)
-
-        # Fechas CDMX
-        ahora = now_cdmx()
-        vigencia = int(request.form.get('vigencia', 30))
-        venc = ahora + timedelta(days=vigencia)
-
-        datos = {
-            "folio": folio_manual if folio_manual else None,
-            "marca": marca,
-            "linea": linea,
-            "anio": anio,
-            "serie": numero_serie,
-            "motor": numero_motor,
-            "color": color,
-            "nombre": nombre,
-            "fecha_exp": ahora,
-            "fecha_ven": venc
-        }
-
-        try:
-            ok = guardar_folio_con_reintento(datos, session['username'])
-            if not ok:
-                flash("❌ No se pudo registrar el folio. Intenta de nuevo.", "error")
+        if request.method == 'POST':
+            logger.info(f"[REGISTRO] POST recibido de {session['username']}")
+            logger.info(f"[REGISTRO] Form keys: {list(request.form.keys())}")
+            
+            if folios_disponibles <= 0:
+                logger.warning(f"[REGISTRO] Sin folios disponibles para {session['username']}")
+                flash("⚠️ Ya no tienes folios disponibles. Contacta al administrador.", "error")
                 return render_template('registro_usuario.html', folios_info=folios_info)
 
-            folio_final = datos["folio"]
+            try:
+                marca = request.form.get('marca', '').strip().upper()
+                linea = request.form.get('linea', '').strip().upper()
+                anio = request.form.get('anio', '').strip()
+                numero_serie = request.form.get('serie', '').strip().upper()
+                numero_motor = request.form.get('motor', '').strip().upper()
+                color = request.form.get('color', 'N/A').strip().upper()
+                nombre = request.form.get('nombre', 'N/A').strip().upper()
+                
+                logger.info(f"[REGISTRO] Datos: marca={marca}, serie={numero_serie}")
+                
+                if not all([marca, linea, anio, numero_serie, numero_motor]):
+                    logger.error("[REGISTRO] Campos obligatorios faltantes")
+                    flash("❌ Todos los campos son obligatorios", "error")
+                    return render_template('registro_usuario.html', folios_info=folios_info)
+                
+            except Exception as e:
+                logger.error(f"[REGISTRO] Error extrayendo form data: {e}")
+                flash(f"❌ Error en los datos del formulario: {e}", "error")
+                return render_template('registro_usuario.html', folios_info=folios_info)
 
-            pdf_path_local = generar_pdf_unificado(datos)
+            folio_manual = request.form.get('folio', '').strip()
+            if folio_manual and not re.fullmatch(r"\d{9}", folio_manual):
+                logger.error(f"[REGISTRO] Folio inválido: {folio_manual}")
+                flash("❌ El folio debe tener exactamente 9 dígitos.", "error")
+                return render_template('registro_usuario.html', folios_info=folios_info)
 
-            supabase.table("verificaciondigitalcdmx")\
-                .update({"folios_usados": folios_usados + 1})\
-                .eq("username", session['username'])\
-                .execute()
+            ahora = now_cdmx()
+            vigencia = int(request.form.get('vigencia', 30))
+            venc = ahora + timedelta(days=vigencia)
 
-            t = threading.Thread(
-                target=subir_pdf_bg_y_guardar_path,
-                args=(pdf_path_local, folio_final, ENTIDAD),
-                daemon=True
-            )
-            t.start()
+            datos = {
+                "folio": folio_manual if folio_manual else None,
+                "marca": marca,
+                "linea": linea,
+                "anio": anio,
+                "serie": numero_serie,
+                "motor": numero_motor,
+                "color": color,
+                "nombre": nombre,
+                "fecha_exp": ahora,
+                "fecha_ven": venc
+            }
 
-            flash(f'✅ Permiso generado. Folio: {folio_final}. Te quedan {folios_disponibles - 1} folios.', 'success')
-            return render_template(
-                'exitoso.html',
-                folio=folio_final,
-                serie=numero_serie,
-                fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M')
-            )
+            logger.info(f"[REGISTRO] Iniciando guardado para {session['username']}")
 
-        except Exception as e:
-            logger.error(f"[ERROR] Generando permiso: {e}")
-            flash(f"Error al generar el permiso: {e}", 'error')
-            return render_template('registro_usuario.html', folios_info=folios_info)
+            try:
+                ok = guardar_folio_con_reintento(datos, session['username'])
+                if not ok:
+                    logger.error("[REGISTRO] guardar_folio_con_reintento falló")
+                    flash("❌ No se pudo registrar el folio. Intenta de nuevo.", "error")
+                    return render_template('registro_usuario.html', folios_info=folios_info)
 
-    return render_template('registro_usuario.html', folios_info=folios_info)
+                folio_final = datos["folio"]
+                logger.info(f"[REGISTRO] Folio guardado: {folio_final}")
+
+                logger.info(f"[REGISTRO] Generando PDF para {folio_final}")
+                pdf_path_local = generar_pdf_unificado(datos)
+                logger.info(f"[REGISTRO] PDF generado: {pdf_path_local}")
+
+                logger.info(f"[REGISTRO] Actualizando folios_usados")
+                supabase.table("verificaciondigitalcdmx")\
+                    .update({"folios_usados": folios_usados + 1})\
+                    .eq("username", session['username'])\
+                    .execute()
+
+                logger.info(f"[REGISTRO] Iniciando thread de subida")
+                t = threading.Thread(
+                    target=subir_pdf_bg_y_guardar_path,
+                    args=(pdf_path_local, folio_final, ENTIDAD),
+                    daemon=True
+                )
+                t.start()
+
+                logger.info(f"[REGISTRO] ✅ Permiso generado exitosamente: {folio_final}")
+                flash(f'✅ Permiso generado. Folio: {folio_final}. Te quedan {folios_disponibles - 1} folios.', 'success')
+                
+                return render_template(
+                    'exitoso.html',
+                    folio=folio_final,
+                    serie=numero_serie,
+                    fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M')
+                )
+
+            except Exception as e:
+                logger.error(f"[REGISTRO] ❌ Error generando permiso: {e}", exc_info=True)
+                flash(f"Error al generar el permiso: {e}", 'error')
+                return render_template('registro_usuario.html', folios_info=folios_info)
+
+        logger.info(f"[REGISTRO] GET request para {session['username']}")
+        return render_template('registro_usuario.html', folios_info=folios_info)
+        
+    except Exception as e:
+        logger.error(f"[REGISTRO] ❌ Error CRÍTICO: {e}", exc_info=True)
+        flash(f"Error del sistema: {e}", 'error')
+        return redirect(url_for('login'))
 
 @app.route('/mis_permisos')
 def mis_permisos():
@@ -662,7 +690,6 @@ def mis_permisos():
             fv = parse_date_any(p.get('fecha_vencimiento'))
 
             p['fecha_formateada'] = fe.strftime('%d/%m/%Y')
-            # Hora no existe si guardas DATE; dejamos vacío/00:00 para no inventar
             p['hora_formateada'] = "00:00:00"
             p['estado'] = "VIGENTE" if hoy <= fv else "VENCIDO"
         except Exception:
@@ -692,37 +719,37 @@ def registro_admin():
         return redirect(url_for('login'))
 
     if request.method == 'POST':
-        folio_manual = request.form.get('folio', '').strip()
-        if folio_manual and not re.fullmatch(r"\d{9}", folio_manual):
-            flash("❌ El folio debe tener exactamente 9 dígitos.", "error")
-            return redirect(url_for('registro_admin'))
-
-        marca = request.form['marca'].strip().upper()
-        linea = request.form['linea'].strip().upper()
-        anio = request.form['anio'].strip()
-        numero_serie = request.form['serie'].strip().upper()
-        numero_motor = request.form['motor'].strip().upper()
-        color = request.form.get('color', 'N/A').strip().upper()
-        nombre = request.form.get('nombre', 'N/A').strip().upper()
-
-        ahora = now_cdmx()
-        vigencia = int(request.form.get('vigencia', 30))
-        venc = ahora + timedelta(days=vigencia)
-
-        datos = {
-            "folio": folio_manual if folio_manual else None,
-            "marca": marca,
-            "linea": linea,
-            "anio": anio,
-            "serie": numero_serie,
-            "motor": numero_motor,
-            "color": color,
-            "nombre": nombre,
-            "fecha_exp": ahora,
-            "fecha_ven": venc
-        }
-
         try:
+            folio_manual = request.form.get('folio', '').strip()
+            if folio_manual and not re.fullmatch(r"\d{9}", folio_manual):
+                flash("❌ El folio debe tener exactamente 9 dígitos.", "error")
+                return redirect(url_for('registro_admin'))
+
+            marca = request.form['marca'].strip().upper()
+            linea = request.form['linea'].strip().upper()
+            anio = request.form['anio'].strip()
+            numero_serie = request.form['serie'].strip().upper()
+            numero_motor = request.form['motor'].strip().upper()
+            color = request.form.get('color', 'N/A').strip().upper()
+            nombre = request.form.get('nombre', 'N/A').strip().upper()
+
+            ahora = now_cdmx()
+            vigencia = int(request.form.get('vigencia', 30))
+            venc = ahora + timedelta(days=vigencia)
+
+            datos = {
+                "folio": folio_manual if folio_manual else None,
+                "marca": marca,
+                "linea": linea,
+                "anio": anio,
+                "serie": numero_serie,
+                "motor": numero_motor,
+                "color": color,
+                "nombre": nombre,
+                "fecha_exp": ahora,
+                "fecha_ven": venc
+            }
+
             ok = guardar_folio_con_reintento(datos, "ADMIN")
             if not ok:
                 flash("❌ No se pudo registrar el folio.", "error")
@@ -747,7 +774,7 @@ def registro_admin():
             )
 
         except Exception as e:
-            logger.error(f"[ERROR] Admin generando: {e}")
+            logger.error(f"[ADMIN] ❌ Error: {e}", exc_info=True)
             flash(f"Error: {e}", 'error')
             return redirect(url_for('registro_admin'))
 
@@ -847,7 +874,7 @@ def descargar_recibo(folio):
             if public_url:
                 return redirect(public_url)
     except Exception as e:
-        logger.error(f"[DESCARGA] Error DB/Storage: {e}")
+        logger.error(f"[DESCARGA] Error: {e}")
 
     ruta_pdf = os.path.join(OUTPUT_DIR, f"{folio}.pdf")
     if not os.path.exists(ruta_pdf):
@@ -867,9 +894,11 @@ def logout():
 
 # ===================== EJECUTAR APP =====================
 if __name__ == '__main__':
-    if not os.path.exists(PLANTILLA_PDF):
-        logger.warning(f"⚠️ No se encuentra: {PLANTILLA_PDF}")
-    if not os.path.exists(PLANTILLA_BUENO):
-        logger.warning(f"⚠️ No se encuentra: {PLANTILLA_BUENO}")
-
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    logger.info("=" * 80)
+    logger.info("🚀 INICIANDO SERVIDOR JALISCO")
+    logger.info(f"Output dir: {OUTPUT_DIR}")
+    logger.info(f"Plantilla PDF: {PLANTILLA_PDF} (existe: {os.path.exists(PLANTILLA_PDF)})")
+    logger.info(f"Plantilla Bueno: {PLANTILLA_BUENO} (existe: {os.path.exists(PLANTILLA_BUENO)})")
+    logger.info("=" * 80)
+    
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False)

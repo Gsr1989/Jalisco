@@ -9,14 +9,13 @@
     <meta name="author" content="Jalisco">
 
     <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
-    
+
     <!-- Montserrat Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
 
     <style type="text/css">
-        /* ========== VARIABLES CSS ========== */
         :root {
             --bg: #fafafa;
             --txt: #67737a;
@@ -24,18 +23,8 @@
             --verde-jalisco: #28a745;
             --primary: #4a5568;
         }
-
-        /* ========== RESET ========== */
-        *, *:before, *:after {
-            box-sizing: border-box;
-        }
-
-        html {
-            font-family: sans-serif;
-            font-size: 14px;
-            height: 100%;
-        }
-
+        *, *:before, *:after { box-sizing: border-box; }
+        html { font-family: sans-serif; font-size: 14px; height: 100%; }
         body {
             margin: 0;
             font-family: "Montserrat", Helvetica, Arial, serif !important;
@@ -48,23 +37,10 @@
             flex-direction: column;
             min-height: 100vh;
         }
+        main { flex: 1; }
+        img { max-width: 100%; height: auto; }
 
-        main {
-            flex: 1;
-        }
-
-        img {
-            max-width: 100%;
-            height: auto;
-        }
-
-        /* ========== HEADER ========== */
-        .top-bar {
-            background-color: var(--verde-jalisco);
-            height: 8px;
-            width: 100%;
-        }
-
+        .top-bar { background-color: var(--verde-jalisco); height: 8px; width: 100%; }
         .header-image {
             width: 100%;
             height: auto;
@@ -72,14 +48,8 @@
             object-fit: cover;
             max-height: 250px;
         }
+        @media (max-width: 767px) { .header-image { max-height: 150px; } }
 
-        @media (max-width: 767px) {
-            .header-image {
-                max-height: 150px;
-            }
-        }
-
-        /* ========== BOTÓN ACCESIBILIDAD ========== */
         #float-button {
             position: fixed;
             bottom: 5%;
@@ -95,28 +65,15 @@
             cursor: pointer;
         }
 
-        /* ========== CONTENEDOR ========== */
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 2rem 1rem;
-        }
-
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
         .page-title {
             text-align: center;
             font: normal normal bold 40px/45px Montserrat;
             color: var(--txt);
             margin: 2rem 0 2rem;
         }
+        @media (max-width: 767px) { .page-title { font-size: 28px; line-height: 32px; } }
 
-        @media (max-width: 767px) {
-            .page-title {
-                font-size: 28px;
-                line-height: 32px;
-            }
-        }
-
-        /* ========== CONTADOR VISUAL ========== */
         .contador-container {
             background: linear-gradient(135deg, var(--primary) 0%, #3a4454 100%);
             border-radius: 12px;
@@ -124,44 +81,14 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
             margin-bottom: 2rem;
         }
+        .contador-header { text-align: center; color: white; margin-bottom: 1.5rem; }
+        .contador-header h2 { margin: 0; font-size: 1.5rem; font-weight: 700; }
 
-        .contador-header {
-            text-align: center;
-            color: white;
-            margin-bottom: 1.5rem;
-        }
+        .contador-numeros { display: flex; justify-content: space-around; margin: 1.5rem 0; }
+        .contador-item { text-align: center; color: white; }
+        .contador-item .numero { font-size: 3rem; font-weight: 700; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); }
+        .contador-item .label { font-size: 0.9rem; text-transform: uppercase; opacity: 0.9; margin-top: 0.5rem; }
 
-        .contador-header h2 {
-            margin: 0;
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        .contador-numeros {
-            display: flex;
-            justify-content: space-around;
-            margin: 1.5rem 0;
-        }
-
-        .contador-item {
-            text-align: center;
-            color: white;
-        }
-
-        .contador-item .numero {
-            font-size: 3rem;
-            font-weight: 700;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .contador-item .label {
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            opacity: 0.9;
-            margin-top: 0.5rem;
-        }
-
-        /* ========== BARRA DE PROGRESO ========== */
         .progress-container {
             background: rgba(255, 255, 255, 0.2);
             height: 35px;
@@ -170,7 +97,6 @@
             margin: 1.5rem 0;
             position: relative;
         }
-
         .progress-bar {
             height: 100%;
             background: linear-gradient(90deg, var(--verde-jalisco) 0%, #20a85f 100%);
@@ -183,16 +109,9 @@
             font-weight: 700;
             font-size: 0.95rem;
         }
+        .progress-bar.warning { background: linear-gradient(90deg, #ff9800 0%, #ffc107 100%); }
+        .progress-bar.danger { background: linear-gradient(90deg, #ea5455 0%, #d93030 100%); }
 
-        .progress-bar.warning {
-            background: linear-gradient(90deg, #ff9800 0%, #ffc107 100%);
-        }
-
-        .progress-bar.danger {
-            background: linear-gradient(90deg, #ea5455 0%, #d93030 100%);
-        }
-
-        /* ========== ALERTAS ========== */
         .alerta-folios {
             text-align: center;
             padding: 1rem;
@@ -201,26 +120,11 @@
             font-weight: 700;
             color: white;
         }
+        .alerta-ok { background: var(--verde-jalisco); }
+        .alerta-advertencia { background: #ff9800; }
+        .alerta-critico { background: #ea5455; animation: parpadeo 1.5s infinite; }
+        @keyframes parpadeo { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 
-        .alerta-ok {
-            background: var(--verde-jalisco);
-        }
-
-        .alerta-advertencia {
-            background: #ff9800;
-        }
-
-        .alerta-critico {
-            background: #ea5455;
-            animation: parpadeo 1.5s infinite;
-        }
-
-        @keyframes parpadeo {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        /* ========== FORMULARIO ========== */
         .form-card {
             background: white;
             padding: 2.5rem;
@@ -228,44 +132,19 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             margin-bottom: 2rem;
         }
-
         @media (max-width: 767px) {
-            .form-card {
-                padding: 1.5rem;
-            }
-            .contador-container {
-                padding: 1.5rem;
-            }
-            .contador-numeros {
-                flex-direction: column;
-                gap: 1.5rem;
-            }
+            .form-card { padding: 1.5rem; }
+            .contador-container { padding: 1.5rem; }
+            .contador-numeros { flex-direction: column; gap: 1.5rem; }
         }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-        }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group-full { grid-column: 1 / -1; }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
+        label { display: block; font-weight: 600; color: #4b4b4b; margin-bottom: 0.5rem; font-size: 14px; }
 
-        .form-group-full {
-            grid-column: 1 / -1;
-        }
-
-        label {
-            display: block;
-            font-weight: 600;
-            color: #4b4b4b;
-            margin-bottom: 0.5rem;
-            font-size: 14px;
-        }
-
-        input[type="text"],
-        input[type="number"] {
+        input[type="text"], input[type="number"] {
             width: 100%;
             padding: 0.786rem 1rem;
             border: 1px solid #d8d6de;
@@ -278,14 +157,11 @@
             transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
             text-transform: uppercase;
         }
-
-        input[type="text"]:focus,
-        input[type="number"]:focus {
+        input[type="text"]:focus, input[type="number"]:focus {
             border-color: var(--verde-jalisco);
             box-shadow: 0 0 0 3px rgba(40, 199, 111, 0.1);
         }
 
-        /* ========== BOTONES ========== */
         .btn {
             width: 100%;
             padding: 0.786rem 1.5rem;
@@ -298,30 +174,15 @@
             transition: all 0.2s;
             position: relative;
         }
-
-        .btn-primary {
-            background: var(--verde-jalisco);
-            color: white;
-        }
-
+        .btn-primary { background: var(--verde-jalisco); color: white; }
         .btn-primary:hover:not(:disabled) {
             background: #24a643;
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(40, 199, 111, 0.3);
         }
+        .btn:disabled { background: #ccc; cursor: not-allowed; transform: none; opacity: 0.7; }
 
-        .btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-            opacity: 0.7;
-        }
-
-        /* ========== SPINNER DE CARGA ========== */
-        .btn-loading {
-            pointer-events: none;
-        }
-
+        .btn-loading { pointer-events: none; }
         .btn-loading::after {
             content: "";
             position: absolute;
@@ -336,20 +197,9 @@
             border-top-color: white;
             animation: spinner 0.6s linear infinite;
         }
+        @keyframes spinner { to { transform: rotate(360deg); } }
 
-        @keyframes spinner {
-            to { transform: rotate(360deg); }
-        }
-
-        .btn-loading-text {
-            opacity: 0;
-        }
-
-        /* ========== FLASH MESSAGES ========== */
-        .flash-messages {
-            margin-bottom: 1.5rem;
-        }
-
+        .flash-messages { margin-bottom: 1.5rem; }
         .alert {
             padding: 0.75rem 1rem;
             margin-bottom: 1rem;
@@ -359,20 +209,9 @@
             text-align: center;
             font-weight: 600;
         }
+        .alert-error { color: #ea5455; background-color: rgba(234, 84, 85, 0.12); border-color: rgba(234, 84, 85, 0.3); }
+        .alert-success { color: #28c76f; background-color: rgba(40, 199, 111, 0.12); border-color: rgba(40, 199, 111, 0.3); }
 
-        .alert-error {
-            color: #ea5455;
-            background-color: rgba(234, 84, 85, 0.12);
-            border-color: rgba(234, 84, 85, 0.3);
-        }
-
-        .alert-success {
-            color: #28c76f;
-            background-color: rgba(40, 199, 111, 0.12);
-            border-color: rgba(40, 199, 111, 0.3);
-        }
-
-        /* ========== MENSAJE SIN FOLIOS ========== */
         .sin-folios {
             text-align: center;
             padding: 3rem 2rem;
@@ -380,25 +219,10 @@
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
+        .sin-folios h2 { color: #ea5455; font-size: 2rem; margin: 1rem 0; }
+        .sin-folios p { color: var(--txt); font-size: 1.1rem; }
 
-        .sin-folios h2 {
-            color: #ea5455;
-            font-size: 2rem;
-            margin: 1rem 0;
-        }
-
-        .sin-folios p {
-            color: var(--txt);
-            font-size: 1.1rem;
-        }
-
-        /* ========== BOTONES ACCIÓN ========== */
-        .actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-
+        .actions { display: flex; gap: 1rem; margin-top: 2rem; }
         .btn-action {
             flex: 1;
             padding: 0.786rem 1.5rem;
@@ -415,25 +239,10 @@
             text-align: center;
             transition: all 0.2s;
         }
+        .btn-action:hover { background: #3a4454; transform: translateY(-2px); }
+        @media (max-width: 767px) { .actions { flex-direction: column; } }
 
-        .btn-action:hover {
-            background: #3a4454;
-            transform: translateY(-2px);
-        }
-
-        @media (max-width: 767px) {
-            .actions {
-                flex-direction: column;
-            }
-        }
-
-        /* ========== HINTS ========== */
-        .hint-text {
-            font-size: 13px;
-            color: #b9b9c3;
-            margin-top: 0.5rem;
-        }
-
+        .hint-text { font-size: 13px; color: #b9b9c3; margin-top: 0.5rem; }
         .section-title {
             font-weight: 700;
             color: var(--txt);
@@ -443,19 +252,9 @@
             border-bottom: 2px solid var(--verde-jalisco);
         }
 
-        /* ========== FOOTER ========== */
-        footer {
-            margin-top: auto;
-            width: 100%;
-        }
+        footer { margin-top: auto; width: 100%; }
+        .footer-image { width: 100%; height: auto; display: block; }
 
-        .footer-image {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        /* ========== MENSAJE DE PROCESANDO ========== */
         .processing-overlay {
             display: none;
             position: fixed;
@@ -468,10 +267,7 @@
             justify-content: center;
             align-items: center;
         }
-
-        .processing-overlay.active {
-            display: flex;
-        }
+        .processing-overlay.active { display: flex; }
 
         .processing-content {
             background: white;
@@ -480,47 +276,36 @@
             text-align: center;
             max-width: 400px;
         }
-
         .processing-spinner {
             width: 60px;
             height: 60px;
             border: 5px solid rgba(40, 167, 69, 0.2);
             border-top-color: #28a745;
             border-radius: 50%;
-            animation: spinner 0.8s linear infinite;
+            animation: spinner2 0.8s linear infinite;
             margin: 0 auto 2rem;
         }
+        @keyframes spinner2 { to { transform: rotate(360deg); } }
 
-        .processing-content h3 {
-            color: var(--txt);
-            margin-bottom: 1rem;
-        }
-
-        .processing-content p {
-            color: var(--muted);
-            font-size: 0.95rem;
-        }
+        .processing-content h3 { color: var(--txt); margin-bottom: 1rem; }
+        .processing-content p { color: var(--muted); font-size: 0.95rem; }
     </style>
 </head>
 
 <body>
-    <!-- Barra Verde Superior -->
     <div class="top-bar"></div>
 
-    <!-- HEADER CON IMAGEN -->
     <header>
-        <img src="{{ url_for('static', filename='assets/images/header.jpg') }}" 
-             alt="Secretaría de Transporte Jalisco" 
+        <img src="{{ url_for('static', filename='assets/images/header.jpg') }}"
+             alt="Secretaría de Transporte Jalisco"
              class="header-image">
     </header>
 
-    <!-- Botón Accesibilidad -->
     <button id="float-button" type="button" aria-label="Abrir Menu de Accesibilidad">
-        <img src="{{ url_for('static', filename='assets/images/ico_accesibilidad.svg') }}" 
+        <img src="{{ url_for('static', filename='assets/images/ico_accesibilidad.svg') }}"
              alt="Accesibilidad">
     </button>
 
-    <!-- OVERLAY DE PROCESANDO -->
     <div class="processing-overlay" id="processingOverlay">
         <div class="processing-content">
             <div class="processing-spinner"></div>
@@ -530,12 +315,10 @@
         </div>
     </div>
 
-    <!-- CONTENIDO PRINCIPAL -->
     <main>
         <div class="container">
             <h1 class="page-title">🚗 Generar Permiso Vehicular</h1>
 
-            <!-- Flash Messages -->
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     <div class="flash-messages">
@@ -548,13 +331,12 @@
                 {% endif %}
             {% endwith %}
 
-            <!-- CONTADOR DE FOLIOS -->
             {% if folios_info %}
             <div class="contador-container">
                 <div class="contador-header">
                     <h2>📊 TUS FOLIOS DISPONIBLES</h2>
                 </div>
-                
+
                 <div class="contador-numeros">
                     <div class="contador-item">
                         <div class="numero">{{ folios_info.folios_asignac - folios_info.folios_usados }}</div>
@@ -569,17 +351,17 @@
                         <div class="label">Total</div>
                     </div>
                 </div>
-                
+
                 {% set porcentaje = (folios_info.folios_usados * 100 / folios_info.folios_asignac) | round | int %}
                 {% set restantes = folios_info.folios_asignac - folios_info.folios_usados %}
-                
+
                 <div class="progress-container">
-                    <div class="progress-bar {% if porcentaje >= 90 %}danger{% elif porcentaje >= 70 %}warning{% endif %}" 
+                    <div class="progress-bar {% if porcentaje >= 90 %}danger{% elif porcentaje >= 70 %}warning{% endif %}"
                          style="width: {{ 100 - porcentaje }}%;">
                         {{ 100 - porcentaje }}% restante
                     </div>
                 </div>
-                
+
                 {% if restantes == 0 %}
                 <div class="alerta-folios alerta-critico">
                     ⚠️ SIN FOLIOS DISPONIBLES ⚠️<br>
@@ -603,7 +385,6 @@
             </div>
             {% endif %}
 
-            <!-- FORMULARIO O MENSAJE SIN FOLIOS -->
             {% if folios_info and (folios_info.folios_asignac - folios_info.folios_usados) > 0 %}
             <div class="form-card">
                 <form method="POST" action="{{ url_for('registro_usuario') }}" id="formularioPermiso">
@@ -611,12 +392,11 @@
                     <input type="hidden" name="telefono" value="0">
                     <input type="hidden" name="vigencia" value="30">
 
-                    <!-- Folio Opcional -->
                     <div class="form-group form-group-full">
                         <label for="folio">Folio (Opcional)</label>
-                        <input type="text" 
-                               id="folio" 
-                               name="folio" 
+                        <input type="text"
+                               id="folio"
+                               name="folio"
                                placeholder="Deja vacío para generar automáticamente"
                                maxlength="9"
                                pattern="[0-9]{9}">
@@ -626,37 +406,31 @@
                     <h3 class="section-title">🚗 Datos del Vehículo</h3>
 
                     <div class="form-grid">
-                        <!-- Marca -->
                         <div class="form-group">
                             <label for="marca">Marca *</label>
                             <input type="text" id="marca" name="marca" placeholder="Ej: NISSAN" required>
                         </div>
 
-                        <!-- Línea -->
                         <div class="form-group">
                             <label for="linea">Línea / Submarca *</label>
                             <input type="text" id="linea" name="linea" placeholder="Ej: VERSA" required>
                         </div>
 
-                        <!-- Año -->
                         <div class="form-group">
                             <label for="anio">Año *</label>
                             <input type="number" id="anio" name="anio" placeholder="Ej: 2020" min="1900" max="2030" required>
                         </div>
 
-                        <!-- Color -->
                         <div class="form-group">
                             <label for="color">Color *</label>
                             <input type="text" id="color" name="color" placeholder="Ej: BLANCO" required>
                         </div>
 
-                        <!-- Serie -->
                         <div class="form-group">
                             <label for="serie">Número de Serie *</label>
                             <input type="text" id="serie" name="serie" placeholder="No. de Serie (VIN)" required>
                         </div>
 
-                        <!-- Motor -->
                         <div class="form-group">
                             <label for="motor">Número de Motor *</label>
                             <input type="text" id="motor" name="motor" placeholder="No. de Motor" required>
@@ -665,7 +439,6 @@
 
                     <h3 class="section-title">👤 Datos del Propietario</h3>
 
-                    <!-- Nombre -->
                     <div class="form-group form-group-full">
                         <label for="nombre">Nombre Completo del Propietario *</label>
                         <input type="text" id="nombre" name="nombre" placeholder="Nombre completo" required>
@@ -683,7 +456,6 @@
             </div>
             {% endif %}
 
-            <!-- BOTONES DE ACCIÓN -->
             <div class="actions">
                 <a href="{{ url_for('mis_folios') }}" class="btn-action">📋 Ver Mis Folios</a>
                 <a href="{{ url_for('consulta_folio') }}" class="btn-action">🔍 Consultar Folio</a>
@@ -692,263 +464,45 @@
         </div>
     </main>
 
-    <!-- FOOTER -->
     <footer>
-        <img src="{{ url_for('static', filename='assets/images/1000008793.png') }}" 
-             alt="Gobierno de Jalisco" 
+        <img src="{{ url_for('static', filename='assets/images/1000008793.png') }}"
+             alt="Gobierno de Jalisco"
              class="footer-image">
     </footer>
 
-    <!-- JAVASCRIPT PARA PREVENIR MÚLTIPLES CLICS -->
+    <!-- ✅ JS corregido: SIN beforeunload -->
     <script>
-        // Variable para controlar si ya se envió el formulario
         let formularioEnviado = false;
 
-        // Obtener el formulario y el botón
         const form = document.getElementById('formularioPermiso');
         const btnGenerar = document.getElementById('btnGenerar');
         const btnText = document.getElementById('btnText');
         const overlay = document.getElementById('processingOverlay');
 
-        // Función para bloquear el formulario
         function bloquearFormulario() {
-            // Deshabilitar botón
             btnGenerar.disabled = true;
             btnGenerar.classList.add('btn-loading');
             btnText.textContent = '⏳ Generando...';
-            
-            // Mostrar overlay
+
             overlay.classList.add('active');
-            
-            // Deshabilitar todos los inputs
-            const inputs = form.querySelectorAll('input, textarea, select');
-            inputs.forEach(input => {
-                input.disabled = true;
+
+            const elements = form.querySelectorAll('input, textarea, select, button');
+            elements.forEach(el => {
+                if (el !== btnGenerar) el.disabled = true;
             });
         }
 
-        // Evento al enviar el formulario
         if (form) {
             form.addEventListener('submit', function(e) {
-                // Si ya se envió, prevenir nuevo envío
                 if (formularioEnviado) {
                     e.preventDefault();
-                    console.log('⚠️ Formulario ya enviado, bloqueando reenvío');
                     return false;
                 }
-
-                // Marcar como enviado
                 formularioEnviado = true;
-                
-                // Bloquear el formulario
                 bloquearFormulario();
-                
-                console.log('✅ Formulario enviado, bloqueado contra reenvíos');
-                
-                // Permitir que el formulario se envíe normalmente
                 return true;
             });
         }
-
-        // Prevenir botón "Atrás" del navegador mientras se procesa
-        window.addEventListener('beforeunload', function(e) {
-            if (formularioEnviado) {
-                e.preventDefault();
-                e.returnValue = '¿Estás seguro? El permiso se está generando...';
-                return e.returnValue;
-            }
-        });
     </script>
 </body>
-</html>
-2️⃣ NUEVO HTML: MIS_FOLIOS.HTML (Historial):
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="utf-8">
-    <title>Secretaría de Transporte | Mis Folios</title>
-    <base href="/">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-    <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
-    
-    <!-- Montserrat Font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
-
-    <style type="text/css">
-        /* [COPIAR TODOS LOS ESTILOS DE registro_usuario.html AQUÍ] */
-        
-        /* ESTILOS ADICIONALES PARA TABLA */
-        .table-container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-            margin-bottom: 2rem;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        thead {
-            background: linear-gradient(135deg, #4a5568 0%, #3a4454 100%);
-            color: white;
-        }
-
-        thead th {
-            padding: 1rem;
-            text-align: left;
-            font-weight: 700;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-        }
-
-        tbody td {
-            padding: 1rem;
-            border-bottom: 1px solid #e3e3e3;
-            color: var(--txt);
-        }
-
-        tbody tr:hover {
-            background: #f8f9fa;
-        }
-
-        tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        .folio-number {
-            font-weight: 700;
-            color: #28a745;
-            font-size: 1.1rem;
-        }
-
-        .badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .badge-success {
-            background: rgba(40, 199, 111, 0.2);
-            color: #28c76f;
-        }
-
-        .badge-warning {
-            background: rgba(255, 152, 0, 0.2);
-            color: #ff9800;
-        }
-
-        .badge-danger {
-            background: rgba(234, 84, 85, 0.2);
-            color: #ea5455;
-        }
-
-        @media (max-width: 767px) {
-            thead {
-                display: none;
-            }
-
-            tbody tr {
-                display: block;
-                margin-bottom: 1rem;
-                border: 1px solid #e3e3e3;
-                border-radius: 8px;
-                padding: 1rem;
-            }
-
-            tbody td {
-                display: block;
-                text-align: right;
-                padding: 0.5rem 0;
-                border: none;
-            }
-
-            tbody td::before {
-                content: attr(data-label);
-                float: left;
-                font-weight: 700;
-                color: #4b4b4b;
-            }
-        }
-    </style>
-</head>
-
-<body>
-    <!-- [COPIAR HEADER COMPLETO DE registro_usuario.html] -->
-
-    <main>
-        <div class="container">
-            <h1 class="page-title">📋 Mis Folios Generados</h1>
-
-            {% if folios %}
-            <div class="table-container">
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Folio</th>
-                                <th>Fecha</th>
-                                <th>Vehículo</th>
-                                <th>Propietario</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for folio in folios %}
-                            <tr>
-                                <td data-label="Folio">
-                                    <span class="folio-number">{{ folio.folio }}</span>
-                                </td>
-                                <td data-label="Fecha">{{ folio.fecha_creacion }}</td>
-                                <td data-label="Vehículo">{{ folio.marca }} {{ folio.linea }}</td>
-                                <td data-label="Propietario">{{ folio.nombre }}</td>
-                                <td data-label="Estado">
-                                    {% if folio.estado == 'VIGENTE' %}
-                                        <span class="badge badge-success">✅ Vigente</span>
-                                    {% elif folio.estado == 'VENCIDO' %}
-                                        <span class="badge badge-warning">⚠️ Vencido</span>
-                                    {% else %}
-                                        <span class="badge badge-danger">❌ {{ folio.estado }}</span>
-                                    {% endif %}
-                                </td>
-                                <td data-label="Acciones">
-                                    <a href="{{ url_for('descargar_recibo', folio=folio.folio) }}" 
-                                       class="btn-action" 
-                                       style="padding: 0.5rem 1rem; font-size: 0.9rem;">
-                                        📥 Descargar
-                                    </a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            {% else %}
-            <div class="sin-folios">
-                <h2>📭 No has generado ningún folio aún</h2>
-                <p>Cuando generes permisos, aparecerán aquí.</p>
-            </div>
-            {% endif %}
-
-            <div class="actions">
-                <a href="{{ url_for('registro_usuario') }}" class="btn-action">← Volver al Formulario</a>
-            </div>
-        </div>
-    </main>
-
-    <!-- [COPIAR FOOTER COMPLETO] -->
-</body>
-</html>
+                </html>

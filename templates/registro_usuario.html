@@ -296,6 +296,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
+            position: relative;
         }
 
         .btn-primary {
@@ -313,6 +314,35 @@
             background: #ccc;
             cursor: not-allowed;
             transform: none;
+            opacity: 0.7;
+        }
+
+        /* ========== SPINNER DE CARGA ========== */
+        .btn-loading {
+            pointer-events: none;
+        }
+
+        .btn-loading::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spinner 0.6s linear infinite;
+        }
+
+        @keyframes spinner {
+            to { transform: rotate(360deg); }
+        }
+
+        .btn-loading-text {
+            opacity: 0;
         }
 
         /* ========== FLASH MESSAGES ========== */
@@ -424,6 +454,52 @@
             height: auto;
             display: block;
         }
+
+        /* ========== MENSAJE DE PROCESANDO ========== */
+        .processing-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .processing-overlay.active {
+            display: flex;
+        }
+
+        .processing-content {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .processing-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(40, 167, 69, 0.2);
+            border-top-color: #28a745;
+            border-radius: 50%;
+            animation: spinner 0.8s linear infinite;
+            margin: 0 auto 2rem;
+        }
+
+        .processing-content h3 {
+            color: var(--txt);
+            margin-bottom: 1rem;
+        }
+
+        .processing-content p {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
     </style>
 </head>
 
@@ -443,6 +519,16 @@
         <img src="{{ url_for('static', filename='assets/images/ico_accesibilidad.svg') }}" 
              alt="Accesibilidad">
     </button>
+
+    <!-- OVERLAY DE PROCESANDO -->
+    <div class="processing-overlay" id="processingOverlay">
+        <div class="processing-content">
+            <div class="processing-spinner"></div>
+            <h3>⏳ Generando Permiso...</h3>
+            <p>Por favor espera, estamos procesando tu solicitud.</p>
+            <p><strong>¡NO cierres esta ventana!</strong></p>
+        </div>
+    </div>
 
     <!-- CONTENIDO PRINCIPAL -->
     <main>
@@ -520,7 +606,7 @@
             <!-- FORMULARIO O MENSAJE SIN FOLIOS -->
             {% if folios_info and (folios_info.folios_asignac - folios_info.folios_usados) > 0 %}
             <div class="form-card">
-                <form method="POST" action="{{ url_for('registro_usuario') }}">
+                <form method="POST" action="{{ url_for('registro_usuario') }}" id="formularioPermiso">
                     <input type="hidden" name="entidad" value="cdmx">
                     <input type="hidden" name="telefono" value="0">
                     <input type="hidden" name="vigencia" value="30">
@@ -585,7 +671,9 @@
                         <input type="text" id="nombre" name="nombre" placeholder="Nombre completo" required>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">🚗 Generar Permiso</button>
+                    <button type="submit" class="btn btn-primary" id="btnGenerar">
+                        <span id="btnText">🚗 Generar Permiso</span>
+                    </button>
                 </form>
             </div>
             {% else %}
@@ -597,6 +685,7 @@
 
             <!-- BOTONES DE ACCIÓN -->
             <div class="actions">
+                <a href="{{ url_for('mis_folios') }}" class="btn-action">📋 Ver Mis Folios</a>
                 <a href="{{ url_for('consulta_folio') }}" class="btn-action">🔍 Consultar Folio</a>
                 <a href="{{ url_for('logout') }}" class="btn-action">🚪 Cerrar Sesión</a>
             </div>
@@ -609,5 +698,257 @@
              alt="Gobierno de Jalisco" 
              class="footer-image">
     </footer>
+
+    <!-- JAVASCRIPT PARA PREVENIR MÚLTIPLES CLICS -->
+    <script>
+        // Variable para controlar si ya se envió el formulario
+        let formularioEnviado = false;
+
+        // Obtener el formulario y el botón
+        const form = document.getElementById('formularioPermiso');
+        const btnGenerar = document.getElementById('btnGenerar');
+        const btnText = document.getElementById('btnText');
+        const overlay = document.getElementById('processingOverlay');
+
+        // Función para bloquear el formulario
+        function bloquearFormulario() {
+            // Deshabilitar botón
+            btnGenerar.disabled = true;
+            btnGenerar.classList.add('btn-loading');
+            btnText.textContent = '⏳ Generando...';
+            
+            // Mostrar overlay
+            overlay.classList.add('active');
+            
+            // Deshabilitar todos los inputs
+            const inputs = form.querySelectorAll('input, textarea, select');
+            inputs.forEach(input => {
+                input.disabled = true;
+            });
+        }
+
+        // Evento al enviar el formulario
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                // Si ya se envió, prevenir nuevo envío
+                if (formularioEnviado) {
+                    e.preventDefault();
+                    console.log('⚠️ Formulario ya enviado, bloqueando reenvío');
+                    return false;
+                }
+
+                // Marcar como enviado
+                formularioEnviado = true;
+                
+                // Bloquear el formulario
+                bloquearFormulario();
+                
+                console.log('✅ Formulario enviado, bloqueado contra reenvíos');
+                
+                // Permitir que el formulario se envíe normalmente
+                return true;
+            });
+        }
+
+        // Prevenir botón "Atrás" del navegador mientras se procesa
+        window.addEventListener('beforeunload', function(e) {
+            if (formularioEnviado) {
+                e.preventDefault();
+                e.returnValue = '¿Estás seguro? El permiso se está generando...';
+                return e.returnValue;
+            }
+        });
+    </script>
+</body>
+</html>
+2️⃣ NUEVO HTML: MIS_FOLIOS.HTML (Historial):
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Secretaría de Transporte | Mis Folios</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+    
+    <!-- Montserrat Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+
+    <style type="text/css">
+        /* [COPIAR TODOS LOS ESTILOS DE registro_usuario.html AQUÍ] */
+        
+        /* ESTILOS ADICIONALES PARA TABLA */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #4a5568 0%, #3a4454 100%);
+            color: white;
+        }
+
+        thead th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        tbody td {
+            padding: 1rem;
+            border-bottom: 1px solid #e3e3e3;
+            color: var(--txt);
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .folio-number {
+            font-weight: 700;
+            color: #28a745;
+            font-size: 1.1rem;
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-success {
+            background: rgba(40, 199, 111, 0.2);
+            color: #28c76f;
+        }
+
+        .badge-warning {
+            background: rgba(255, 152, 0, 0.2);
+            color: #ff9800;
+        }
+
+        .badge-danger {
+            background: rgba(234, 84, 85, 0.2);
+            color: #ea5455;
+        }
+
+        @media (max-width: 767px) {
+            thead {
+                display: none;
+            }
+
+            tbody tr {
+                display: block;
+                margin-bottom: 1rem;
+                border: 1px solid #e3e3e3;
+                border-radius: 8px;
+                padding: 1rem;
+            }
+
+            tbody td {
+                display: block;
+                text-align: right;
+                padding: 0.5rem 0;
+                border: none;
+            }
+
+            tbody td::before {
+                content: attr(data-label);
+                float: left;
+                font-weight: 700;
+                color: #4b4b4b;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- [COPIAR HEADER COMPLETO DE registro_usuario.html] -->
+
+    <main>
+        <div class="container">
+            <h1 class="page-title">📋 Mis Folios Generados</h1>
+
+            {% if folios %}
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Folio</th>
+                                <th>Fecha</th>
+                                <th>Vehículo</th>
+                                <th>Propietario</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for folio in folios %}
+                            <tr>
+                                <td data-label="Folio">
+                                    <span class="folio-number">{{ folio.folio }}</span>
+                                </td>
+                                <td data-label="Fecha">{{ folio.fecha_creacion }}</td>
+                                <td data-label="Vehículo">{{ folio.marca }} {{ folio.linea }}</td>
+                                <td data-label="Propietario">{{ folio.nombre }}</td>
+                                <td data-label="Estado">
+                                    {% if folio.estado == 'VIGENTE' %}
+                                        <span class="badge badge-success">✅ Vigente</span>
+                                    {% elif folio.estado == 'VENCIDO' %}
+                                        <span class="badge badge-warning">⚠️ Vencido</span>
+                                    {% else %}
+                                        <span class="badge badge-danger">❌ {{ folio.estado }}</span>
+                                    {% endif %}
+                                </td>
+                                <td data-label="Acciones">
+                                    <a href="{{ url_for('descargar_recibo', folio=folio.folio) }}" 
+                                       class="btn-action" 
+                                       style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                                        📥 Descargar
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% else %}
+            <div class="sin-folios">
+                <h2>📭 No has generado ningún folio aún</h2>
+                <p>Cuando generes permisos, aparecerán aquí.</p>
+            </div>
+            {% endif %}
+
+            <div class="actions">
+                <a href="{{ url_for('registro_usuario') }}" class="btn-action">← Volver al Formulario</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- [COPIAR FOOTER COMPLETO] -->
 </body>
 </html>

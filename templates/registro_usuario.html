@@ -470,7 +470,7 @@
              class="footer-image">
     </footer>
 
-    <!-- ✅ JAVASCRIPT COMPLETO CON TOKEN Y PROTECCIÓN -->
+    <!-- ✅ OPCIÓN A - JAVASCRIPT CORREGIDO CON TOKEN -->
     <script>
         let formularioEnviado = false;
         let requestToken = null;
@@ -485,9 +485,11 @@
             return 'token_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         }
 
-        // Generar token al cargar la página
-        requestToken = generarToken();
-        console.log('[TOKEN] Generado:', requestToken);
+        // ✅ GENERAR TOKEN SOLO SI EXISTE EL FORMULARIO
+        if (form) {
+            requestToken = generarToken();
+            console.log('[TOKEN] ✅ Token generado al cargar:', requestToken);
+        }
 
         function bloquearFormulario() {
             btnGenerar.disabled = true;
@@ -506,27 +508,35 @@
             form.addEventListener('submit', function(e) {
                 if (formularioEnviado) {
                     e.preventDefault();
-                    console.log('⚠️ Formulario ya enviado, bloqueando reenvío');
+                    console.log('[SUBMIT] ⚠️ Formulario ya enviado, bloqueando reenvío');
                     alert('⚠️ El permiso ya se está generando. Por favor espera...');
                     return false;
                 }
 
                 // 🔑 AGREGAR TOKEN AL FORMULARIO
-                let tokenInput = document.querySelector('input[name="request_token"]');
+                let tokenInput = form.querySelector('input[name="request_token"]');
                 if (!tokenInput) {
                     tokenInput = document.createElement('input');
                     tokenInput.type = 'hidden';
                     tokenInput.name = 'request_token';
                     form.appendChild(tokenInput);
+                    console.log('[TOKEN] ✅ Campo hidden creado');
                 }
                 tokenInput.value = requestToken;
                 
-                console.log('[TOKEN] Enviando con token:', requestToken);
+                console.log('[TOKEN] ✅ Token agregado al formulario:', requestToken);
+                
+                // 🔍 DEBUG: Ver todos los campos del formulario
+                const formData = new FormData(form);
+                console.log('[FORM] Campos que se enviarán:');
+                for (let [key, value] of formData.entries()) {
+                    console.log(`  ${key}: ${value}`);
+                }
 
                 formularioEnviado = true;
                 bloquearFormulario();
                 
-                console.log('✅ Formulario enviado, bloqueado contra reenvíos');
+                console.log('[SUBMIT] ✅ Formulario enviándose...');
                 return true;
             });
         }
@@ -551,12 +561,14 @@
                 }
                 
                 // Rehabilitar inputs
-                const elements = form.querySelectorAll('input, textarea, select, button');
-                elements.forEach(el => {
-                    el.disabled = false;
-                });
+                if (form) {
+                    const elements = form.querySelectorAll('input, textarea, select, button');
+                    elements.forEach(el => {
+                        el.disabled = false;
+                    });
+                }
                 
-                console.log('[TOKEN] Página recargada, nuevo token:', requestToken);
+                console.log('[TOKEN] 🔄 Página recargada, nuevo token:', requestToken);
             }
         });
     </script>

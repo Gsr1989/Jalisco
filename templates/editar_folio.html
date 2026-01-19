@@ -1,80 +1,378 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Editar Folio</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
-            padding: 20px;
+    <meta charset="utf-8">
+    <title>Secretaría de Transporte | Editar Folio</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Editar Folio - Secretaría de Transporte">
+    <meta name="author" content="Jalisco">
+
+    <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+    
+    <!-- Montserrat Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+
+    <style type="text/css">
+        /* ========== VARIABLES CSS ========== */
+        :root {
+            --bg: #fafafa;
+            --txt: #67737a;
+            --muted: #6e6b7b;
+            --verde-jalisco: #28a745;
         }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-        }
-        h1 { text-align: center; color: #333; }
-        input, button {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+
+        /* ========== RESET ========== */
+        *, *:before, *:after {
             box-sizing: border-box;
-            font-size: 16px;
         }
-        button {
-            background: #800000;
-            color: white;
+
+        html {
+            font-family: sans-serif;
+            font-size: 14px;
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Montserrat", Helvetica, Arial, serif !important;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.45;
+            color: var(--muted);
+            background-color: var(--bg);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* ========== HEADER ========== */
+        .top-bar {
+            background-color: var(--verde-jalisco);
+            height: 8px;
+            width: 100%;
+        }
+
+        .header-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+            max-height: 250px;
+        }
+
+        @media (max-width: 767px) {
+            .header-image {
+                max-height: 150px;
+            }
+        }
+
+        /* ========== BOTÓN ACCESIBILIDAD ========== */
+        #float-button {
+            position: fixed;
+            bottom: 5%;
+            left: 5%;
+            z-index: 999;
+            border-radius: 100%;
+            height: 55px;
+            width: 55px;
+            padding: 0;
             border: none;
+            background-color: #f6f6f6;
+            box-shadow: 0 .125rem .25rem rgba(34, 41, 47, .075);
             cursor: pointer;
         }
-        button:hover { background: #a00000; }
-        a {
-            display: inline-block;
-            margin-top: 20px;
-            color: #800000;
+
+        /* ========== CONTENEDOR ========== */
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .page-title {
+            text-align: center;
+            font: normal normal bold 40px/45px Montserrat;
+            color: var(--txt);
+            margin: 2rem 0 1rem;
+        }
+
+        @media (max-width: 767px) {
+            .page-title {
+                font-size: 28px;
+                line-height: 32px;
+            }
+        }
+
+        /* ========== TARJETA FORMULARIO ========== */
+        .form-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        @media (max-width: 767px) {
+            .form-card {
+                padding: 1.5rem;
+            }
+        }
+
+        /* ========== FORMULARIO ========== */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group-full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #4b4b4b;
+            margin-bottom: 0.5rem;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="date"] {
+            width: 100%;
+            padding: 0.786rem 1rem;
+            border: 1px solid #d8d6de;
+            border-radius: 0.357rem;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            background: #fff;
+            color: var(--muted);
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus {
+            border-color: var(--verde-jalisco);
+            box-shadow: 0 0 0 3px rgba(40, 199, 111, 0.1);
+        }
+
+        input[readonly] {
+            background-color: #f0f0f0;
+            cursor: not-allowed;
+        }
+
+        /* ========== BOTONES ========== */
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.786rem 1.5rem;
+            border: none;
+            border-radius: 0.357rem;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
             text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--verde-jalisco);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #24a643;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(40, 199, 111, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f6f6f6;
+            color: var(--txt);
+            border: 1px solid #e3e3e3;
+        }
+
+        .btn-secondary:hover {
+            background: #e3e3e3;
+        }
+
+        @media (max-width: 767px) {
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* ========== FOLIO BADGE ========== */
+        .folio-badge {
+            display: inline-block;
+            background: var(--verde-jalisco);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        /* ========== FOOTER ========== */
+        footer {
+            margin-top: auto;
+            width: 100%;
+        }
+
+        .footer-image {
+            width: 100%;
+            height: auto;
+            display: block;
         }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>✏️ Editar Folio</h1>
-        
-        <form method="POST">
-            <label>Folio:</label>
-            <input type="text" value="{{ folio.folio }}" readonly style="background:#eee;">
-            
-            <label>Marca:</label>
-            <input type="text" name="marca" value="{{ folio.marca }}" required>
-            
-            <label>Línea:</label>
-            <input type="text" name="linea" value="{{ folio.linea }}" required>
-            
-            <label>Año:</label>
-            <input type="text" name="anio" value="{{ folio.anio }}" required>
-            
-            <label>No. Serie:</label>
-            <input type="text" name="serie" value="{{ folio.numero_serie }}" required>
-            
-            <label>No. Motor:</label>
-            <input type="text" name="motor" value="{{ folio.numero_motor }}" required>
-            
-            <label>Fecha Expedición:</label>
-            <input type="date" name="fecha_expedicion" value="{{ folio.fecha_expedicion }}" required>
-            
-            <label>Fecha Vencimiento:</label>
-            <input type="date" name="fecha_vencimiento" value="{{ folio.fecha_vencimiento }}" required>
-            
-            <button type="submit">Guardar Cambios</button>
-        </form>
-        
-        <a href="{{ url_for('admin_folios') }}">← Cancelar</a>
-    </div>
+    <!-- Barra Verde Superior -->
+    <div class="top-bar"></div>
+
+    <!-- HEADER CON IMAGEN -->
+    <header>
+        <img src="{{ url_for('static', filename='assets/images/header.jpg') }}" 
+             alt="Secretaría de Transporte Jalisco" 
+             class="header-image">
+    </header>
+
+    <!-- Botón Accesibilidad -->
+    <button id="float-button" type="button" aria-label="Abrir Menu de Accesibilidad">
+        <img src="{{ url_for('static', filename='assets/images/ico_accesibilidad.svg') }}" 
+             alt="Accesibilidad">
+    </button>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main>
+        <div class="container">
+            <h1 class="page-title">✏️ Editar Folio</h1>
+
+            <div class="form-card">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <span class="folio-badge">{{ folio.folio }}</span>
+                </div>
+
+                <!-- Formulario -->
+                <form method="POST" action="{{ url_for('editar_folio', folio=folio.folio) }}">
+                    <div class="form-grid">
+                        <!-- Marca -->
+                        <div class="form-group">
+                            <label for="marca">Marca</label>
+                            <input type="text" 
+                                   id="marca" 
+                                   name="marca" 
+                                   value="{{ folio.marca }}" 
+                                   placeholder="Ej: NISSAN"
+                                   required>
+                        </div>
+
+                        <!-- Línea -->
+                        <div class="form-group">
+                            <label for="linea">Línea / Submarca</label>
+                            <input type="text" 
+                                   id="linea" 
+                                   name="linea" 
+                                   value="{{ folio.linea }}" 
+                                   placeholder="Ej: VERSA"
+                                   required>
+                        </div>
+
+                        <!-- Año -->
+                        <div class="form-group">
+                            <label for="anio">Año</label>
+                            <input type="text" 
+                                   id="anio" 
+                                   name="anio" 
+                                   value="{{ folio.anio }}" 
+                                   placeholder="Ej: 2020"
+                                   required>
+                        </div>
+
+                        <!-- Serie -->
+                        <div class="form-group">
+                            <label for="serie">Número de Serie</label>
+                            <input type="text" 
+                                   id="serie" 
+                                   name="serie" 
+                                   value="{{ folio.numero_serie }}" 
+                                   placeholder="No. de Serie"
+                                   required>
+                        </div>
+
+                        <!-- Motor -->
+                        <div class="form-group">
+                            <label for="motor">Número de Motor</label>
+                            <input type="text" 
+                                   id="motor" 
+                                   name="motor" 
+                                   value="{{ folio.numero_motor }}" 
+                                   placeholder="No. de Motor"
+                                   required>
+                        </div>
+
+                        <!-- Fecha Expedición -->
+                        <div class="form-group">
+                            <label for="fecha_expedicion">Fecha de Expedición</label>
+                            <input type="date" 
+                                   id="fecha_expedicion" 
+                                   name="fecha_expedicion" 
+                                   value="{{ folio.fecha_expedicion }}" 
+                                   required>
+                        </div>
+
+                        <!-- Fecha Vencimiento -->
+                        <div class="form-group">
+                            <label for="fecha_vencimiento">Fecha de Vencimiento</label>
+                            <input type="date" 
+                                   id="fecha_vencimiento" 
+                                   name="fecha_vencimiento" 
+                                   value="{{ folio.fecha_vencimiento }}" 
+                                   required>
+                        </div>
+                    </div>
+
+                    <!-- Acciones -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">💾 Guardar Cambios</button>
+                        <a href="{{ url_for('admin_folios') }}" class="btn btn-secondary">✖️ Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <img src="{{ url_for('static', filename='assets/images/1000008793.png') }}" 
+             alt="Gobierno de Jalisco" 
+             class="footer-image">
+    </footer>
 </body>
 </html>

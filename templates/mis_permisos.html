@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Secretaría de Transporte | Mis Permisos</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Mis Permisos - Secretaría de Transporte">
+  <meta name="author" content="Jalisco">
+
+  <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+
+  <!-- Montserrat Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#fafafa;
+      --txt:#67737a;
+      --muted:#6e6b7b;
+      --verde-jalisco:#28a745;
+      --primary:#4a5568;
+      --card:#ffffff;
+      --border:#e8e8ee;
+      --shadow:0 2px 8px rgba(0,0,0,.08);
+      --shadow2:0 8px 20px rgba(0,0,0,.12);
+      --danger:#ea5455;
+      --warning:#ff9800;
+      --ok:#28c76f;
+      --coffee:#8b5a2b;
+    }
+    *,*:before,*:after{box-sizing:border-box}
+    html{font-family:sans-serif;font-size:14px;height:100%}
+    body{
+      margin:0;
+      font-family:"Montserrat", Helvetica, Arial, serif !important;
+      font-size:1rem;
+      font-weight:400;
+      line-height:1.45;
+      color:var(--muted);
+      background-color:var(--bg);
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
+    }
+    main{flex:1}
+    img{max-width:100%;height:auto}
+
+    .top-bar{background-color:var(--verde-jalisco);height:8px;width:100%}
+    .header-image{
+      width:100%;
+      height:auto;
+      display:block;
+      object-fit:cover;
+      max-height:250px;
+    }
+    @media (max-width:767px){.header-image{max-height:150px}}
+
+    #float-button{
+      position:fixed;
+      bottom:5%;
+      left:5%;
+      z-index:999;
+      border-radius:100%;
+      height:55px;
+      width:55px;
+      padding:0;
+      border:none;
+      background-color:#f6f6f6;
+      box-shadow:0 .125rem .25rem rgba(34,41,47,.075);
+      cursor:pointer;
+    }
+
+    .container{max-width:1000px;margin:0 auto;padding:2rem 1rem}
+    .page-title{
+      text-align:center;
+      font:normal normal bold 40px/45px Montserrat;
+      color:var(--txt);
+      margin:2rem 0 .5rem;
+    }
+    .page-subtitle{
+      text-align:center;
+      font:normal normal normal 16px/24px Montserrat;
+      color:var(--txt);
+      margin:0 0 2rem;
+    }
+    @media (max-width:767px){
+      .page-title{font-size:28px;line-height:32px}
+    }
+
+    .flash-messages{margin-bottom:1.5rem}
+    .alert{
+      padding:.75rem 1rem;
+      margin-bottom:1rem;
+      border:1px solid transparent;
+      border-radius:.357rem;
+      font-size:.95rem;
+      text-align:center;
+      font-weight:600;
+      background:rgba(0,0,0,.03);
+    }
+    .alert-error{color:var(--danger);background-color:rgba(234,84,85,.12);border-color:rgba(234,84,85,.3)}
+    .alert-success{color:var(--ok);background-color:rgba(40,199,111,.12);border-color:rgba(40,199,111,.3)}
+
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(12,1fr);
+      gap:1rem;
+      margin-bottom:1.5rem;
+    }
+    .stat-card{
+      grid-column:span 4;
+      background:linear-gradient(135deg, var(--primary) 0%, #3a4454 100%);
+      color:#fff;
+      border-radius:12px;
+      padding:1.25rem 1.25rem;
+      box-shadow:var(--shadow2);
+      position:relative;
+      overflow:hidden;
+    }
+    .stat-card:before{
+      content:"";
+      position:absolute;
+      right:-60px;
+      top:-60px;
+      width:140px;
+      height:140px;
+      background:rgba(255,255,255,.08);
+      border-radius:999px;
+      transform:rotate(10deg);
+    }
+    .stat-label{opacity:.9;font-weight:600;font-size:.9rem;text-transform:uppercase}
+    .stat-value{font-size:2.2rem;font-weight:800;margin-top:.35rem;line-height:1}
+    .stat-hint{opacity:.85;font-size:.9rem;margin-top:.5rem}
+    @media (max-width:900px){.stat-card{grid-column:span 6}}
+    @media (max-width:600px){.stat-card{grid-column:span 12}}
+
+    .toolbar{
+      display:flex;
+      gap:1rem;
+      align-items:center;
+      justify-content:space-between;
+      margin:1rem 0 1.5rem;
+      flex-wrap:wrap;
+    }
+    .search{
+      flex:1;
+      min-width:240px;
+      background:#fff;
+      border:1px solid #d8d6de;
+      border-radius:.357rem;
+      padding:.786rem 1rem;
+      font-family:inherit;
+      font-size:1rem;
+      outline:none;
+      color:var(--muted);
+      transition:border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    }
+    .search:focus{
+      border-color:var(--verde-jalisco);
+      box-shadow:0 0 0 3px rgba(40,199,111,.1);
+    }
+    .select{
+      min-width:220px;
+      background:#fff;
+      border:1px solid #d8d6de;
+      border-radius:.357rem;
+      padding:.786rem 1rem;
+      font-family:inherit;
+      font-size:1rem;
+      outline:none;
+      color:var(--muted);
+      transition:border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    }
+    .select:focus{
+      border-color:var(--verde-jalisco);
+      box-shadow:0 0 0 3px rgba(40,199,111,.1);
+    }
+
+    .table-card{
+      background:var(--card);
+      border-radius:12px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      border:1px solid var(--border);
+    }
+    .table-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:1.25rem 1.5rem;
+      border-bottom:1px solid var(--border);
+      gap:1rem;
+      flex-wrap:wrap;
+    }
+    .table-head h3{
+      margin:0;
+      color:var(--txt);
+      font-size:1.1rem;
+      font-weight:800;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:.5rem;
+      padding:.35rem .75rem;
+      border-radius:999px;
+      font-weight:800;
+      font-size:.85rem;
+      border:1px solid rgba(0,0,0,.06);
+      background:rgba(0,0,0,.03);
+      color:var(--txt);
+    }
+    .pill.ok{background:rgba(40,199,111,.12);border-color:rgba(40,199,111,.25);color:#1f7a4b}
+    .pill.danger{background:rgba(234,84,85,.12);border-color:rgba(234,84,85,.25);color:#9d2a2a}
+    .pill.warn{background:rgba(255,152,0,.14);border-color:rgba(255,152,0,.28);color:#a86400}
+
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+    }
+    thead th{
+      text-align:left;
+      padding:1rem 1.5rem;
+      font-size:.85rem;
+      letter-spacing:.02em;
+      text-transform:uppercase;
+      color:#8b8b98;
+      background:#fbfbfd;
+      border-bottom:1px solid var(--border);
+      white-space:nowrap;
+    }
+    tbody td{
+      padding:1rem 1.5rem;
+      border-bottom:1px solid var(--border);
+      vertical-align:middle;
+      color:var(--muted);
+    }
+    tbody tr:hover{background:#fcfcff}
+    tbody tr:last-child td{border-bottom:none}
+
+    .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+    .folio{
+      font-weight:900;
+      color:#2c2c34;
+      letter-spacing:.02em;
+    }
+    .muted{color:#8b8b98;font-size:.95rem}
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:.4rem;
+      padding:.35rem .65rem;
+      border-radius:999px;
+      font-weight:900;
+      font-size:.8rem;
+      border:1px solid transparent;
+      white-space:nowrap;
+    }
+    .badge.vigente{color:#1f7a4b;background:rgba(40,199,111,.12);border-color:rgba(40,199,111,.25)}
+    .badge.vencido{color:#6a3e00;background:rgba(255,152,0,.16);border-color:rgba(255,152,0,.30)}
+    .badge.error{color:#9d2a2a;background:rgba(234,84,85,.12);border-color:rgba(234,84,85,.25)}
+
+    .actions{
+      display:flex;
+      gap:.75rem;
+      align-items:center;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+    }
+    .btn-link{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:.5rem;
+      padding:.65rem 1rem;
+      border-radius:.357rem;
+      text-decoration:none;
+      font-weight:700;
+      font-size:.95rem;
+      cursor:pointer;
+      transition:all .2s;
+      border:1px solid #d8d6de;
+      background:#fff;
+      color:var(--txt);
+      white-space:nowrap;
+    }
+    .btn-link:hover{
+      transform:translateY(-2px);
+      box-shadow:0 4px 8px rgba(0,0,0,.08);
+      border-color:rgba(40,167,69,.35);
+    }
+    .btn-primary{
+      border:none;
+      background:var(--verde-jalisco);
+      color:#fff;
+    }
+    .btn-primary:hover{
+      background:#24a643;
+      border-color:transparent;
+      box-shadow:0 4px 8px rgba(40,199,111,.25);
+    }
+
+    .empty{
+      text-align:center;
+      padding:3rem 1.5rem;
+      color:var(--txt);
+    }
+    .empty h2{margin:.5rem 0 0;color:var(--txt);font-size:1.5rem}
+    .empty p{margin:.75rem 0 0;color:var(--muted)}
+    .empty .btn-link{margin-top:1.25rem}
+
+    .actions-bottom{
+      display:flex;
+      gap:1rem;
+      margin-top:2rem;
+      flex-wrap:wrap;
+    }
+    .btn-action{
+      flex:1;
+      padding:.786rem 1.5rem;
+      background:var(--primary);
+      color:white;
+      border:none;
+      border-radius:.357rem;
+      font-family:inherit;
+      font-size:1rem;
+      font-weight:600;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-block;
+      text-align:center;
+      transition:all .2s;
+      min-width:220px;
+    }
+    .btn-action:hover{background:#3a4454;transform:translateY(-2px)}
+    @media (max-width:767px){
+      .actions-bottom{flex-direction:column}
+      .btn-action{min-width:unset}
+      thead{display:none}
+      table, tbody, tr, td{display:block;width:100%}
+      tbody tr{border-bottom:1px solid var(--border)}
+      tbody td{
+        border:none;
+        padding:.75rem 1rem;
+        display:flex;
+        justify-content:space-between;
+        gap:1rem;
+      }
+      tbody td::before{
+        content:attr(data-label);
+        font-weight:800;
+        color:#8b8b98;
+        text-transform:uppercase;
+        font-size:.78rem;
+        letter-spacing:.02em;
+      }
+      .actions{justify-content:flex-start}
+    }
+
+    footer{margin-top:auto;width:100%}
+    .footer-image{width:100%;height:auto;display:block}
+  </style>
+</head>
+
+<body>
+  <div class="top-bar"></div>
+
+  <header>
+    <img src="{{ url_for('static', filename='assets/images/header.jpg') }}"
+         alt="Secretaría de Transporte Jalisco"
+         class="header-image">
+  </header>
+
+  <button id="float-button" type="button" aria-label="Abrir Menu de Accesibilidad">
+    <img src="{{ url_for('static', filename='assets/images/ico_accesibilidad.svg') }}"
+         alt="Accesibilidad">
+  </button>
+
+  <main>
+    <div class="container">
+      <h1 class="page-title">📋 Mis Permisos</h1>
+      <p class="page-subtitle">Historial de permisos generados con tu usuario</p>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-messages">
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Permisos generados</div>
+          <div class="stat-value">{{ total_generados }}</div>
+          <div class="stat-hint">Historial total en tu cuenta</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Folios asignados</div>
+          <div class="stat-value">{{ folios_asignados }}</div>
+          <div class="stat-hint">Asignados por el administrador</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Folios usados</div>
+          <div class="stat-value">{{ folios_usados }}</div>
+          <div class="stat-hint">Usados hasta el momento</div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <input id="searchInput" class="search" type="text" placeholder="Buscar por folio, serie, marca, línea o estado...">
+        <select id="statusFilter" class="select">
+          <option value="all">Filtrar: Todos</option>
+          <option value="VIGENTE">Solo Vigentes</option>
+          <option value="VENCIDO">Solo Vencidos</option>
+        </select>
+      </div>
+
+      <div class="table-card">
+        <div class="table-head">
+          <h3>🧾 Lista de permisos</h3>
+          {% set disponibles = (folios_asignados | int) - (folios_usados | int) %}
+          {% if disponibles <= 0 %}
+            <span class="pill danger">⚠️ Sin folios disponibles</span>
+          {% elif disponibles <= 3 %}
+            <span class="pill warn">🚨 Quedan {{ disponibles }} folios</span>
+          {% else %}
+            <span class="pill ok">✅ Quedan {{ disponibles }} folios</span>
+          {% endif %}
+        </div>
+
+        {% if permisos and permisos|length > 0 %}
+          <table id="permisosTable">
+            <thead>
+              <tr>
+                <th>Folio</th>
+                <th>Fecha</th>
+                <th>Serie</th>
+                <th>Vehículo</th>
+                <th>Estado</th>
+                <th style="text-align:right;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for p in permisos %}
+              {# Compatibilidad: tu backend ya setea p['estado'] como VIGENTE/VENCIDO/ERROR #}
+              {% set estado = (p.estado or 'ERROR') %}
+              <tr class="permiso-row"
+                  data-folio="{{ (p.folio or '') }}"
+                  data-serie="{{ (p.numero_serie or '') }}"
+                  data-marca="{{ (p.marca or '') }}"
+                  data-linea="{{ (p.linea or '') }}"
+                  data-estado="{{ estado }}">
+                <td data-label="Folio">
+                  <div class="folio mono">{{ p.folio }}</div>
+                  <div class="muted">Entidad: {{ p.entidad or 'jalisco' }}</div>
+                </td>
+                <td data-label="Fecha">
+                  <div><strong>{{ p.fecha_formateada or '—' }}</strong></div>
+                  <div class="muted">{{ p.hora_formateada or '' }}</div>
+                </td>
+                <td data-label="Serie">
+                  <div class="mono">{{ p.numero_serie }}</div>
+                </td>
+                <td data-label="Vehículo">
+                  <div><strong>{{ p.marca }}</strong> {{ p.linea }}</div>
+                  <div class="muted">Año: {{ p.anio }}</div>
+                </td>
+                <td data-label="Estado">
+                  {% if estado == 'VIGENTE' %}
+                    <span class="badge vigente">✅ VIGENTE</span>
+                  {% elif estado == 'VENCIDO' %}
+                    <span class="badge vencido">⏰ VENCIDO</span>
+                  {% else %}
+                    <span class="badge error">❌ ERROR</span>
+                  {% endif %}
+                </td>
+                <td data-label="Acciones">
+                  <div class="actions">
+                    <a class="btn-link" href="{{ url_for('consulta_folio_directo', folio=p.folio) }}">🔎 Ver</a>
+                    <a class="btn-link btn-primary" href="{{ url_for('descargar_recibo', folio=p.folio) }}">⬇️ Descargar</a>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <div class="empty">
+            <div style="font-size:2.5rem;">🗂️</div>
+            <h2>No hay permisos aún</h2>
+            <p>Cuando generes un permiso, aquí aparecerá tu historial con opción de ver y descargar.</p>
+            <a class="btn-link btn-primary" href="{{ url_for('registro_usuario') }}">🚗 Generar permiso</a>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="actions-bottom">
+        <a href="{{ url_for('registro_usuario') }}" class="btn-action">🚗 Generar Permiso</a>
+        <a href="{{ url_for('consulta_folio') }}" class="btn-action">🔍 Consultar Folio</a>
+        <a href="{{ url_for('logout') }}" class="btn-action">🚪 Cerrar Sesión</a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <img src="{{ url_for('static', filename='assets/images/1000008793.png') }}"
+         alt="Gobierno de Jalisco"
+         class="footer-image">
+  </footer>
+
+  <script>
+    const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
+    const rows = document.querySelectorAll('.permiso-row');
+
+    function normalizar(v) {
+      return (v || '').toString().trim().toUpperCase();
+    }
+
+    function aplicarFiltros() {
+      const q = normalizar(searchInput ? searchInput.value : '');
+      const st = statusFilter ? statusFilter.value : 'all';
+
+      rows.forEach(row => {
+        const folio = normalizar(row.dataset.folio);
+        const serie = normalizar(row.dataset.serie);
+        const marca = normalizar(row.dataset.marca);
+        const linea = normalizar(row.dataset.linea);
+        const estado = normalizar(row.dataset.estado);
+
+        const matchText =
+          !q ||
+          folio.includes(q) ||
+          serie.includes(q) ||
+          marca.includes(q) ||
+          linea.includes(q) ||
+          estado.includes(q);
+
+        const matchStatus =
+          st === 'all' || estado === normalizar(st);
+
+        row.style.display = (matchText && matchStatus) ? '' : 'none';
+      });
+    }
+
+    if (searchInput) searchInput.addEventListener('input', aplicarFiltros);
+    if (statusFilter) statusFilter.addEventListener('change', aplicarFiltros);
+  </script>
+</body>
+          </html>

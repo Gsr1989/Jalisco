@@ -1,36 +1,293 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Consulta de Permiso Guadalajara</title>
-  <style>
-    body {
-      background-color: #2d5dab;
-      color: white;
-      font-family: sans-serif;
-      text-align: center;
-      padding: 40px 20px;
-    }
-    h1 {
-      font-size: 1.8em;
-      margin-bottom: 0.2em;
-    }
-    p {
-      font-size: 1.1em;
-      max-width: 600px;
-      margin: 0 auto 20px;
-    }
-    .icon {
-      font-size: 2em;
-      margin-top: 20px;
-    }
-  </style>
+    <meta charset="utf-8">
+    <title>Secretaría de Transporte | Consulta de Permiso</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Consulta de Permiso - Secretaría de Transporte">
+    <meta name="author" content="Jalisco">
+
+    <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+    
+    <!-- Montserrat Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+
+    <style type="text/css">
+        /* ========== VARIABLES CSS ========== */
+        :root {
+            --bg: #fafafa;
+            --txt: #67737a;
+            --muted: #6e6b7b;
+            --verde-jalisco: #28a745;
+            --primary: #4a5568;
+        }
+
+        /* ========== RESET ========== */
+        *, *:before, *:after {
+            box-sizing: border-box;
+        }
+
+        html {
+            font-family: sans-serif;
+            font-size: 14px;
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Montserrat", Helvetica, Arial, serif !important;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.45;
+            color: var(--muted);
+            background-color: var(--bg);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* ========== HEADER ========== */
+        .top-bar {
+            background-color: var(--verde-jalisco);
+            height: 8px;
+            width: 100%;
+        }
+
+        .header-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+            max-height: 250px;
+        }
+
+        @media (max-width: 767px) {
+            .header-image {
+                max-height: 150px;
+            }
+        }
+
+        /* ========== BOTÓN ACCESIBILIDAD ========== */
+        #float-button {
+            position: fixed;
+            bottom: 5%;
+            left: 5%;
+            z-index: 999;
+            border-radius: 100%;
+            height: 55px;
+            width: 55px;
+            padding: 0;
+            border: none;
+            background-color: #f6f6f6;
+            box-shadow: 0 .125rem .25rem rgba(34, 41, 47, .075);
+            cursor: pointer;
+        }
+
+        /* ========== CONTENEDOR ========== */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 3rem 1rem;
+            text-align: center;
+        }
+
+        /* ========== ICONO GRANDE ========== */
+        .main-icon {
+            font-size: 5rem;
+            margin-bottom: 2rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        /* ========== TÍTULO ========== */
+        .page-title {
+            font: normal normal bold 40px/45px Montserrat;
+            color: var(--txt);
+            margin: 1rem 0;
+        }
+
+        @media (max-width: 767px) {
+            .page-title {
+                font-size: 28px;
+                line-height: 32px;
+            }
+        }
+
+        /* ========== TARJETA CONTENIDO ========== */
+        .content-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 767px) {
+            .content-card {
+                padding: 1.5rem;
+            }
+        }
+
+        .content-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--txt);
+            margin-bottom: 2rem;
+        }
+
+        .content-text strong {
+            color: var(--verde-jalisco);
+            font-weight: 700;
+        }
+
+        /* ========== FEATURES ========== */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .feature-item {
+            padding: 1.5rem;
+            background: rgba(40, 199, 111, 0.05);
+            border-radius: 8px;
+            border: 2px solid rgba(40, 199, 111, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-text {
+            font-weight: 600;
+            color: var(--txt);
+            font-size: 0.95rem;
+        }
+
+        /* ========== BOTÓN CTA ========== */
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: var(--verde-jalisco);
+            color: white;
+            border: none;
+            border-radius: 0.357rem;
+            font-family: inherit;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+            margin-top: 2rem;
+        }
+
+        .cta-button:hover {
+            background: #24a643;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(40, 199, 111, 0.3);
+        }
+
+        /* ========== FOOTER ========== */
+        footer {
+            margin-top: auto;
+            width: 100%;
+        }
+
+        .footer-image {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+    </style>
 </head>
+
 <body>
-  <h1>Consulta de Permiso Guadalajara</h1>
-  <p>
-    Ingresa tu número de permiso y accede de inmediato a la información sobre tu permiso digital. Nuestra plataforma es fácil de usar, rápida y segura, ofreciéndote todos los detalles necesarios en un solo lugar. <strong>¡Verifica tu permiso ahora!</strong>
-  </p>
-  <div class="icon">❓</div>
+    <!-- Barra Verde Superior -->
+    <div class="top-bar"></div>
+
+    <!-- HEADER CON IMAGEN -->
+    <header>
+        <img src="{{ url_for('static', filename='assets/images/header.jpg') }}" 
+             alt="Secretaría de Transporte Jalisco" 
+             class="header-image">
+    </header>
+
+    <!-- Botón Accesibilidad -->
+    <button id="float-button" type="button" aria-label="Abrir Menu de Accesibilidad">
+        <img src="{{ url_for('static', filename='assets/images/ico_accesibilidad.svg') }}" 
+             alt="Accesibilidad">
+    </button>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main>
+        <div class="container">
+            <!-- Icono principal -->
+            <div class="main-icon">🔍</div>
+
+            <!-- Título -->
+            <h1 class="page-title">Consulta de Permiso Jalisco</h1>
+
+            <!-- Tarjeta de contenido -->
+            <div class="content-card">
+                <p class="content-text">
+                    Ingresa tu número de permiso y accede de inmediato a la información sobre tu permiso digital. 
+                    Nuestra plataforma es <strong>fácil de usar, rápida y segura</strong>, ofreciéndote todos los 
+                    detalles necesarios en un solo lugar. <strong>¡Verifica tu permiso ahora!</strong>
+                </p>
+
+                <!-- Features -->
+                <div class="features">
+                    <div class="feature-item">
+                        <div class="feature-icon">⚡</div>
+                        <div class="feature-text">Consulta Rápida</div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-icon">🔒</div>
+                        <div class="feature-text">100% Seguro</div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-icon">📱</div>
+                        <div class="feature-text">Acceso 24/7</div>
+                    </div>
+                </div>
+
+                <!-- Botón CTA -->
+                <a href="{{ url_for('consulta_folio') }}" class="cta-button">
+                    🔎 Consultar Mi Permiso
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <img src="{{ url_for('static', filename='assets/images/1000008793.png') }}" 
+             alt="Gobierno de Jalisco" 
+             class="footer-image">
+    </footer>
 </body>
 </html>

@@ -20,36 +20,13 @@
     <style type="text/css">
         /* ========== VARIABLES CSS ========== */
         :root {
-            --blue: #00cfe8;
-            --indigo: #6610f2;
-            --purple: #dadada;
-            --pink: #e83e8c;
-            --red: #ea5455;
-            --orange: #ff9f43;
-            --yellow: #ffc107;
-            --green: #28c76f;
-            --teal: #20c997;
-            --cyan: #17a2b8;
-            --white: #fff;
-            --gray: #b8c2cc;
-            --gray-dark: #1e1e1e;
-            --primary: #dadada;
-            --secondary: #82868b;
-            --success: #28c76f;
-            --info: #00cfe8;
-            --warning: #ff9f43;
-            --danger: #ea5455;
-            --light: #f6f6f6;
-            --dark: #4b4b4b;
             --color-dep: #ffffff;
-            --breakpoint-xs: 0;
-            --breakpoint-sm: 576px;
-            --breakpoint-md: 768px;
-            --breakpoint-lg: 992px;
-            --breakpoint-xl: 1200px;
-            --breakpoint-xxl: 1440px;
-            --font-family-sans-serif: "Montserrat", Helvetica, Arial, serif;
-            --font-family-monospace: "Montserrat", Helvetica, Arial, serif;
+            --bg: #fafafa;
+            --txt: #67737a;
+            --muted: #6e6b7b;
+            --verde-jalisco: #28a745;
+            --footer-bg: #4a5568;
+            --footer-darker: #3a4454;
         }
 
         /* ========== RESET ========== */
@@ -61,7 +38,6 @@
             font-family: sans-serif;
             line-height: 1.15;
             -webkit-text-size-adjust: 100%;
-            -webkit-tap-highlight-color: rgba(34, 41, 47, 0);
             font-size: 14px;
             height: 100%;
             letter-spacing: .01rem;
@@ -73,15 +49,17 @@
             font-size: 1rem;
             font-weight: 400;
             line-height: 1.45;
-            color: #6e6b7b;
+            color: var(--muted);
             text-align: left;
-            background-color: #fafafa;
-            height: 100%;
-            direction: ltr;
+            background-color: var(--bg);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         main {
             display: block;
+            flex: 1;
         }
 
         p {
@@ -114,40 +92,19 @@
             cursor: pointer;
         }
 
-        button::-moz-focus-inner, [type=button]::-moz-focus-inner {
-            padding: 0;
-            border-style: none;
-        }
-
         /* ========== UTILIDADES ========== */
         .img-fluid {
             max-width: 100%;
             height: auto;
         }
 
-        .container, .container-fluid {
+        .container {
             width: 100%;
             padding-right: 1rem;
             padding-left: 1rem;
             margin-right: auto;
             margin-left: auto;
-            max-width: 100%;
-        }
-
-        @media (min-width: 576px) {
-            .container { max-width: 99%; }
-        }
-        @media (min-width: 768px) {
-            .container { max-width: 95%; }
-        }
-        @media (min-width: 992px) {
-            .container { max-width: 992px; }
-        }
-        @media (min-width: 1200px) {
-            .container { max-width: 1200px; }
-        }
-        @media (min-width: 1440px) {
-            .container { max-width: 1440px; }
+            max-width: 1200px;
         }
 
         .row {
@@ -155,8 +112,6 @@
             flex-wrap: wrap;
             margin-right: -1rem;
             margin-left: -1rem;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
         }
 
         .col-lg-6 {
@@ -176,12 +131,9 @@
         .btn {
             display: inline-block;
             font-weight: 500;
-            color: #6e6b7b;
+            color: var(--muted);
             text-align: center;
             vertical-align: middle;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
             user-select: none;
             background-color: transparent;
             border: 1px solid transparent;
@@ -189,26 +141,9 @@
             font-size: 1rem;
             line-height: 1;
             border-radius: .358rem;
-            transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out, background 0s, border 0s;
+            transition: all .15s ease-in-out;
             box-shadow: none;
-        }
-
-        .btn:hover {
-            color: #6e6b7b;
-            text-decoration: none;
-        }
-
-        .btn:focus {
-            outline: 0;
-            box-shadow: 0 0 0 .2rem rgba(218, 218, 218, .25);
-        }
-
-        .btn:disabled {
-            opacity: .65;
-        }
-
-        .btn:not(:disabled):not(.disabled) {
-            cursor: pointer;
+            font-family: inherit;
         }
 
         .btn-light {
@@ -218,55 +153,16 @@
         }
 
         .btn-light:hover {
-            color: #2a2e30;
             background-color: #e3e3e3;
             border-color: #ddd;
-        }
-
-        .btn-light:focus {
-            color: #2a2e30;
-            background-color: #e3e3e3;
-            border-color: #ddd;
-            box-shadow: 0 0 0 .2rem rgba(215, 216, 216, .5);
-        }
-
-        .btn-light:not(:disabled):not(.disabled):active {
-            color: #2a2e30;
-            background-color: #ddd;
-            border-color: #d6d6d6;
         }
 
         .bg-white {
             background-color: #fff !important;
         }
 
-        .justify-content-center {
-            justify-content: center !important;
-        }
-
-        .align-items-center {
-            align-items: center !important;
-        }
-
-        .shadow-sm {
-            box-shadow: 0 .125rem .25rem rgba(34, 41, 47, .075) !important;
-        }
-
-        .w-100 {
-            width: 100% !important;
-        }
-
-        .ml-0 {
-            margin-left: 0 !important;
-        }
-
         .mt-4 {
             margin-top: 3.5rem !important;
-        }
-
-        .px-0 {
-            padding-right: 0 !important;
-            padding-left: 0 !important;
         }
 
         .py-2 {
@@ -282,18 +178,17 @@
         }
 
         /* ========== ESTILOS ESPECÍFICOS ========== */
-        main {
+        .top-bar {
+            background-color: var(--verde-jalisco);
+            height: 8px;
             width: 100%;
-            max-width: 100%;
-            min-height: 100vh;
         }
 
         .fund {
             text-align: left;
             font: normal normal bold 40px/45px Montserrat;
             letter-spacing: 0px;
-            color: #67737a;
-            opacity: 1;
+            color: var(--txt);
             margin-bottom: 1rem;
         }
 
@@ -301,7 +196,7 @@
             text-align: left;
             font: normal normal normal 18px/32px Montserrat;
             letter-spacing: 0px;
-            color: #67737a;
+            color: var(--txt);
             margin-bottom: 1.5rem;
         }
 
@@ -314,9 +209,6 @@
             .padd {
                 padding-right: 0 !important;
                 padding-top: 0%;
-            }
-            .img {
-                width: 300px;
             }
             .fund {
                 font-size: 28px;
@@ -341,10 +233,10 @@
         }
 
         #float-button:focus {
-            border: 5px solid var(--color-dep);
+            outline: 4px solid rgba(236, 205, 50, 0.35);
         }
 
-        /* ========== FORMULARIO LOGIN ========== */
+        /* ========== FORMULARIO ========== */
         .form-group {
             margin-bottom: 1.5rem;
         }
@@ -367,7 +259,7 @@
             font-size: 1rem;
             outline: none;
             background: #fff;
-            color: #6e6b7b;
+            color: var(--muted);
             transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
         }
 
@@ -388,7 +280,7 @@
             transform: translateY(-50%);
             background: transparent;
             border: none;
-            color: #6e6b7b;
+            color: var(--muted);
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
@@ -430,11 +322,87 @@
             border-color: rgba(40, 199, 111, 0.3);
         }
 
-        /* ========== HINT TEXT ========== */
         .hint-text {
             font-size: 13px;
             color: #b9b9c3;
             margin-top: 0.5rem;
+        }
+
+        /* ========== FOOTER ========== */
+        footer {
+            background-color: var(--footer-bg);
+            color: white;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            padding: 3rem 1rem 2rem;
+            text-align: center;
+        }
+
+        .footer-divider {
+            width: 80%;
+            height: 1px;
+            background-color: rgba(255, 255, 255, 0.2);
+            margin: 0 auto 2rem;
+        }
+
+        .footer-title {
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin-bottom: 2rem;
+            color: white;
+        }
+
+        .footer-logo {
+            max-width: 280px;
+            margin: 0 auto 2rem;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .social-icon {
+            background: white;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: transform 0.2s;
+            text-decoration: none;
+        }
+
+        .social-icon:hover {
+            transform: translateY(-3px);
+        }
+
+        .social-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .footer-gov-logo {
+            max-width: 180px;
+            margin: 2rem auto;
+        }
+
+        .footer-badge {
+            max-width: 120px;
+            margin: 1.5rem auto;
+        }
+
+        .footer-copyright {
+            background-color: var(--footer-darker);
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
         }
 
         /* ========== RESPONSIVE ========== */
@@ -447,13 +415,16 @@
 </head>
 
 <body>
+    <!-- Barra Verde Superior -->
+    <div class="top-bar"></div>
+
     <!-- Botón Accesibilidad Flotante -->
     <button id="float-button" type="button" aria-label="Abrir Menu de Accesibilidad" class="btn btn-light shadow-sm">
         <img src="{{ url_for('static', filename='assets/images/ico_accesibilidad.svg') }}" alt="Accesibilidad del Sitio" class="img-fluid">
     </button>
 
-    <!-- Main Container -->
-    <main class="container-fluid px-0 ml-0 py-2 py-sm-4 bg-white row justify-content-center">
+    <!-- Main Content -->
+    <main class="container-fluid px-0 ml-0 py-2 py-sm-4 bg-white row justify-content-center" style="margin: 0;">
         <div class="body container mt-4 bg-white row justify-content-center align-items-center" style="padding-bottom: 5%;">
             
             <!-- COLUMNA IZQUIERDA: Formulario -->
@@ -502,6 +473,66 @@
 
         </div>
     </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <!-- Divider -->
+            <div class="footer-divider"></div>
+
+            <!-- Título -->
+            <h3 class="footer-title">Secretaría de Transporte</h3>
+
+            <!-- Logo -->
+            <div class="footer-logo">
+                <img src="{{ url_for('static', filename='assets/images/logo_jalisco_2024_2030.svg') }}" alt="Transporte Jalisco" class="img-fluid">
+            </div>
+
+            <!-- Redes Sociales -->
+            <div class="footer-social">
+                <a href="https://www.facebook.com/TransporteJalisco" target="_blank" class="social-icon" aria-label="Facebook">
+                    <svg fill="#4267B2" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                </a>
+                <a href="https://twitter.com/TransporteJal" target="_blank" class="social-icon" aria-label="X (Twitter)">
+                    <svg fill="#000000" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </a>
+            </div>
+
+            <!-- Logo Gobierno -->
+            <div class="footer-gov-logo">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+                    <!-- Árbol con leones simplificado -->
+                    <g fill="white">
+                        <circle cx="100" cy="40" r="25"/>
+                        <rect x="90" y="60" width="20" height="40"/>
+                        <!-- Leones estilizados -->
+                        <path d="M60,100 L50,120 L70,120 Z"/>
+                        <path d="M140,100 L130,120 L150,120 Z"/>
+                    </g>
+                    <!-- Sonrisa naranja -->
+                    <path d="M50,150 Q100,180 150,150" stroke="#ff9f43" stroke-width="8" fill="none"/>
+                </svg>
+            </div>
+
+            <!-- Badge Web Access -->
+            <div class="footer-badge">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 150">
+                    <circle cx="75" cy="75" r="70" fill="#3b82f6" opacity="0.2"/>
+                    <circle cx="75" cy="75" r="60" fill="#3b82f6"/>
+                    <text x="75" y="50" text-anchor="middle" fill="white" font-family="Arial" font-size="12" font-weight="bold">WEB ACCESS</text>
+                    <!-- Iconos de accesibilidad -->
+                    <circle cx="75" cy="75" r="8" fill="white"/>
+                    <path d="M60,90 L75,75 L90,90" stroke="white" stroke-width="3" fill="none"/>
+                    <path d="M65,95 Q75,105 85,95" stroke="white" stroke-width="3" fill="none"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Copyright -->
+        <div class="footer-copyright">
+            Gobierno de Jalisco © 2026
+        </div>
+    </footer>
 
     <!-- Toggle Password Script -->
     <script>

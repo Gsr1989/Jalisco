@@ -470,14 +470,24 @@
              class="footer-image">
     </footer>
 
-    <!-- ✅ JS corregido: SIN beforeunload -->
+    <!-- ✅ JAVASCRIPT COMPLETO CON TOKEN Y PROTECCIÓN -->
     <script>
         let formularioEnviado = false;
+        let requestToken = null;
 
         const form = document.getElementById('formularioPermiso');
         const btnGenerar = document.getElementById('btnGenerar');
         const btnText = document.getElementById('btnText');
         const overlay = document.getElementById('processingOverlay');
+
+        // 🔑 GENERAR TOKEN ÚNICO
+        function generarToken() {
+            return 'token_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // Generar token al cargar la página
+        requestToken = generarToken();
+        console.log('[TOKEN] Generado:', requestToken);
 
         function bloquearFormulario() {
             btnGenerar.disabled = true;
@@ -496,13 +506,59 @@
             form.addEventListener('submit', function(e) {
                 if (formularioEnviado) {
                     e.preventDefault();
+                    console.log('⚠️ Formulario ya enviado, bloqueando reenvío');
+                    alert('⚠️ El permiso ya se está generando. Por favor espera...');
                     return false;
                 }
+
+                // 🔑 AGREGAR TOKEN AL FORMULARIO
+                let tokenInput = document.querySelector('input[name="request_token"]');
+                if (!tokenInput) {
+                    tokenInput = document.createElement('input');
+                    tokenInput.type = 'hidden';
+                    tokenInput.name = 'request_token';
+                    form.appendChild(tokenInput);
+                }
+                tokenInput.value = requestToken;
+                
+                console.log('[TOKEN] Enviando con token:', requestToken);
+
                 formularioEnviado = true;
                 bloquearFormulario();
+                
+                console.log('✅ Formulario enviado, bloqueado contra reenvíos');
                 return true;
             });
         }
+
+        // 🔄 REGENERAR TOKEN SI VUELVEN A LA PÁGINA
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted || formularioEnviado) {
+                // Página cargada desde caché o volvieron después de enviar
+                requestToken = generarToken();
+                formularioEnviado = false;
+                
+                // Rehabilitar botón
+                if (btnGenerar) {
+                    btnGenerar.disabled = false;
+                    btnGenerar.classList.remove('btn-loading');
+                    btnText.textContent = '🚗 Generar Permiso';
+                }
+                
+                // Ocultar overlay
+                if (overlay) {
+                    overlay.classList.remove('active');
+                }
+                
+                // Rehabilitar inputs
+                const elements = form.querySelectorAll('input, textarea, select, button');
+                elements.forEach(el => {
+                    el.disabled = false;
+                });
+                
+                console.log('[TOKEN] Página recargada, nuevo token:', requestToken);
+            }
+        });
     </script>
 </body>
-                </html>
+</html>

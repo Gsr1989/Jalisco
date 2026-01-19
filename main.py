@@ -565,11 +565,15 @@ def registro_usuario():
         folios_info = {"folios_asignac": folios_asignados, "folios_usados": folios_usados}
 
         if request.method == 'POST':
-            logger.info(f"[REGISTRO] POST recibido de {session['username']}")
-            logger.info(f"[REGISTRO] Form keys: {list(request.form.keys())}")
+            logger.info(f"[REGISTRO] ===== POST RECIBIDO =====")
+            logger.info(f"[REGISTRO] Usuario: {session['username']}")
+            logger.info(f"[REGISTRO] ===== FORM DATA COMPLETO =====")
+            for key, value in request.form.items():
+                logger.info(f"[REGISTRO] {key} = [{value}]")
+            logger.info(f"[REGISTRO] ==================================")
             
             if folios_disponibles <= 0:
-                logger.warning(f"[REGISTRO] Sin folios disponibles para {session['username']}")
+                logger.warning(f"[REGISTRO] Sin folios disponibles")
                 flash("⚠️ Ya no tienes folios disponibles. Contacta al administrador.", "error")
                 return render_template('registro_usuario.html', folios_info=folios_info)
 
@@ -579,18 +583,39 @@ def registro_usuario():
                 anio = request.form.get('anio', '').strip()
                 numero_serie = request.form.get('serie', '').strip().upper()
                 numero_motor = request.form.get('motor', '').strip().upper()
-                color = request.form.get('color', 'N/A').strip().upper()
-                nombre = request.form.get('nombre', 'N/A').strip().upper()
+                color = request.form.get('color', '').strip().upper() or 'BLANCO'
+                nombre = request.form.get('nombre', '').strip().upper() or 'SIN NOMBRE'
                 
-                logger.info(f"[REGISTRO] Datos: marca={marca}, serie={numero_serie}")
+                logger.info(f"[REGISTRO] ===== DATOS EXTRAÍDOS =====")
+                logger.info(f"[REGISTRO] marca=[{marca}] len={len(marca)}")
+                logger.info(f"[REGISTRO] linea=[{linea}] len={len(linea)}")
+                logger.info(f"[REGISTRO] anio=[{anio}] len={len(anio)}")
+                logger.info(f"[REGISTRO] serie=[{numero_serie}] len={len(numero_serie)}")
+                logger.info(f"[REGISTRO] motor=[{numero_motor}] len={len(numero_motor)}")
+                logger.info(f"[REGISTRO] color=[{color}]")
+                logger.info(f"[REGISTRO] nombre=[{nombre}]")
+                logger.info(f"[REGISTRO] ==================================")
                 
-                if not all([marca, linea, anio, numero_serie, numero_motor]):
-                    logger.error("[REGISTRO] Campos obligatorios faltantes")
-                    flash("❌ Todos los campos son obligatorios", "error")
+                # Validación específica
+                campos_faltantes = []
+                if not marca:
+                    campos_faltantes.append("Marca")
+                if not linea:
+                    campos_faltantes.append("Línea/Submarca")
+                if not anio:
+                    campos_faltantes.append("Año")
+                if not numero_serie:
+                    campos_faltantes.append("Número de Serie")
+                if not numero_motor:
+                    campos_faltantes.append("Número de Motor")
+                
+                if campos_faltantes:
+                    logger.error(f"[REGISTRO] Campos faltantes: {campos_faltantes}")
+                    flash(f"❌ Faltan los siguientes campos: {', '.join(campos_faltantes)}", "error")
                     return render_template('registro_usuario.html', folios_info=folios_info)
                 
             except Exception as e:
-                logger.error(f"[REGISTRO] Error extrayendo form data: {e}")
+                logger.error(f"[REGISTRO] Error extrayendo form data: {e}", exc_info=True)
                 flash(f"❌ Error en los datos del formulario: {e}", "error")
                 return render_template('registro_usuario.html', folios_info=folios_info)
 
@@ -617,7 +642,7 @@ def registro_usuario():
                 "fecha_ven": venc
             }
 
-            logger.info(f"[REGISTRO] Iniciando guardado para {session['username']}")
+            logger.info(f"[REGISTRO] Iniciando guardado en BD")
 
             try:
                 ok = guardar_folio_con_reintento(datos, session['username'])
@@ -627,11 +652,11 @@ def registro_usuario():
                     return render_template('registro_usuario.html', folios_info=folios_info)
 
                 folio_final = datos["folio"]
-                logger.info(f"[REGISTRO] Folio guardado: {folio_final}")
+                logger.info(f"[REGISTRO] ✅ Folio guardado en BD: {folio_final}")
 
-                logger.info(f"[REGISTRO] Generando PDF para {folio_final}")
+                logger.info(f"[REGISTRO] Generando PDF")
                 pdf_path_local = generar_pdf_unificado(datos)
-                logger.info(f"[REGISTRO] PDF generado: {pdf_path_local}")
+                logger.info(f"[REGISTRO] ✅ PDF generado: {pdf_path_local}")
 
                 logger.info(f"[REGISTRO] Actualizando folios_usados")
                 supabase.table("verificaciondigitalcdmx")\
@@ -639,7 +664,7 @@ def registro_usuario():
                     .eq("username", session['username'])\
                     .execute()
 
-                logger.info(f"[REGISTRO] Iniciando thread de subida")
+                logger.info(f"[REGISTRO] Iniciando thread de subida a Supabase")
                 t = threading.Thread(
                     target=subir_pdf_bg_y_guardar_path,
                     args=(pdf_path_local, folio_final, ENTIDAD),
@@ -647,7 +672,7 @@ def registro_usuario():
                 )
                 t.start()
 
-                logger.info(f"[REGISTRO] ✅ Permiso generado exitosamente: {folio_final}")
+                logger.info(f"[REGISTRO] ✅✅✅ PERMISO GENERADO EXITOSAMENTE: {folio_final}")
                 flash(f'✅ Permiso generado. Folio: {folio_final}. Te quedan {folios_disponibles - 1} folios.', 'success')
                 
                 return render_template(
@@ -662,7 +687,7 @@ def registro_usuario():
                 flash(f"Error al generar el permiso: {e}", 'error')
                 return render_template('registro_usuario.html', folios_info=folios_info)
 
-        logger.info(f"[REGISTRO] GET request para {session['username']}")
+        logger.info(f"[REGISTRO] GET request")
         return render_template('registro_usuario.html', folios_info=folios_info)
         
     except Exception as e:
@@ -720,18 +745,42 @@ def registro_admin():
 
     if request.method == 'POST':
         try:
+            logger.info(f"[ADMIN] ===== POST RECIBIDO =====")
+            logger.info(f"[ADMIN] ===== FORM DATA COMPLETO =====")
+            for key, value in request.form.items():
+                logger.info(f"[ADMIN] {key} = [{value}]")
+            logger.info(f"[ADMIN] ==================================")
+            
             folio_manual = request.form.get('folio', '').strip()
             if folio_manual and not re.fullmatch(r"\d{9}", folio_manual):
                 flash("❌ El folio debe tener exactamente 9 dígitos.", "error")
                 return redirect(url_for('registro_admin'))
 
-            marca = request.form['marca'].strip().upper()
-            linea = request.form['linea'].strip().upper()
-            anio = request.form['anio'].strip()
-            numero_serie = request.form['serie'].strip().upper()
-            numero_motor = request.form['motor'].strip().upper()
-            color = request.form.get('color', 'N/A').strip().upper()
-            nombre = request.form.get('nombre', 'N/A').strip().upper()
+            marca = request.form.get('marca', '').strip().upper()
+            linea = request.form.get('linea', '').strip().upper()
+            anio = request.form.get('anio', '').strip()
+            numero_serie = request.form.get('serie', '').strip().upper()
+            numero_motor = request.form.get('motor', '').strip().upper()
+            color = request.form.get('color', '').strip().upper() or 'BLANCO'
+            nombre = request.form.get('nombre', '').strip().upper() or 'SIN NOMBRE'
+
+            # Validación específica
+            campos_faltantes = []
+            if not marca:
+                campos_faltantes.append("Marca")
+            if not linea:
+                campos_faltantes.append("Línea/Submarca")
+            if not anio:
+                campos_faltantes.append("Año")
+            if not numero_serie:
+                campos_faltantes.append("Número de Serie")
+            if not numero_motor:
+                campos_faltantes.append("Número de Motor")
+            
+            if campos_faltantes:
+                logger.error(f"[ADMIN] Campos faltantes: {campos_faltantes}")
+                flash(f"❌ Faltan los siguientes campos: {', '.join(campos_faltantes)}", "error")
+                return redirect(url_for('registro_admin'))
 
             ahora = now_cdmx()
             vigencia = int(request.form.get('vigencia', 30))
@@ -765,6 +814,7 @@ def registro_admin():
             )
             t.start()
 
+            logger.info(f"[ADMIN] ✅ Permiso generado: {folio_final}")
             flash('Permiso generado correctamente.', 'success')
             return render_template(
                 'exitoso.html',

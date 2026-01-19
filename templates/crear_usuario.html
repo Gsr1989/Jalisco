@@ -1,86 +1,341 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Crear Usuario</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
-            padding: 20px;
+    <meta charset="utf-8">
+    <title>Secretaría de Transporte | Crear Usuario</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Crear Usuario - Secretaría de Transporte">
+    <meta name="author" content="Jalisco">
+
+    <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+    
+    <!-- Montserrat Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+
+    <style type="text/css">
+        /* ========== VARIABLES CSS ========== */
+        :root {
+            --bg: #fafafa;
+            --txt: #67737a;
+            --muted: #6e6b7b;
+            --verde-jalisco: #28a745;
         }
+
+        /* ========== RESET ========== */
+        *, *:before, *:after {
+            box-sizing: border-box;
+        }
+
+        html {
+            font-family: sans-serif;
+            font-size: 14px;
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Montserrat", Helvetica, Arial, serif !important;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.45;
+            color: var(--muted);
+            background-color: var(--bg);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* ========== HEADER ========== */
+        .top-bar {
+            background-color: var(--verde-jalisco);
+            height: 8px;
+            width: 100%;
+        }
+
+        .header-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+            max-height: 250px;
+        }
+
+        @media (max-width: 767px) {
+            .header-image {
+                max-height: 150px;
+            }
+        }
+
+        /* ========== BOTÓN ACCESIBILIDAD ========== */
+        #float-button {
+            position: fixed;
+            bottom: 5%;
+            left: 5%;
+            z-index: 999;
+            border-radius: 100%;
+            height: 55px;
+            width: 55px;
+            padding: 0;
+            border: none;
+            background-color: #f6f6f6;
+            box-shadow: 0 .125rem .25rem rgba(34, 41, 47, .075);
+            cursor: pointer;
+        }
+
+        /* ========== CONTENEDOR ========== */
         .container {
             max-width: 600px;
             margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .page-title {
+            text-align: center;
+            font: normal normal bold 40px/45px Montserrat;
+            color: var(--txt);
+            margin: 2rem 0 1rem;
+        }
+
+        @media (max-width: 767px) {
+            .page-title {
+                font-size: 28px;
+                line-height: 32px;
+            }
+        }
+
+        /* ========== TARJETA FORMULARIO ========== */
+        .form-card {
             background: white;
-            padding: 30px;
-            border-radius: 10px;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
-        h1 { text-align: center; color: #333; }
-        input, button {
+
+        @media (max-width: 767px) {
+            .form-card {
+                padding: 1.5rem;
+            }
+        }
+
+        /* ========== FORMULARIO ========== */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #4b4b4b;
+            margin-bottom: 0.5rem;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="number"] {
             width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-sizing: border-box;
-            font-size: 16px;
+            padding: 0.786rem 1rem;
+            border: 1px solid #d8d6de;
+            border-radius: 0.357rem;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            background: #fff;
+            color: var(--muted);
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
         }
-        button {
-            background: #800000;
-            color: white;
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="number"]:focus {
+            border-color: var(--verde-jalisco);
+            box-shadow: 0 0 0 3px rgba(40, 199, 111, 0.1);
+        }
+
+        /* ========== BOTONES ========== */
+        .btn {
+            width: 100%;
+            padding: 0.786rem 1.5rem;
             border: none;
+            border-radius: 0.357rem;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.2s;
         }
-        button:hover { background: #a00000; }
+
+        .btn-primary {
+            background: var(--verde-jalisco);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #24a643;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(40, 199, 111, 0.3);
+        }
+
+        /* ========== FLASH MESSAGES ========== */
+        .flash-messages {
+            margin-bottom: 1.5rem;
+        }
+
         .alert {
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 5px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.357rem;
+            font-size: 0.95rem;
         }
-        .alert-success {
-            background: #4caf50;
-            color: white;
-        }
+
         .alert-error {
-            background: #f44336;
-            color: white;
+            color: #ea5455;
+            background-color: rgba(234, 84, 85, 0.12);
+            border-color: rgba(234, 84, 85, 0.3);
         }
-        a {
-            display: inline-block;
-            margin-top: 20px;
-            color: #800000;
+
+        .alert-success {
+            color: #28c76f;
+            background-color: rgba(40, 199, 111, 0.12);
+            border-color: rgba(40, 199, 111, 0.3);
+        }
+
+        /* ========== BACK LINK ========== */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            color: var(--txt);
             text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--verde-jalisco);
+        }
+
+        /* ========== FOOTER ========== */
+        footer {
+            margin-top: auto;
+            width: 100%;
+        }
+
+        .footer-image {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* ========== HINTS ========== */
+        .hint-text {
+            font-size: 13px;
+            color: #b9b9c3;
+            margin-top: 0.5rem;
         }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>👤 Crear Nuevo Usuario</h1>
-        
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        
-        <form method="POST">
-            <label>Usuario:</label>
-            <input type="text" name="username" required>
-            
-            <label>Contraseña:</label>
-            <input type="password" name="password" required>
-            
-            <label>Folios a Asignar:</label>
-            <input type="number" name="folios" min="1" required>
-            
-            <button type="submit">Crear Usuario</button>
-        </form>
-        
-        <a href="{{ url_for('admin') }}">← Volver al Panel</a>
-    </div>
+    <!-- Barra Verde Superior -->
+    <div class="top-bar"></div>
+
+    <!-- HEADER CON IMAGEN -->
+    <header>
+        <img src="{{ url_for('static', filename='assets/images/header.jpg') }}" 
+             alt="Secretaría de Transporte Jalisco" 
+             class="header-image">
+    </header>
+
+    <!-- Botón Accesibilidad -->
+    <button id="float-button" type="button" aria-label="Abrir Menu de Accesibilidad">
+        <img src="{{ url_for('static', filename='assets/images/ico_accesibilidad.svg') }}" 
+             alt="Accesibilidad">
+    </button>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main>
+        <div class="container">
+            <h1 class="page-title">👤 Crear Nuevo Usuario</h1>
+
+            <div class="form-card">
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="flash-messages">
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Formulario -->
+                <form method="POST" action="{{ url_for('crear_usuario') }}">
+                    <div class="form-group">
+                        <label for="username">Usuario</label>
+                        <input type="text" 
+                               id="username" 
+                               name="username" 
+                               placeholder="Ingresa el nombre de usuario" 
+                               required 
+                               autofocus>
+                        <p class="hint-text">El nombre de usuario debe ser único</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Contraseña</label>
+                        <input type="password" 
+                               id="password" 
+                               name="password" 
+                               placeholder="Ingresa la contraseña" 
+                               required>
+                        <p class="hint-text">Asigna una contraseña segura</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="folios">Folios a Asignar</label>
+                        <input type="number" 
+                               id="folios" 
+                               name="folios" 
+                               min="1" 
+                               placeholder="Ej: 100" 
+                               required>
+                        <p class="hint-text">Cantidad de folios disponibles para el usuario</p>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">✅ Crear Usuario</button>
+                </form>
+
+                <a href="{{ url_for('admin') }}" class="back-link">
+                    <span>←</span>
+                    <span>Volver al Panel</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <img src="{{ url_for('static', filename='assets/images/1000008793.png') }}" 
+             alt="Gobierno de Jalisco" 
+             class="footer-image">
+    </footer>
 </body>
 </html>

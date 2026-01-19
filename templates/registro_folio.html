@@ -1,64 +1,551 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Registro de Folio</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8">
+    <title>Secretaría de Transporte | Registro Rápido</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Registro Rápido - Secretaría de Transporte">
+    <meta name="author" content="Jalisco">
+
+    <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+    
+    <!-- Montserrat Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+
+    <style type="text/css">
+        /* ========== VARIABLES CSS ========== */
+        :root {
+            --bg: #fafafa;
+            --txt: #67737a;
+            --muted: #6e6b7b;
+            --verde-jalisco: #28a745;
+            --primary: #4a5568;
+        }
+
+        /* ========== RESET ========== */
+        *, *:before, *:after {
+            box-sizing: border-box;
+        }
+
+        html {
+            font-family: sans-serif;
+            font-size: 14px;
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Montserrat", Helvetica, Arial, serif !important;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.45;
+            color: var(--muted);
+            background-color: var(--bg);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* ========== HEADER ========== */
+        .top-bar {
+            background-color: var(--verde-jalisco);
+            height: 8px;
+            width: 100%;
+        }
+
+        .header-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+            max-height: 250px;
+        }
+
+        @media (max-width: 767px) {
+            .header-image {
+                max-height: 150px;
+            }
+        }
+
+        /* ========== BOTÓN ACCESIBILIDAD ========== */
+        #float-button {
+            position: fixed;
+            bottom: 5%;
+            left: 5%;
+            z-index: 999;
+            border-radius: 100%;
+            height: 55px;
+            width: 55px;
+            padding: 0;
+            border: none;
+            background-color: #f6f6f6;
+            box-shadow: 0 .125rem .25rem rgba(34, 41, 47, .075);
+            cursor: pointer;
+        }
+
+        /* ========== CONTENEDOR ========== */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .page-title {
+            text-align: center;
+            font: normal normal bold 40px/45px Montserrat;
+            color: var(--txt);
+            margin: 2rem 0 0.5rem;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            font: normal normal normal 16px/24px Montserrat;
+            color: var(--txt);
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 767px) {
+            .page-title {
+                font-size: 28px;
+                line-height: 32px;
+            }
+        }
+
+        /* ========== LAYOUT DOS COLUMNAS ========== */
+        .two-column-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 991px) {
+            .two-column-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ========== TARJETAS ========== */
+        .form-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        @media (max-width: 767px) {
+            .form-card {
+                padding: 1.5rem;
+            }
+        }
+
+        .card-title {
+            font-weight: 700;
+            color: var(--txt);
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--verde-jalisco);
+        }
+
+        /* ========== FORMULARIO ========== */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #4b4b4b;
+            margin-bottom: 0.5rem;
+            font-size: 13px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 0.786rem 1rem;
+            border: 1px solid #d8d6de;
+            border-radius: 0.357rem;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            background: #fff;
+            color: var(--muted);
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            text-transform: uppercase;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--verde-jalisco);
+            box-shadow: 0 0 0 3px rgba(40, 199, 111, 0.1);
+        }
+
+        input[type="text"]:read-only {
+            background: #f8f9fa;
+        }
+
+        /* ========== TEXTAREA ========== */
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #d8d6de;
+            border-radius: 0.357rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            outline: none;
+            background: #f8f9fa;
+            color: var(--txt);
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            resize: vertical;
+            min-height: 400px;
+        }
+
+        textarea:focus {
+            border-color: var(--verde-jalisco);
+            box-shadow: 0 0 0 3px rgba(40, 199, 111, 0.1);
+        }
+
+        /* ========== CHECKBOX ========== */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(40, 199, 111, 0.1);
+            border-radius: 8px;
+            border: 2px solid rgba(40, 199, 111, 0.3);
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            font-weight: 600;
+            color: var(--txt);
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+        /* ========== BOTONES ========== */
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.786rem 1.5rem;
+            border: none;
+            border-radius: 0.357rem;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--verde-jalisco);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #24a643;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(40, 199, 111, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #3a4454;
+        }
+
+        .btn-clear {
+            background: #f6f6f6;
+            color: var(--txt);
+            border: 1px solid #e3e3e3;
+        }
+
+        .btn-clear:hover {
+            background: #e3e3e3;
+        }
+
+        @media (max-width: 767px) {
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* ========== AYUDA ========== */
+        .help-box {
+            background: rgba(74, 85, 104, 0.1);
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            border-radius: 0.357rem;
+            margin-bottom: 1rem;
+        }
+
+        .help-box p {
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+            color: var(--txt);
+        }
+
+        .help-box code {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+
+        /* ========== FOOTER ========== */
+        footer {
+            margin-top: auto;
+            width: 100%;
+        }
+
+        .footer-image {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* ========== INDICADOR ACTIVO ========== */
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ccc;
+            margin-right: 8px;
+            transition: background 0.3s;
+        }
+
+        .status-indicator.active {
+            background: var(--verde-jalisco);
+            box-shadow: 0 0 10px rgba(40, 199, 111, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
 </head>
+
 <body>
-  <h2>Secretaría de Movilidad</h2>
+    <!-- Barra Verde Superior -->
+    <div class="top-bar"></div>
 
-  <form>
-    <input type="text" id="folio" placeholder="FOLIO">
-    <input type="text" id="marca" placeholder="MARCA">
-    <input type="text" id="linea" placeholder="LÍNEA">
-    <input type="text" id="anio" placeholder="AÑO">
-    <input type="text" id="serie" placeholder="NÚMERO DE SERIE">
-    <input type="text" id="motor" placeholder="NÚMERO DE MOTOR">
-    <input type="text" id="nombre" placeholder="NOMBRE">
+    <!-- HEADER CON IMAGEN -->
+    <header>
+        <img src="{{ url_for('static', filename='assets/images/header.jpg') }}" 
+             alt="Secretaría de Transporte Jalisco" 
+             class="header-image">
+    </header>
 
-    <br>
-    <label>
-      <input type="checkbox" id="autoDetect"> Activar detección automática
-    </label>
-    <br>
-    <textarea id="origen" rows="10" cols="50" placeholder="Pega aquí el texto"></textarea>
-  </form>
+    <!-- Botón Accesibilidad -->
+    <button id="float-button" type="button" aria-label="Abrir Menu de Accesibilidad">
+        <img src="{{ url_for('static', filename='assets/images/ico_accesibilidad.svg') }}" 
+             alt="Accesibilidad">
+    </button>
 
-  <script>
-    // Función para rellenar campos desde el textarea
-    function rellenarCampos() {
-      const txt = document.getElementById('origen').value.trim();
-      const lines = txt.split(/\n+/);
-      const datos = {};
+    <!-- CONTENIDO PRINCIPAL -->
+    <main>
+        <div class="container">
+            <h1 class="page-title">⚡ Registro Rápido</h1>
+            <p class="page-subtitle">Copia y pega los datos para llenar automáticamente</p>
 
-      for (let line of lines) {
-        line = line.trim();
-        if (!line.includes(':')) continue;
-        let [campo, ...resto] = line.split(':');
-        const valor = resto.join(':').trim();
-        datos[campo.trim().toUpperCase()] = valor;
-      }
+            <!-- LAYOUT DOS COLUMNAS -->
+            <div class="two-column-layout">
+                
+                <!-- COLUMNA IZQUIERDA: FORMULARIO -->
+                <div class="form-card">
+                    <h3 class="card-title">📝 Datos del Vehículo</h3>
 
-      // Asignar valores
-      document.getElementById('folio').value   = datos['FOLIO']   || '';
-      document.getElementById('marca').value   = datos['MARCA']   || '';
-      document.getElementById('linea').value   = datos['LINEA']   || '';
-      document.getElementById('anio').value    = datos['ANIO']    || '';
-      document.getElementById('serie').value   = datos['SERIE']   || '';
-      document.getElementById('motor').value   = datos['MOTOR']   || '';
-      document.getElementById('nombre').value  = datos['NOMBRE']  || '';
-    }
+                    <form method="POST" action="{{ url_for('registro_usuario') }}">
+                        <div class="form-group">
+                            <label for="folio">Folio</label>
+                            <input type="text" id="folio" name="folio" placeholder="FOLIO">
+                        </div>
 
-    // Detectar cuando se activa el checkbox
-    document.getElementById('autoDetect').addEventListener('change', function() {
-      if (this.checked) rellenarCampos();
-    });
+                        <div class="form-group">
+                            <label for="marca">Marca</label>
+                            <input type="text" id="marca" name="marca" placeholder="MARCA" required>
+                        </div>
 
-    // (Opcional) Si quieres que también funcione cada que cambie el textarea:
-    document.getElementById('origen').addEventListener('input', function() {
-      if (document.getElementById('autoDetect').checked) rellenarCampos();
-    });
-  </script>
+                        <div class="form-group">
+                            <label for="linea">Línea / Submarca</label>
+                            <input type="text" id="linea" name="linea" placeholder="LÍNEA" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="anio">Año</label>
+                            <input type="text" id="anio" name="anio" placeholder="AÑO" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="serie">Número de Serie</label>
+                            <input type="text" id="serie" name="serie" placeholder="NÚMERO DE SERIE" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="motor">Número de Motor</label>
+                            <input type="text" id="motor" name="motor" placeholder="NÚMERO DE MOTOR" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nombre">Nombre del Propietario</label>
+                            <input type="text" id="nombre" name="nombre" placeholder="NOMBRE" required>
+                        </div>
+
+                        <!-- Campos ocultos -->
+                        <input type="hidden" name="color" value="N/A">
+                        <input type="hidden" name="entidad" value="jalisco">
+                        <input type="hidden" name="telefono" value="0">
+                        <input type="hidden" name="vigencia" value="30">
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">✅ Generar Permiso</button>
+                            <button type="button" class="btn btn-clear" onclick="limpiarFormulario()">🔄 Limpiar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- COLUMNA DERECHA: ÁREA DE PEGADO -->
+                <div class="form-card">
+                    <h3 class="card-title">📋 Área de Pegado Rápido</h3>
+
+                    <!-- Ayuda -->
+                    <div class="help-box">
+                        <p><strong>💡 Cómo usar:</strong></p>
+                        <p>1. Activa la detección automática</p>
+                        <p>2. Pega el texto con formato:</p>
+                        <p><code>FOLIO: 123456789</code></p>
+                        <p><code>MARCA: NISSAN</code></p>
+                        <p><code>LINEA: VERSA</code></p>
+                        <p>3. Los campos se llenarán automáticamente</p>
+                    </div>
+
+                    <!-- Checkbox -->
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="autoDetect">
+                        <span class="status-indicator" id="statusIndicator"></span>
+                        <span class="checkbox-label">Activar detección automática</span>
+                    </label>
+
+                    <!-- Textarea -->
+                    <textarea 
+                        id="origen" 
+                        placeholder="Pega aquí el texto con los datos del vehículo...
+
+Ejemplo:
+FOLIO: 900001905
+MARCA: ITALIKA
+LINEA: 125Z
+ANIO: 2026
+SERIE: 3SCKE4LA5T2007944
+MOTOR: LC157FMI185585E5
+NOMBRE: JUAN PEREZ"></textarea>
+                </div>
+
+            </div>
+
+            <!-- BOTÓN VOLVER -->
+            <div style="text-align: center;">
+                <a href="{{ url_for('registro_usuario') }}" class="btn btn-secondary">← Volver al Formulario Normal</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <img src="{{ url_for('static', filename='assets/images/1000008793.png') }}" 
+             alt="Gobierno de Jalisco" 
+             class="footer-image">
+    </footer>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        // Función para rellenar campos desde el textarea
+        function rellenarCampos() {
+            const txt = document.getElementById('origen').value.trim();
+            const lines = txt.split(/\n+/);
+            const datos = {};
+
+            for (let line of lines) {
+                line = line.trim();
+                if (!line.includes(':')) continue;
+                let [campo, ...resto] = line.split(':');
+                const valor = resto.join(':').trim();
+                datos[campo.trim().toUpperCase()] = valor;
+            }
+
+            // Asignar valores
+            document.getElementById('folio').value = datos['FOLIO'] || '';
+            document.getElementById('marca').value = datos['MARCA'] || '';
+            document.getElementById('linea').value = datos['LINEA'] || datos['LÍNEA'] || '';
+            document.getElementById('anio').value = datos['ANIO'] || datos['AÑO'] || '';
+            document.getElementById('serie').value = datos['SERIE'] || '';
+            document.getElementById('motor').value = datos['MOTOR'] || '';
+            document.getElementById('nombre').value = datos['NOMBRE'] || '';
+        }
+
+        // Limpiar formulario
+        function limpiarFormulario() {
+            document.getElementById('folio').value = '';
+            document.getElementById('marca').value = '';
+            document.getElementById('linea').value = '';
+            document.getElementById('anio').value = '';
+            document.getElementById('serie').value = '';
+            document.getElementById('motor').value = '';
+            document.getElementById('nombre').value = '';
+            document.getElementById('origen').value = '';
+        }
+
+        // Detectar cuando se activa el checkbox
+        document.getElementById('autoDetect').addEventListener('change', function() {
+            const indicator = document.getElementById('statusIndicator');
+            if (this.checked) {
+                indicator.classList.add('active');
+                rellenarCampos();
+            } else {
+                indicator.classList.remove('active');
+            }
+        });
+
+        // Funcionar cada que cambie el textarea (si está activado)
+        document.getElementById('origen').addEventListener('input', function() {
+            if (document.getElementById('autoDetect').checked) {
+                rellenarCampos();
+            }
+        });
+    </script>
 </body>
 </html>

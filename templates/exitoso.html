@@ -1,10 +1,22 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Registro exitoso</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <title>Secretaría de Transporte | Registro Exitoso</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Registro Exitoso - Secretaría de Transporte">
+    <meta name="author" content="Jalisco">
+
+    <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+    
+    <!-- Montserrat Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+
     <script>
+        // Auto-descarga del PDF
         window.onload = function () {
             const link = document.createElement('a');
             link.href = "/descargar_recibo/{{ folio }}";
@@ -12,56 +24,321 @@
             link.click();
         };
     </script>
-    <style>
-        body {
-            text-align: center;
+
+    <style type="text/css">
+        /* ========== VARIABLES CSS ========== */
+        :root {
+            --bg: #fafafa;
+            --txt: #67737a;
+            --muted: #6e6b7b;
+            --verde-jalisco: #28a745;
+            --success: #28c76f;
+        }
+
+        /* ========== RESET ========== */
+        *, *:before, *:after {
+            box-sizing: border-box;
+        }
+
+        html {
             font-family: sans-serif;
-            background-color: #f7f7f7;
-            padding: 40px;
+            font-size: 14px;
+            height: 100%;
         }
-        h1 { color: green; }
-        .info {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 500px;
-            margin: 20px auto;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+
+        body {
+            margin: 0;
+            font-family: "Montserrat", Helvetica, Arial, serif !important;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.45;
+            color: var(--muted);
+            background-color: var(--bg);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
-        button {
-            padding: 12px 24px;
-            font-size: 16px;
-            background-color: #4CAF50;
-            color: white;
+
+        main {
+            flex: 1;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* ========== HEADER ========== */
+        .top-bar {
+            background-color: var(--verde-jalisco);
+            height: 8px;
+            width: 100%;
+        }
+
+        .header-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+            max-height: 250px;
+        }
+
+        @media (max-width: 767px) {
+            .header-image {
+                max-height: 150px;
+            }
+        }
+
+        /* ========== BOTÓN ACCESIBILIDAD ========== */
+        #float-button {
+            position: fixed;
+            bottom: 5%;
+            left: 5%;
+            z-index: 999;
+            border-radius: 100%;
+            height: 55px;
+            width: 55px;
+            padding: 0;
             border: none;
-            border-radius: 6px;
+            background-color: #f6f6f6;
+            box-shadow: 0 .125rem .25rem rgba(34, 41, 47, .075);
             cursor: pointer;
-            margin: 10px;
         }
-        button:hover {
-            background-color: #45a049;
+
+        /* ========== CONTENEDOR ========== */
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 3rem 1rem;
+            text-align: center;
         }
-        a {
+
+        /* ========== ICONO ÉXITO ========== */
+        .success-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            animation: scaleIn 0.5s ease;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* ========== TÍTULO ========== */
+        .page-title {
+            font: normal normal bold 40px/45px Montserrat;
+            color: var(--success);
+            margin: 1rem 0;
+        }
+
+        .page-subtitle {
+            font: normal normal normal 18px/28px Montserrat;
+            color: var(--txt);
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 767px) {
+            .page-title {
+                font-size: 28px;
+                line-height: 32px;
+            }
+            .page-subtitle {
+                font-size: 16px;
+                line-height: 24px;
+            }
+        }
+
+        /* ========== TARJETA INFO ========== */
+        .info-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 767px) {
+            .info-card {
+                padding: 1.5rem;
+            }
+        }
+
+        .info-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #4b4b4b;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--txt);
+            margin-top: 0.5rem;
+        }
+
+        .folio-highlight {
+            color: var(--verde-jalisco);
+            font-size: 1.8rem;
+        }
+
+        /* ========== BOTONES ========== */
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 0.357rem;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
             text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--verde-jalisco);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #24a643;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(40, 199, 111, 0.3);
+        }
+
+        .btn-secondary {
+            background: #4a5568;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #3a4454;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(74, 85, 104, 0.3);
+        }
+
+        /* ========== FOOTER ========== */
+        footer {
+            margin-top: auto;
+            width: 100%;
+        }
+
+        .footer-image {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* ========== ANIMACIÓN PULSO ========== */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .btn-primary {
+            animation: pulse 2s infinite;
+        }
+
+        .btn-primary:hover {
+            animation: none;
         }
     </style>
 </head>
-<body>
-    <h1>✅ Registro exitoso</h1>
-    <div class="info">
-        <p>El permiso con folio <strong>{{ folio }}</strong> fue registrado correctamente.</p>
-        <p><strong>No. Serie:</strong> {{ serie }}</p>
-        <p><strong>Fecha:</strong> {{ fecha_generacion }}</p>
-    </div>
 
-    <div>
-        <a href="/descargar_recibo/{{ folio }}" download="{{ folio }}_jalisco.pdf">
-            <button>📥 Descargar PDF Completo</button>
-        </a>
-        <br>
-        <a href="{{ url_for('admin') if session.get('admin') else url_for('registro_usuario') }}">
-            <button style="background-color: #800000;">← Generar Otro Permiso</button>
-        </a>
-    </div>
+<body>
+    <!-- Barra Verde Superior -->
+    <div class="top-bar"></div>
+
+    <!-- HEADER CON IMAGEN -->
+    <header>
+        <img src="{{ url_for('static', filename='assets/images/header.jpg') }}" 
+             alt="Secretaría de Transporte Jalisco" 
+             class="header-image">
+    </header>
+
+    <!-- Botón Accesibilidad -->
+    <button id="float-button" type="button" aria-label="Abrir Menu de Accesibilidad">
+        <img src="{{ url_for('static', filename='assets/images/ico_accesibilidad.svg') }}" 
+             alt="Accesibilidad">
+    </button>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main>
+        <div class="container">
+            <!-- Icono de éxito -->
+            <div class="success-icon">✅</div>
+
+            <!-- Título -->
+            <h1 class="page-title">¡Registro Exitoso!</h1>
+            <p class="page-subtitle">El permiso ha sido generado correctamente</p>
+
+            <!-- Tarjeta de información -->
+            <div class="info-card">
+                <div class="info-item">
+                    <div class="info-label">Folio</div>
+                    <div class="info-value folio-highlight">{{ folio }}</div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Número de Serie</div>
+                    <div class="info-value">{{ serie }}</div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Fecha de Generación</div>
+                    <div class="info-value">{{ fecha_generacion }}</div>
+                </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="actions">
+                <a href="/descargar_recibo/{{ folio }}" download="{{ folio }}_jalisco.pdf" class="btn btn-primary">
+                    📥 Descargar PDF Completo
+                </a>
+
+                <a href="{{ url_for('admin') if session.get('admin') else url_for('registro_usuario') }}" class="btn btn-secondary">
+                    📄 Generar Otro Permiso
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <img src="{{ url_for('static', filename='assets/images/1000008793.png') }}" 
+             alt="Gobierno de Jalisco" 
+             class="footer-image">
+    </footer>
 </body>
 </html>

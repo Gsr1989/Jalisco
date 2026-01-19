@@ -242,24 +242,20 @@
 </head>
 
 <body>
-  <!-- Barra Verde Superior -->
   <div class="top-bar"></div>
 
-  <!-- HEADER CON IMAGEN -->
   <header>
     <img src="{{ url_for('static', filename='assets/images/header.jpg') }}"
          alt="Secretaría de Transporte Jalisco"
          class="header-image">
   </header>
 
-  <!-- Botón Accesibilidad Flotante -->
-  <button id="float-button" type="button" aria-label="Abrir Menu de Accesibilidad">
+  <button id="float-button" type="button" aria-label="Accesibilidad (ir arriba)">
     <img src="{{ url_for('static', filename='assets/images/ico_accesibilidad.svg') }}"
          alt="Accesibilidad del Sitio"
          class="img-fluid">
   </button>
 
-  <!-- CONTENIDO PRINCIPAL -->
   <main>
     <div class="container">
       <h1 class="page-title">Mis Folios</h1>
@@ -276,8 +272,25 @@
               <div class="folio-row"><b>Marca:</b> {{ f.marca }}</div>
               <div class="folio-row"><b>Línea:</b> {{ f.linea }}</div>
               <div class="folio-row"><b>Serie:</b> {{ f.numero_serie }}</div>
-              <div class="folio-row"><b>Expedición:</b> {{ f.fecha_expedicion }}</div>
-              <div class="folio-row"><b>Vencimiento:</b> {{ f.fecha_vencimiento }}</div>
+
+              <!-- Fechas: Supabase suele traer ISO "2026-01-19", aquí lo mostramos dd/mm/aaaa -->
+              <div class="folio-row">
+                <b>Expedición:</b>
+                {% if f.fecha_expedicion %}
+                  {{ f.fecha_expedicion[8:10] }}/{{ f.fecha_expedicion[5:7] }}/{{ f.fecha_expedicion[0:4] }}
+                {% else %}
+                  -
+                {% endif %}
+              </div>
+
+              <div class="folio-row">
+                <b>Vencimiento:</b>
+                {% if f.fecha_vencimiento %}
+                  {{ f.fecha_vencimiento[8:10] }}/{{ f.fecha_vencimiento[5:7] }}/{{ f.fecha_vencimiento[0:4] }}
+                {% else %}
+                  -
+                {% endif %}
+              </div>
 
               {% if f.estado_actual == "VIGENTE" %}
                 <div class="badge vigente">✅ VIGENTE</div>
@@ -288,8 +301,8 @@
               {% endif %}
 
               <div class="btn-row">
-                <a class="btn primary" href="/descargar_recibo/{{ f.folio }}">📥 Descargar PDF</a>
-                <a class="btn" href="/consulta/{{ f.folio }}">🔍 Consultar</a>
+                <a class="btn primary" href="{{ url_for('descargar_recibo', folio=f.folio) }}">📥 Descargar PDF</a>
+                <a class="btn" href="{{ url_for('consulta_folio_directo', folio=f.folio) }}">🔍 Consultar</a>
               </div>
             </div>
           {% endfor %}
@@ -297,17 +310,23 @@
       {% endif %}
 
       <div style="text-align:center; padding: 0 1rem 3rem;">
-        <a href="/registro_usuario" class="btn">⬅️ Volver</a>
-        <a href="/logout" class="btn">🚪 Cerrar Sesión</a>
+        <a href="{{ url_for('registro_usuario') }}" class="btn">⬅️ Volver</a>
+        <a href="{{ url_for('logout') }}" class="btn">🚪 Cerrar Sesión</a>
       </div>
     </div>
   </main>
 
-  <!-- FOOTER CON IMAGEN -->
   <footer>
     <img src="{{ url_for('static', filename='assets/images/1000008793.png') }}"
          alt="Gobierno de Jalisco"
          class="footer-image">
   </footer>
+
+  <script>
+    // No cambia tu lógica; solo para que el botón haga algo útil
+    document.getElementById('float-button')?.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
 </body>
 </html>

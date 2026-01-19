@@ -10,9 +10,23 @@ from PIL import Image
 from io import BytesIO
 import time
 import re
+import threading
+
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 app = Flask(__name__)
 app.secret_key = 'clave_muy_segura_123456'
+
+# ====== FIX PROXY (Render) ======
+# Evita 400 "Solicitud incorrecta" y problemas de https/host detrás del proxy
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
+
+# En Render normalmente estás detrás de HTTPS.
+# Estas flags ayudan a que la cookie de sesión no se rompa con proxy.
+app.config.update(
+    SESSION_COOKIE_SAMESITE="Lax",
+    SESSION_COOKIE_SECURE=True,     # Render usa https
+)
 
 # ================== SUPABASE CONFIG ==================
 SUPABASE_URL = "https://xsagwqepoljfsogusubw.supabase.co"
@@ -51,20 +65,13 @@ coords_pagina2 = {
     "linea_captura": (380, 265, 10, (0, 0, 0))
 }
 
-coords_qr_dinamico = {
-    "x": 966,
-    "y": 603,
-    "ancho": 140,
-    "alto": 140
-}
-
+coords_qr_dinamico = {"x": 966, "y": 603, "ancho": 140, "alto": 140}
 PRECIO_FIJO_PAGINA2 = 1080
 
 # ================== FOLIOS ANTI-DUPLICADOS ==================
 PREFIJO_CDMX = 122000000
 
 def _leer_ultimo_folio_cdmx_db():
-    """Busca el último folio CDMX directamente en Supabase"""
     try:
         inicio = PREFIJO_CDMX
         fin = PREFIJO_CDMX + 100000000
@@ -91,13 +98,8 @@ def _leer_ultimo_folio_cdmx_db():
         return PREFIJO_CDMX - 1
 
 def generar_folio_cdmx():
-    """Genera el siguiente folio disponible consultando SIEMPRE la DB"""
     ultimo = _leer_ultimo_folio_cdmx_db()
-
-    if ultimo < PREFIJO_CDMX:
-        siguiente = PREFIJO_CDMX
-    else:
-        siguiente = ultimo + 1
+    siguiente = PREFIJO_CDMX if ultimo < PREFIJO_CDMX else ultimo + 1
 
     while str(siguiente)[0] == '0' or siguiente >= PREFIJO_CDMX + 100000000:
         if siguiente >= PREFIJO_CDMX + 100000000:
@@ -110,7 +112,6 @@ def generar_folio_cdmx():
     return folio
 
 def guardar_folio_con_reintento(datos, username):
-    """Guarda con sistema que INCREMENTA el folio automáticamente si está duplicado"""
     max_intentos = 200000
 
     if "folio" not in datos or not datos.get("folio") or not re.fullmatch(r"\d{9}", str(datos.get("folio", ""))):
@@ -126,7 +127,6 @@ def guardar_folio_con_reintento(datos, username):
             return False
 
         folio_str = f"{folio_actual:09d}"
-
         if folio_str[0] == '0':
             continue
 
@@ -176,19 +176,16 @@ def generar_folios_pagina2() -> dict:
 def obtener_folio_representativo():
     return 21385 + int(time.time()) % 100000
 
-# ================== SUPABASE STORAGE (BUCKET PUBLICO) ==================
+# ================== SUPABASE STORAGE ==================
 def subir_pdf_a_supabase(ruta_pdf_local: str, folio: str, entidad: str = "cdmx"):
     """
-    Sube el PDF a Storage en: bucket 'pdfs' -> cdmx/<folio>.pdf
-    Regresa la ruta storage (pdf_path) o None si falla.
+    Sube el PDF a Storage: bucket 'pdfs' -> cdmx/<folio>.pdf
     """
     try:
         ruta_storage = f"{entidad}/{folio}.pdf"
-
         with open(ruta_pdf_local, "rb") as f:
             contenido = f.read()
 
-        # upsert True: si ya existe, lo reemplaza
         supabase.storage.from_(SUPABASE_BUCKET_PDFS).upload(
             ruta_storage,
             contenido,
@@ -201,14 +198,31 @@ def subir_pdf_a_supabase(ruta_pdf_local: str, folio: str, entidad: str = "cdmx")
         print("[STORAGE] ❌ Error subiendo:", e)
         return None
 
+def subir_pdf_bg_y_guardar_path(ruta_pdf_local: str, folio: str, entidad: str = "cdmx"):
+    """
+    Hilo en segundo plano:
+    - sube a storage
+    - guarda pdf_path en folios_registrados
+    """
+    try:
+        storage_path = subir_pdf_a_supabase(ruta_pdf_local, folio, entidad=entidad)
+        if storage_path:
+            supabase.table("folios_registrados")\
+                .update({"pdf_path": storage_path})\
+                .eq("folio", folio)\
+                .execute()
+    except Exception as e:
+        print("[STORAGE BG] ❌ Error:", e)
+
 def url_publica_pdf(storage_path: str):
     """
-    Como el bucket es PUBLICO, se puede obtener URL publica directa.
+    Normaliza get_public_url (a veces devuelve dict, a veces string)
     """
     try:
         res = supabase.storage.from_(SUPABASE_BUCKET_PDFS).get_public_url(storage_path)
         if isinstance(res, dict):
-            return res.get("publicURL") or res.get("publicUrl") or res.get("public_url")
+            # python libs cambian keys según version
+            return res.get("publicURL") or res.get("publicUrl") or res.get("public_url") or res.get("url")
         return res
     except Exception as e:
         print("[STORAGE] ❌ Error get_public_url:", e)
@@ -504,20 +518,23 @@ def registro_usuario():
                 return render_template('registro_usuario.html', folios_info=folios_info)
 
             folio_final = datos["folio"]
+
+            # 1) Genera PDF local (esto es rápido)
             pdf_path_local = generar_pdf_unificado(datos)
 
-            # ===== SUBIR A SUPABASE STORAGE Y GUARDAR pdf_path =====
-            storage_path = subir_pdf_a_supabase(pdf_path_local, folio_final, entidad="cdmx")
-            if storage_path:
-                supabase.table("folios_registrados")\
-                    .update({"pdf_path": storage_path})\
-                    .eq("folio", folio_final)\
-                    .execute()
-
+            # 2) Incrementa folios usados (rápido)
             supabase.table("verificaciondigitalcdmx")\
                 .update({"folios_usados": folios_usados + 1})\
                 .eq("username", session['username'])\
                 .execute()
+
+            # 3) SUBE PDF EN SEGUNDO PLANO (NO BLOQUEA)
+            t = threading.Thread(
+                target=subir_pdf_bg_y_guardar_path,
+                args=(pdf_path_local, folio_final, "cdmx"),
+                daemon=True
+            )
+            t.start()
 
             flash(f'✅ Permiso generado. Folio: {folio_final}. Te quedan {folios_disponibles - 1} folios.', 'success')
             return render_template('exitoso.html',
@@ -594,13 +611,13 @@ def registro_admin():
             folio_final = datos["folio"]
             pdf_path_local = generar_pdf_unificado(datos)
 
-            # ===== SUBIR A SUPABASE STORAGE Y GUARDAR pdf_path =====
-            storage_path = subir_pdf_a_supabase(pdf_path_local, folio_final, entidad="cdmx")
-            if storage_path:
-                supabase.table("folios_registrados")\
-                    .update({"pdf_path": storage_path})\
-                    .eq("folio", folio_final)\
-                    .execute()
+            # SUBE EN BG
+            t = threading.Thread(
+                target=subir_pdf_bg_y_guardar_path,
+                args=(pdf_path_local, folio_final, "cdmx"),
+                daemon=True
+            )
+            t.start()
 
             flash('Permiso generado correctamente.', 'success')
             return render_template('exitoso.html',
@@ -677,117 +694,11 @@ def consulta_folio_directo(folio):
 
     return render_template("resultado_consulta.html", resultado=resultado)
 
-@app.route('/admin_folios')
-def admin_folios():
-    if not session.get('admin'):
-        return redirect(url_for('login'))
-
-    filtro = request.args.get('filtro','').strip()
-    criterio = request.args.get('criterio','folio')
-    ordenar = request.args.get('ordenar','desc')
-    estado_filtro = request.args.get('estado','todos')
-    fecha_inicio = request.args.get('fecha_inicio','')
-    fecha_fin = request.args.get('fecha_fin','')
-
-    query = supabase.table("folios_registrados").select("*")
-
-    if filtro:
-        if criterio=="folio":
-            query = query.ilike("folio",f"%{filtro}%")
-        elif criterio=="numero_serie":
-            query = query.ilike("numero_serie",f"%{filtro}%")
-
-    registros = query.execute().data or []
-    hoy = datetime.now()
-    filtrados=[]
-
-    for fol in registros:
-        try:
-            fe = datetime.fromisoformat(fol['fecha_expedicion'])
-            fv = datetime.fromisoformat(fol['fecha_vencimiento'])
-        except:
-            continue
-        fol["estado"] = "VIGENTE" if hoy<=fv else "VENCIDO"
-        if estado_filtro=="vigente" and fol["estado"]!="VIGENTE": continue
-        if estado_filtro=="vencido" and fol["estado"]!="VENCIDO": continue
-        if fecha_inicio:
-            try:
-                fi = datetime.strptime(fecha_inicio,"%Y-%m-%d")
-                if fe<fi: continue
-            except: pass
-        if fecha_fin:
-            try:
-                ff = datetime.strptime(fecha_fin,"%Y-%m-%d")
-                if fe>ff: continue
-            except: pass
-        filtrados.append(fol)
-
-    filtrados.sort(key=lambda x:x['fecha_expedicion'],reverse=(ordenar=='desc'))
-
-    return render_template('admin_folios.html',
-        folios=filtrados,
-        filtro=filtro,
-        criterio=criterio,
-        ordenar=ordenar,
-        estado=estado_filtro,
-        fecha_inicio=fecha_inicio,
-        fecha_fin=fecha_fin
-    )
-
-@app.route('/editar_folio/<folio>', methods=['GET','POST'])
-def editar_folio(folio):
-    if not session.get('admin'):
-        return redirect(url_for('login'))
-    if request.method=='POST':
-        data = {
-            "marca": request.form['marca'],
-            "linea": request.form['linea'],
-            "anio": request.form['anio'],
-            "numero_serie": request.form['serie'],
-            "numero_motor": request.form['motor'],
-            "fecha_expedicion": request.form['fecha_expedicion'],
-            "fecha_vencimiento": request.form['fecha_vencimiento']
-        }
-        supabase.table("folios_registrados").update(data).eq("folio",folio).execute()
-        flash("Folio actualizado correctamente.","success")
-        return redirect(url_for('admin_folios'))
-    resp = supabase.table("folios_registrados").select("*").eq("folio",folio).execute().data
-    if resp:
-        return render_template('editar_folio.html', folio=resp[0])
-    flash("Folio no encontrado.","error")
-    return redirect(url_for('admin_folios'))
-
-@app.route('/eliminar_folio', methods=['POST'])
-def eliminar_folio():
-    if not session.get('admin'):
-        return redirect(url_for('login'))
-    folio = request.form['folio']
-    supabase.table("folios_registrados").delete().eq("folio",folio).execute()
-    flash("Folio eliminado correctamente.","success")
-    return redirect(url_for('admin_folios'))
-
-@app.route('/eliminar_folios_masivo', methods=['POST'])
-def eliminar_folios_masivo():
-    if not session.get('admin'):
-        return redirect(url_for('login'))
-    folios = request.form.getlist('folios')
-    if not folios:
-        flash("No seleccionaste ningún folio.", "error")
-        return redirect(url_for('admin_folios'))
-    try:
-        supabase.table("folios_registrados").delete().in_("folio", folios).execute()
-        flash(f"Se eliminaron {len(folios)} folios correctamente.", "success")
-    except Exception as e:
-        flash(f"Error al eliminar folios: {e}", "error")
-    return redirect(url_for('admin_folios'))
-
 @app.route('/descargar_recibo/<folio>')
 def descargar_recibo(folio):
     """
-    Como el bucket es PUBLICO:
-    - Busca pdf_path en la DB
-    - Si existe, redirige al URL publico del Storage
-    - Si no existe, intenta local (documentos/<folio>.pdf)
+    - Si ya existe pdf_path en DB, redirige a URL pública de Storage
+    - Si aún no (porque se está subiendo), hace fallback al local
     """
     try:
         row = supabase.table("folios_registrados")\
@@ -804,8 +715,7 @@ def descargar_recibo(folio):
     except Exception as e:
         print("[DESCARGA] Error DB/Storage:", e)
 
-    # fallback local
-    ruta_pdf = f"documentos/{folio}.pdf"
+    ruta_pdf = f"{OUTPUT_DIR}/{folio}.pdf"
     if not os.path.exists(ruta_pdf):
         abort(404)
 
@@ -822,4 +732,5 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # En Render no uses debug=True
+    app.run(host='0.0.0.0', port=5000)

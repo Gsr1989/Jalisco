@@ -1,112 +1,329 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Iniciar Sesión - Validación Vehicular MX</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <title>Iniciar Sesión - Secretaría de Movilidad</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Secretaría de Movilidad - Sistema de Validación Vehicular" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
     <style>
-        body {
-            background-color: #ffffff;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+        :root {
+            --color-dep: #8b1f41;
+            --primary: #8b1f41;
+            --secondary: #82868b;
+            --success: #28c76f;
+            --danger: #ea5455;
+            --white: #fff;
+            --gray: #b8c2cc;
+            --gray-dark: #1e1e1e;
         }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 14px;
+            height: 100%;
+            letter-spacing: .01rem;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Montserrat', Helvetica, Arial, serif;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.45;
+            color: #6e6b7b;
+            background-color: #fafafa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
         header {
+            background-color: #fff;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 30px;
         }
+
         header img {
             height: 80px;
         }
-        .titulo {
-            text-align: center;
-            font-size: 28px;
-            margin-top: 30px;
-            font-weight: bold;
-            color: #222;
+
+        /* Main Container */
+        main {
+            flex: 1;
+            width: 100%;
+            max-width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
         }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-right: -1rem;
+            margin-left: -1rem;
+            align-items: center;
+        }
+
+        .col {
+            position: relative;
+            width: 100%;
+            padding-right: 1rem;
+            padding-left: 1rem;
+        }
+
+        @media (min-width: 992px) {
+            .col-lg-6 {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+        }
+
+        /* Title Section */
+        .title-section {
+            text-align: left;
+        }
+
+        .title-section h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #67737a;
+            margin: 0 0 1rem 0;
+            line-height: 1.2;
+        }
+
+        .title-section p {
+            font-size: 1.125rem;
+            color: #67737a;
+            line-height: 1.6;
+        }
+
+        /* Form Container */
         .form-container {
-            max-width: 400px;
-            margin: 30px auto;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            background-color: #fff;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         }
+
+        .form-container h2 {
+            color: var(--color-dep);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 1.5rem 0;
+            text-align: center;
+        }
+
+        /* Form Elements */
         input {
             width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 16px;
-            box-sizing: border-box;
+            padding: 0.786rem 1rem;
+            margin: 0.5rem 0;
+            border: 1px solid #d8d6de;
+            border-radius: 0.358rem;
+            font-size: 1rem;
+            font-family: 'Montserrat', sans-serif;
+            transition: border-color 0.15s ease-in-out;
         }
+
+        input:focus {
+            outline: none;
+            border-color: var(--color-dep);
+            box-shadow: 0 3px 10px 0 rgba(139, 31, 65, 0.1);
+        }
+
         button {
-            background-color: #800000;
+            background-color: var(--color-dep);
             color: white;
-            font-size: 16px;
-            padding: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 0.786rem 1.5rem;
             border: none;
-            border-radius: 6px;
+            border-radius: 0.358rem;
             cursor: pointer;
             width: 100%;
-            font-weight: bold;
+            margin-top: 1rem;
+            transition: all 0.15s ease-in-out;
+            font-family: 'Montserrat', sans-serif;
         }
+
         button:hover {
-            background-color: #a00000;
+            background-color: #6d1833;
+            box-shadow: 0 8px 25px -8px rgba(139, 31, 65, 0.6);
         }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        /* Error Messages */
         .error {
-            color: red;
-            font-weight: bold;
-            margin-top: 10px;
+            color: var(--danger);
+            font-weight: 500;
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background-color: #fef3f3;
+            border-left: 3px solid var(--danger);
+            border-radius: 0.358rem;
         }
+
+        /* Footer */
         footer {
-            margin-top: 80px;
+            margin-top: auto;
             width: 100%;
+            background-color: #fff;
         }
+
         footer img {
             width: 100%;
             display: block;
         }
-        @media (max-width: 600px) {
+
+        /* Logo Section */
+        .logo-section {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .logo-section img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Responsive */
+        @media (max-width: 991px) {
+            .title-section {
+                text-align: center;
+                margin-bottom: 2rem;
+            }
+
+            .title-section h1 {
+                font-size: 2rem;
+            }
+
             header img {
                 height: 60px;
             }
-            .titulo {
-                font-size: 24px;
+        }
+
+        @media (max-width: 576px) {
+            header {
+                padding: 1rem;
+            }
+
+            .form-container {
+                padding: 1.5rem;
+            }
+
+            .title-section h1 {
+                font-size: 1.75rem;
+            }
+
+            .title-section p {
+                font-size: 1rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-left: 3px solid var(--color-dep);
+            animation: rotate 1s ease infinite;
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
             }
         }
     </style>
 </head>
 <body>
-
-    <header>
-        <img src="{{ url_for('static', filename='logotipo.png') }}" alt="Logo">
-    </header>
-
-    <div class="titulo">Secretaría de Movilidad</div>
-
-    <div class="form-container">
-        <form method="POST">
-            <input type="text" name="username" placeholder="Nombre de usuario" required>
-            <input type="password" name="password" placeholder="Contraseña" required>
-            <button type="submit">Iniciar Sesión</button>
-        </form>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="error">{{ message }}</div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
     </div>
 
+    <header>
+        <img src="{{ url_for('static', filename='logotipo.png') }}" alt="Logo Gobierno de Jalisco">
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="row">
+                <div class="col col-lg-6 title-section">
+                    <h1>Sistema de Validación Vehicular</h1>
+                    <p>Accede al sistema oficial de la Secretaría de Movilidad para la gestión y validación de permisos vehiculares del Estado de Jalisco.</p>
+                </div>
+                <div class="col col-lg-6">
+                    <div class="form-container">
+                        <h2>Iniciar Sesión</h2>
+                        <form method="POST" id="loginForm">
+                            <input type="text" name="username" placeholder="Nombre de usuario" required autocomplete="username">
+                            <input type="password" name="password" placeholder="Contraseña" required autocomplete="current-password">
+                            <button type="submit">Iniciar Sesión</button>
+                        </form>
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                          {% if messages %}
+                            {% for category, message in messages %}
+                              <div class="error">{{ message }}</div>
+                            {% endfor %}
+                          {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
     <footer>
-        <img src="{{ url_for('static', filename='footer.png') }}" alt="Footer">
+        <img src="{{ url_for('static', filename='footer.png') }}" alt="Footer Gobierno de Jalisco">
     </footer>
 
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function() {
+            document.getElementById('loadingOverlay').classList.add('active');
+        });
+    </script>
 </body>
 </html>

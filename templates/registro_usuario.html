@@ -483,18 +483,13 @@
         const btnText = document.getElementById('btnText');
         const overlay = document.getElementById('processingOverlay');
 
-        function bloquearFormulario() {
-            if (!btnGenerar || !btnText || !overlay || !form) return;
+        function bloquearBoton() {
+            if (!btnGenerar || !btnText || !overlay) return;
 
             btnGenerar.disabled = true;
             btnGenerar.classList.add('btn-loading');
             btnText.textContent = '⏳ Generando...';
             overlay.classList.add('active');
-
-            const elements = form.querySelectorAll('input, textarea, select, button');
-            elements.forEach(el => {
-                if (el !== btnGenerar) el.disabled = true;
-            });
         }
 
         if (form) {
@@ -506,7 +501,7 @@
                 }
 
                 formularioEnviado = true;
-                bloquearFormulario();
+                bloquearBoton();
                 return true;
             });
         }
@@ -522,11 +517,6 @@
                 }
 
                 if (overlay) overlay.classList.remove('active');
-
-                if (form) {
-                    const elements = form.querySelectorAll('input, textarea, select, button');
-                    elements.forEach(el => { el.disabled = false; });
-                }
             }
         });
     </script>

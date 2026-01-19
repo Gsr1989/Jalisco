@@ -1,72 +1,313 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mis folios</title>
+  <meta charset="utf-8">
+  <title>Secretaría de Transporte | Mis Folios</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Mis Folios - Secretaría de Transporte">
+  <meta name="keywords" content="Secretaría de Transporte, Mis Folios">
+  <meta property="og:image" content="{{ url_for('static', filename='assets/images/logo_jalisco_2024_2030.svg') }}">
+  <meta name="author" content="Jalisco">
+
+  <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+
+  <!-- Montserrat Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
   <style>
+    :root {
+      --color-dep: #ffffff;
+      --bg: #fafafa;
+      --txt: #67737a;
+      --muted: #6e6b7b;
+      --verde-jalisco: #28a745;
+      --primary-card: #4a5568;
+    }
+
+    *, *:before, *:after { box-sizing: border-box; }
+
+    html{
+      font-family: sans-serif;
+      line-height: 1.15;
+      -webkit-text-size-adjust: 100%;
+      font-size: 14px;
+      height: 100%;
+      letter-spacing: .01rem;
+    }
+
     body{
-      font-family: Arial, sans-serif;
-      background:#f5f5f5;
-      padding:20px;
+      margin: 0;
+      font-family: "Montserrat", Helvetica, Arial, serif !important;
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.45;
+      color: var(--muted);
+      text-align: left;
+      background-color: var(--bg);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
-    .card{
-      background:white;
-      padding:15px;
-      border-radius:12px;
-      margin-bottom:12px;
-      box-shadow:0 2px 8px rgba(0,0,0,0.08);
+
+    main{ display:block; flex:1; }
+
+    img{ vertical-align: middle; border-style: none; }
+    a{ text-decoration:none; color:inherit; }
+
+    .img-fluid{ max-width:100%; height:auto; }
+
+    .container{
+      width: 100%;
+      padding-right: 1rem;
+      padding-left: 1rem;
+      margin-right: auto;
+      margin-left: auto;
+      max-width: 1200px;
     }
-    .folio{
-      font-size:18px;
-      font-weight:bold;
+
+    /* Barra Verde Superior */
+    .top-bar{
+      background-color: var(--verde-jalisco);
+      height: 8px;
+      width: 100%;
     }
-    .vigente{ color:green; font-weight:bold; }
-    .vencido{ color:brown; font-weight:bold; }
+
+    /* Header con imagen */
+    .header-image{
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+      max-height: 250px;
+    }
+    @media (max-width: 767px){
+      .header-image{ max-height:150px; }
+    }
+
+    /* Botón accesibilidad flotante */
+    #float-button{
+      position: fixed;
+      bottom: 5%;
+      left: 5%;
+      z-index: 999;
+      border-radius: 100%;
+      height: 55px;
+      width: 55px;
+      padding: 0;
+      border: none;
+      background-color: #f6f6f6;
+      box-shadow: 0 .125rem .25rem rgba(34, 41, 47, .075);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    #float-button:hover{ transform: scale(1.05); }
+    #float-button:focus{ outline: 4px solid rgba(236, 205, 50, 0.35); }
+
+    /* Título */
+    .page-title{
+      text-align: center;
+      font: normal normal bold 40px/45px Montserrat;
+      letter-spacing: 0px;
+      color: var(--txt);
+      margin: 3rem 0 1rem;
+    }
+    .page-subtitle{
+      text-align: center;
+      font: normal normal normal 18px/32px Montserrat;
+      letter-spacing: 0px;
+      color: var(--txt);
+      margin-bottom: 2.2rem;
+    }
+    @media (max-width: 767px){
+      .page-title{ font-size:28px; line-height:32px; margin:2rem 0 .5rem; }
+      .page-subtitle{ font-size:16px; line-height:24px; margin-bottom:1.6rem; }
+    }
+
+    /* Lista de folios (cards) */
+    .folios-grid{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin: 0 auto 2.5rem;
+      max-width: 1000px;
+      padding: 0 1rem;
+    }
+
+    .folio-card{
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 1.25rem 1.25rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.08);
+      border-top: 4px solid rgba(40,167,69,0.65);
+    }
+
+    .folio-title{
+      margin: 0 0 .75rem;
+      font-weight: 800;
+      color: var(--txt);
+      font-size: 1.05rem;
+    }
+
+    .folio-row{
+      margin: .25rem 0;
+      color: var(--muted);
+      font-size: .95rem;
+    }
+    .folio-row b{
+      color: var(--txt);
+      font-weight: 700;
+    }
+
+    .badge{
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      margin-top: .75rem;
+      font-weight: 800;
+      padding: .4rem .65rem;
+      border-radius: 999px;
+      font-size: .85rem;
+      border: 1px solid transparent;
+    }
+    .badge.vigente{
+      color: #1f7a47;
+      background: rgba(40,199,111,.10);
+      border-color: rgba(40,199,111,.25);
+    }
+    .badge.vencido{
+      color: #7a3a1f;
+      background: rgba(234,84,85,.08);
+      border-color: rgba(234,84,85,.25);
+    }
+    .badge.desconocido{
+      color: #5b5f63;
+      background: rgba(130,134,139,.12);
+      border-color: rgba(130,134,139,.25);
+    }
+
+    .btn-row{
+      display:flex;
+      gap:.65rem;
+      flex-wrap:wrap;
+      margin-top: 1rem;
+    }
+
     .btn{
-      display:inline-block;
-      margin-top:10px;
-      padding:10px 14px;
-      background:#0a7cff;
-      color:white;
-      text-decoration:none;
-      border-radius:10px;
-      font-size:14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      padding: .786rem 1.2rem;
+      background-color: #f6f6f6;
+      border: 1px solid #e3e3e3;
+      border-radius: 0.358rem;
+      color: var(--txt);
+      font-weight: 700;
+      font-size: .95rem;
+      transition: all 0.2s;
+      cursor: pointer;
+      font-family: "Montserrat", sans-serif;
     }
-    .btn:hover{ opacity:0.9; }
+    .btn:hover{
+      background-color:#e3e3e3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.10);
+    }
+    .btn.primary{
+      background: var(--verde-jalisco);
+      border-color: var(--verde-jalisco);
+      color: #fff;
+    }
+    .btn.primary:hover{
+      background:#23923c;
+      border-color:#23923c;
+    }
+
+    .empty{
+      text-align:center;
+      color: var(--txt);
+      margin: 1rem auto 2.5rem;
+      max-width: 800px;
+      padding: 0 1rem;
+      font-size: 1rem;
+    }
+
+    /* Footer con imagen */
+    footer{ margin-top:auto; width:100%; }
+    .footer-image{ width:100%; height:auto; display:block; }
   </style>
 </head>
+
 <body>
+  <!-- Barra Verde Superior -->
+  <div class="top-bar"></div>
 
-  <h2>📌 Mis Folios</h2>
+  <!-- HEADER CON IMAGEN -->
+  <header>
+    <img src="{{ url_for('static', filename='assets/images/header.jpg') }}"
+         alt="Secretaría de Transporte Jalisco"
+         class="header-image">
+  </header>
 
-  {% if folios|length == 0 %}
-    <p>No tienes folios generados todavía.</p>
-  {% endif %}
+  <!-- Botón Accesibilidad Flotante -->
+  <button id="float-button" type="button" aria-label="Abrir Menu de Accesibilidad">
+    <img src="{{ url_for('static', filename='assets/images/ico_accesibilidad.svg') }}"
+         alt="Accesibilidad del Sitio"
+         class="img-fluid">
+  </button>
 
-  {% for f in folios %}
-    <div class="card">
-      <div class="folio">Folio: {{ f.folio }}</div>
-      <div>Marca: {{ f.marca }}</div>
-      <div>Línea: {{ f.linea }}</div>
-      <div>Serie: {{ f.numero_serie }}</div>
-      <div>Expedición: {{ f.fecha_expedicion }}</div>
-      <div>Vencimiento: {{ f.fecha_vencimiento }}</div>
+  <!-- CONTENIDO PRINCIPAL -->
+  <main>
+    <div class="container">
+      <h1 class="page-title">Mis Folios</h1>
+      <p class="page-subtitle">Aquí puedes ver los permisos que generaste con tu cuenta</p>
 
-      {% if f.estado_actual == "VIGENTE" %}
-        <div class="vigente">✅ VIGENTE</div>
-      {% elif f.estado_actual == "VENCIDO" %}
-        <div class="vencido">⛔ VENCIDO</div>
+      {% if folios|length == 0 %}
+        <div class="empty">No tienes folios generados todavía.</div>
       {% else %}
-        <div>Estado: {{ f.estado_actual }}</div>
+        <div class="folios-grid">
+          {% for f in folios %}
+            <div class="folio-card">
+              <h2 class="folio-title">Folio: {{ f.folio }}</h2>
+
+              <div class="folio-row"><b>Marca:</b> {{ f.marca }}</div>
+              <div class="folio-row"><b>Línea:</b> {{ f.linea }}</div>
+              <div class="folio-row"><b>Serie:</b> {{ f.numero_serie }}</div>
+              <div class="folio-row"><b>Expedición:</b> {{ f.fecha_expedicion }}</div>
+              <div class="folio-row"><b>Vencimiento:</b> {{ f.fecha_vencimiento }}</div>
+
+              {% if f.estado_actual == "VIGENTE" %}
+                <div class="badge vigente">✅ VIGENTE</div>
+              {% elif f.estado_actual == "VENCIDO" %}
+                <div class="badge vencido">⛔ VENCIDO</div>
+              {% else %}
+                <div class="badge desconocido">ℹ️ {{ f.estado_actual }}</div>
+              {% endif %}
+
+              <div class="btn-row">
+                <a class="btn primary" href="/descargar_recibo/{{ f.folio }}">📥 Descargar PDF</a>
+                <a class="btn" href="/consulta/{{ f.folio }}">🔍 Consultar</a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
       {% endif %}
 
-      <a class="btn" href="/descargar_recibo/{{ f.folio }}">📥 Descargar PDF</a>
+      <div style="text-align:center; padding: 0 1rem 3rem;">
+        <a href="/registro_usuario" class="btn">⬅️ Volver</a>
+        <a href="/logout" class="btn">🚪 Cerrar Sesión</a>
+      </div>
     </div>
-  {% endfor %}
+  </main>
 
-  <br>
-  <a class="btn" href="/registro_usuario">⬅️ Volver</a>
-
+  <!-- FOOTER CON IMAGEN -->
+  <footer>
+    <img src="{{ url_for('static', filename='assets/images/1000008793.png') }}"
+         alt="Gobierno de Jalisco"
+         class="footer-image">
+  </footer>
 </body>
 </html>

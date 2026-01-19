@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis folios</title>
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      background:#f5f5f5;
+      padding:20px;
+    }
+    .card{
+      background:white;
+      padding:15px;
+      border-radius:12px;
+      margin-bottom:12px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.08);
+    }
+    .folio{
+      font-size:18px;
+      font-weight:bold;
+    }
+    .vigente{ color:green; font-weight:bold; }
+    .vencido{ color:brown; font-weight:bold; }
+    .btn{
+      display:inline-block;
+      margin-top:10px;
+      padding:10px 14px;
+      background:#0a7cff;
+      color:white;
+      text-decoration:none;
+      border-radius:10px;
+      font-size:14px;
+    }
+    .btn:hover{ opacity:0.9; }
+  </style>
+</head>
+<body>
+
+  <h2>📌 Mis Folios</h2>
+
+  {% if folios|length == 0 %}
+    <p>No tienes folios generados todavía.</p>
+  {% endif %}
+
+  {% for f in folios %}
+    <div class="card">
+      <div class="folio">Folio: {{ f.folio }}</div>
+      <div>Marca: {{ f.marca }}</div>
+      <div>Línea: {{ f.linea }}</div>
+      <div>Serie: {{ f.numero_serie }}</div>
+      <div>Expedición: {{ f.fecha_expedicion }}</div>
+      <div>Vencimiento: {{ f.fecha_vencimiento }}</div>
+
+      {% if f.estado_actual == "VIGENTE" %}
+        <div class="vigente">✅ VIGENTE</div>
+      {% elif f.estado_actual == "VENCIDO" %}
+        <div class="vencido">⛔ VENCIDO</div>
+      {% else %}
+        <div>Estado: {{ f.estado_actual }}</div>
+      {% endif %}
+
+      <a class="btn" href="/descargar_recibo/{{ f.folio }}">📥 Descargar PDF</a>
+    </div>
+  {% endfor %}
+
+  <br>
+  <a class="btn" href="/registro_usuario">⬅️ Volver</a>
+
+</body>
+</html>

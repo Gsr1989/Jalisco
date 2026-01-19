@@ -504,6 +504,31 @@ def registro_usuario():
 
     return render_template('registro_usuario.html', folios_info=folios_info)
     
+@app.route('/mis_folios')
+def mis_folios():
+    if 'username' not in session or not session['username']:
+        flash("Sesión no válida. Inicia sesión de nuevo.", "error")
+        return redirect(url_for('login'))
+
+    # Traer los folios generados por este usuario
+    registros = supabase.table("folios_registrados")\
+        .select("*")\
+        .eq("username", session['username'])\
+        .order("fecha_expedicion", desc=True)\
+        .execute().data or []
+
+    hoy = datetime.now()
+
+    # Agregar estado VIGENTE / VENCIDO para mostrar bonito
+    for r in registros:
+        try:
+            fv = datetime.fromisoformat(r["fecha_vencimiento"])
+            r["estado_actual"] = "VIGENTE" if hoy <= fv else "VENCIDO"
+        except:
+            r["estado_actual"] = "DESCONOCIDO"
+
+    return render_template("mis_folios.html", folios=registros)
+
 @app.route('/registro_admin', methods=['GET', 'POST'])
 def registro_admin():
     if not session.get('admin'):

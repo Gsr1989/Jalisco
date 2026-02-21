@@ -364,6 +364,18 @@
                         <input type="text" id="nombre" name="nombre" placeholder="Nombre completo" required>
                     </div>
 
+                    <div class="campo">
+    <label for="vigencia">⏰ Vigencia del Permiso:</label>
+    <select id="vigencia" name="vigencia" required>
+        <option value="30">30 días</option>
+        <option value="60">60 días</option>
+        <option value="90">90 días</option>
+        <option value="180">6 meses (180 días)</option>
+        <option value="365">1 año (365 días)</option>
+    </select>
+    <small>Selecciona el tiempo de vigencia del permiso</small>
+                    </div>
+
                     <button type="submit" class="btn btn-primary" id="btnGenerar">
                         <span id="btnText">✅ Generar Permiso</span>
                     </button>

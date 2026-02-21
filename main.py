@@ -635,8 +635,21 @@ def registro_admin():
             return redirect(url_for('registro_admin'))
 
         ahora = now_cdmx()
-        vigencia = int(request.form.get('vigencia', 30))
-        venc = ahora + timedelta(days=vigencia)
+        
+        # ===== SELECTOR DE VIGENCIA =====
+        vigencia_seleccionada = request.form.get('vigencia', '30')
+        
+        # Mapeo de opciones a días
+        vigencia_dias_map = {
+            '30': 30,
+            '60': 60,
+            '90': 90,
+            '180': 180,  # 6 meses
+            '365': 365   # 1 año
+        }
+        
+        vigencia_dias = vigencia_dias_map.get(vigencia_seleccionada, 30)
+        venc = ahora + timedelta(days=vigencia_dias)
 
         datos = {
             "folio": folio_manual if folio_manual else None,

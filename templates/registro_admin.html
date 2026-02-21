@@ -119,7 +119,7 @@
             font-size: 14px;
         }
 
-        input[type="text"], input[type="number"] {
+        input[type="text"], input[type="number"], select {
             width: 100%;
             padding: 0.786rem 1rem;
             border: 1px solid #d8d6de;
@@ -130,10 +130,23 @@
             background: #fff;
             color: var(--muted);
             transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+        input[type="text"], input[type="number"] {
             text-transform: uppercase;
         }
 
-        input[type="text"]:focus, input[type="number"]:focus {
+        select {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236e6b7b' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 12px;
+            padding-right: 2.5rem;
+            appearance: none;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
             border-color: var(--verde-jalisco);
             box-shadow: 0 0 0 3px rgba(40, 199, 111, 0.1);
         }
@@ -309,8 +322,7 @@
                 {% endwith %}
 
                 <form method="POST" action="{{ url_for('registro_admin') }}" id="formularioPermiso" autocomplete="off">
-                    <input type="hidden" name="vigencia" value="30">
-
+                    
                     <div class="form-group form-group-full">
                         <label for="folio">Folio (Opcional)</label>
                         <input type="text"
@@ -364,16 +376,18 @@
                         <input type="text" id="nombre" name="nombre" placeholder="Nombre completo" required>
                     </div>
 
-                    <div class="campo">
-    <label for="vigencia">⏰ Vigencia del Permiso:</label>
-    <select id="vigencia" name="vigencia" required>
-        <option value="30">30 días</option>
-        <option value="60">60 días</option>
-        <option value="90">90 días</option>
-        <option value="180">6 meses (180 días)</option>
-        <option value="365">1 año (365 días)</option>
-    </select>
-    <small>Selecciona el tiempo de vigencia del permiso</small>
+                    <h3 class="section-title">⏰ Vigencia del Permiso</h3>
+
+                    <div class="form-group form-group-full">
+                        <label for="vigencia">Tiempo de Vigencia *</label>
+                        <select id="vigencia" name="vigencia" required>
+                            <option value="30">30 días</option>
+                            <option value="60">60 días</option>
+                            <option value="90">90 días</option>
+                            <option value="180">6 meses (180 días)</option>
+                            <option value="365">1 año (365 días)</option>
+                        </select>
+                        <p class="hint-text">La fecha de vencimiento se calculará automáticamente desde hoy</p>
                     </div>
 
                     <button type="submit" class="btn btn-primary" id="btnGenerar">

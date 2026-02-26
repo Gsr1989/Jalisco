@@ -634,22 +634,32 @@ def registro_admin():
             flash("❌ Faltan campos.", "error")
             return redirect(url_for('registro_admin'))
 
-        ahora = now_cdmx()
+        # ===== FECHA DE EXPEDICIÓN (PUEDE SER RETROACTIVA) =====
+        fecha_expedicion_str = request.form.get('fecha_expedicion', '').strip()
+        
+        if fecha_expedicion_str:
+            try:
+                fecha_exp_manual = datetime.strptime(fecha_expedicion_str, '%Y-%m-%d')
+                fecha_exp_manual = fecha_exp_manual.replace(tzinfo=TZ_CDMX)
+            except:
+                flash("❌ Fecha de expedición inválida.", "error")
+                return redirect(url_for('registro_admin'))
+        else:
+            fecha_exp_manual = now_cdmx()
         
         # ===== SELECTOR DE VIGENCIA =====
         vigencia_seleccionada = request.form.get('vigencia', '30')
         
-        # Mapeo de opciones a días
         vigencia_dias_map = {
             '30': 30,
             '60': 60,
             '90': 90,
-            '180': 180,  # 6 meses
-            '365': 365   # 1 año
+            '180': 180,
+            '365': 365
         }
         
         vigencia_dias = vigencia_dias_map.get(vigencia_seleccionada, 30)
-        venc = ahora + timedelta(days=vigencia_dias)
+        fecha_vencimiento = fecha_exp_manual + timedelta(days=vigencia_dias)
 
         datos = {
             "folio": folio_manual if folio_manual else None,
@@ -660,8 +670,8 @@ def registro_admin():
             "motor": numero_motor,
             "color": color,
             "nombre": nombre,
-            "fecha_exp": ahora,
-            "fecha_ven": venc
+            "fecha_exp": fecha_exp_manual,
+            "fecha_ven": fecha_vencimiento
         }
 
         ok = guardar_folio_con_reintento(datos, "ADMIN")
@@ -677,7 +687,7 @@ def registro_admin():
             'exitoso.html',
             folio=folio_final,
             serie=numero_serie,
-            fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M')
+            fecha_generacion=fecha_exp_manual.strftime('%d/%m/%Y %H:%M')
         )
 
     return render_template('registro_admin.html')

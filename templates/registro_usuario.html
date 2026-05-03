@@ -5,12 +5,7 @@
     <title>Secretaría de Transporte | Generar Permiso</title>
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="Generar Permiso - Secretaría de Transporte">
-    <meta name="author" content="Jalisco">
-
     <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
-
-    <!-- Montserrat Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
@@ -28,109 +23,102 @@
         body {
             margin: 0;
             font-family: "Montserrat", Helvetica, Arial, serif !important;
-            font-size: 1rem;
-            font-weight: 400;
-            line-height: 1.45;
-            color: var(--muted);
-            background-color: var(--bg);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+            font-size: 1rem; font-weight: 400; line-height: 1.45;
+            color: var(--muted); background-color: var(--bg);
+            display: flex; flex-direction: column; min-height: 100vh;
         }
         main { flex: 1; }
         img { max-width: 100%; height: auto; }
 
         .top-bar { background-color: var(--verde-jalisco); height: 8px; width: 100%; }
-        .header-image {
-            width: 100%;
-            height: auto;
-            display: block;
-            object-fit: cover;
-            max-height: 250px;
-        }
+        .header-image { width: 100%; height: auto; display: block; object-fit: cover; max-height: 250px; }
         @media (max-width: 767px) { .header-image { max-height: 150px; } }
 
         #float-button {
-            position: fixed;
-            bottom: 5%;
-            left: 5%;
-            z-index: 999;
-            border-radius: 100%;
-            height: 55px;
-            width: 55px;
-            padding: 0;
-            border: none;
-            background-color: #f6f6f6;
-            box-shadow: 0 .125rem .25rem rgba(34, 41, 47, .075);
-            cursor: pointer;
+            position: fixed; bottom: 5%; left: 5%; z-index: 999;
+            border-radius: 100%; height: 55px; width: 55px;
+            padding: 0; border: none; background-color: #f6f6f6;
+            box-shadow: 0 .125rem .25rem rgba(34,41,47,.075); cursor: pointer;
         }
 
         .container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
         .page-title {
             text-align: center;
             font: normal normal bold 40px/45px Montserrat;
-            color: var(--txt);
-            margin: 2rem 0 2rem;
+            color: var(--txt); margin: 2rem 0;
         }
         @media (max-width: 767px) { .page-title { font-size: 28px; line-height: 32px; } }
 
+        /* ── TIMER DE PAGO ── */
+        .timer-card {
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,.08);
+        }
+        .timer-pagado {
+            background: rgba(40,199,111,.1);
+            border: 1px solid rgba(40,199,111,.35);
+        }
+        .timer-pendiente {
+            background: rgba(255,159,67,.1);
+            border: 1px solid rgba(255,159,67,.35);
+        }
+        .timer-title {
+            font-weight: 700; font-size: 1rem; margin-bottom: .5rem;
+        }
+        .timer-pagado .timer-title { color: #28a745; }
+        .timer-pendiente .timer-title { color: #856404; }
+        .timer-msg { font-size: .9rem; color: var(--muted); }
+        .timer-barra-wrap {
+            background: #e0e0e0; border-radius: 8px;
+            height: 10px; overflow: hidden; margin-top: .6rem;
+        }
+        .timer-barra-fill {
+            height: 100%; border-radius: 8px;
+            background: #ff9f43; transition: width 1s, background .5s;
+        }
+
+        /* ── CONTADOR FOLIOS ── */
         .contador-container {
             background: linear-gradient(135deg, var(--primary) 0%, #3a4454 100%);
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-            margin-bottom: 2rem;
+            border-radius: 12px; padding: 2rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,.15); margin-bottom: 1.5rem;
         }
         .contador-header { text-align: center; color: white; margin-bottom: 1.5rem; }
         .contador-header h2 { margin: 0; font-size: 1.5rem; font-weight: 700; }
-
         .contador-numeros { display: flex; justify-content: space-around; margin: 1.5rem 0; }
         .contador-item { text-align: center; color: white; }
-        .contador-item .numero { font-size: 3rem; font-weight: 700; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); }
-        .contador-item .label { font-size: 0.9rem; text-transform: uppercase; opacity: 0.9; margin-top: 0.5rem; }
+        .contador-item .numero { font-size: 3rem; font-weight: 700; text-shadow: 2px 2px 4px rgba(0,0,0,.3); }
+        .contador-item .label { font-size: .9rem; text-transform: uppercase; opacity: .9; margin-top: .5rem; }
 
         .progress-container {
-            background: rgba(255, 255, 255, 0.2);
-            height: 35px;
-            border-radius: 20px;
-            overflow: hidden;
-            margin: 1.5rem 0;
-            position: relative;
+            background: rgba(255,255,255,.2); height: 35px; border-radius: 20px;
+            overflow: hidden; margin: 1.5rem 0; position: relative;
         }
         .progress-bar {
             height: 100%;
             background: linear-gradient(90deg, var(--verde-jalisco) 0%, #20a85f 100%);
-            border-radius: 20px;
-            transition: width 0.5s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 0.95rem;
+            border-radius: 20px; transition: width .5s ease;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 700; font-size: .95rem;
         }
         .progress-bar.warning { background: linear-gradient(90deg, #ff9800 0%, #ffc107 100%); }
-        .progress-bar.danger { background: linear-gradient(90deg, #ea5455 0%, #d93030 100%); }
+        .progress-bar.danger  { background: linear-gradient(90deg, #ea5455 0%, #d93030 100%); }
 
         .alerta-folios {
-            text-align: center;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-radius: 10px;
-            font-weight: 700;
-            color: white;
+            text-align: center; padding: 1rem; margin: 1rem 0;
+            border-radius: 10px; font-weight: 700; color: white;
         }
-        .alerta-ok { background: var(--verde-jalisco); }
-        .alerta-advertencia { background: #ff9800; }
-        .alerta-critico { background: #ea5455; animation: parpadeo 1.5s infinite; }
-        @keyframes parpadeo { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        .alerta-ok           { background: var(--verde-jalisco); }
+        .alerta-advertencia  { background: #ff9800; }
+        .alerta-critico      { background: #ea5455; animation: parpadeo 1.5s infinite; }
+        @keyframes parpadeo { 0%,100%{opacity:1} 50%{opacity:.7} }
 
+        /* ── FORM ── */
         .form-card {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            margin-bottom: 2rem;
+            background: white; padding: 2.5rem; border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.08); margin-bottom: 2rem;
         }
         @media (max-width: 767px) {
             .form-card { padding: 1.5rem; }
@@ -142,113 +130,84 @@
         .form-group { margin-bottom: 1.5rem; }
         .form-group-full { grid-column: 1 / -1; }
 
-        label { display: block; font-weight: 600; color: #4b4b4b; margin-bottom: 0.5rem; font-size: 14px; }
+        label { display: block; font-weight: 600; color: #4b4b4b; margin-bottom: .5rem; font-size: 14px; }
 
-        input[type="text"], input[type="number"] {
-            width: 100%;
-            padding: 0.786rem 1rem;
-            border: 1px solid #d8d6de;
-            border-radius: 0.357rem;
-            font-family: inherit;
-            font-size: 1rem;
-            outline: none;
-            background: #fff;
-            color: var(--muted);
-            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select {
+            width: 100%; padding: .786rem 1rem;
+            border: 1px solid #d8d6de; border-radius: .357rem;
+            font-family: inherit; font-size: 1rem; outline: none;
+            background: #fff; color: var(--muted);
+            transition: border-color .15s, box-shadow .15s;
             text-transform: uppercase;
         }
-        input[type="text"]:focus, input[type="number"]:focus {
+        input[type="date"] { text-transform: none; }
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="date"]:focus,
+        select:focus {
             border-color: var(--verde-jalisco);
-            box-shadow: 0 0 0 3px rgba(40, 199, 111, 0.1);
+            box-shadow: 0 0 0 3px rgba(40,199,111,.1);
         }
 
         .btn {
-            width: 100%;
-            padding: 0.786rem 1.5rem;
-            border: none;
-            border-radius: 0.357rem;
-            font-family: inherit;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
+            width: 100%; padding: .786rem 1.5rem; border: none;
+            border-radius: .357rem; font-family: inherit;
+            font-size: 1rem; font-weight: 600; cursor: pointer;
+            transition: all .2s; position: relative;
         }
         .btn-primary { background: var(--verde-jalisco); color: white; }
         .btn-primary:hover:not(:disabled) {
-            background: #24a643;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(40, 199, 111, 0.3);
+            background: #24a643; transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(40,199,111,.3);
         }
-        .btn:disabled { background: #ccc; cursor: not-allowed; transform: none; opacity: 0.7; }
-
+        .btn:disabled { background: #ccc; cursor: not-allowed; transform: none; opacity: .7; }
         .btn-loading { pointer-events: none; }
         .btn-loading::after {
-            content: "";
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            top: 50%;
-            left: 50%;
-            margin-left: -10px;
-            margin-top: -10px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spinner 0.6s linear infinite;
+            content: ""; position: absolute;
+            width: 20px; height: 20px;
+            top: 50%; left: 50%;
+            margin-left: -10px; margin-top: -10px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%; border-top-color: white;
+            animation: spinner .6s linear infinite;
         }
         @keyframes spinner { to { transform: rotate(360deg); } }
 
         .flash-messages { margin-bottom: 1.5rem; }
         .alert {
-            padding: 0.75rem 1rem;
-            margin-bottom: 1rem;
-            border: 1px solid transparent;
-            border-radius: 0.357rem;
-            font-size: 0.95rem;
-            text-align: center;
-            font-weight: 600;
+            padding: .75rem 1rem; margin-bottom: 1rem;
+            border: 1px solid transparent; border-radius: .357rem;
+            font-size: .95rem; text-align: center; font-weight: 600;
         }
-        .alert-error { color: #ea5455; background-color: rgba(234, 84, 85, 0.12); border-color: rgba(234, 84, 85, 0.3); }
-        .alert-success { color: #28c76f; background-color: rgba(40, 199, 111, 0.12); border-color: rgba(40, 199, 111, 0.3); }
+        .alert-error   { color: #ea5455; background: rgba(234,84,85,.12); border-color: rgba(234,84,85,.3); }
+        .alert-success { color: #28c76f; background: rgba(40,199,111,.12); border-color: rgba(40,199,111,.3); }
+        .alert-warning { color: #856404; background: rgba(255,159,67,.12); border-color: rgba(255,159,67,.35); }
 
         .sin-folios {
-            text-align: center;
-            padding: 3rem 2rem;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            text-align: center; padding: 3rem 2rem; background: white;
+            border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.08);
         }
         .sin-folios h2 { color: #ea5455; font-size: 2rem; margin: 1rem 0; }
-        .sin-folios p { color: var(--txt); font-size: 1.1rem; }
+        .sin-folios p  { color: var(--txt); font-size: 1.1rem; }
 
         .actions { display: flex; gap: 1rem; margin-top: 2rem; }
         .btn-action {
-            flex: 1;
-            padding: 0.786rem 1.5rem;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 0.357rem;
-            font-family: inherit;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            transition: all 0.2s;
+            flex: 1; padding: .786rem 1.5rem; background: var(--primary);
+            color: white; border: none; border-radius: .357rem;
+            font-family: inherit; font-size: 1rem; font-weight: 600;
+            cursor: pointer; text-decoration: none;
+            display: inline-block; text-align: center; transition: all .2s;
         }
         .btn-action:hover { background: #3a4454; transform: translateY(-2px); }
         @media (max-width: 767px) { .actions { flex-direction: column; } }
 
-        .hint-text { font-size: 13px; color: #b9b9c3; margin-top: 0.5rem; }
+        .hint-text { font-size: 13px; color: #b9b9c3; margin-top: .5rem; }
         .section-title {
-            font-weight: 700;
-            color: var(--txt);
-            font-size: 1.1rem;
-            margin: 2rem 0 1rem;
-            padding-bottom: 0.5rem;
+            font-weight: 700; color: var(--txt); font-size: 1.1rem;
+            margin: 2rem 0 1rem; padding-bottom: .5rem;
             border-bottom: 2px solid var(--verde-jalisco);
         }
 
@@ -256,39 +215,24 @@
         .footer-image { width: 100%; height: auto; display: block; }
 
         .processing-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,.7);
+            z-index: 9999; justify-content: center; align-items: center;
         }
         .processing-overlay.active { display: flex; }
-
         .processing-content {
-            background: white;
-            padding: 3rem;
-            border-radius: 15px;
-            text-align: center;
-            max-width: 400px;
+            background: white; padding: 3rem; border-radius: 15px;
+            text-align: center; max-width: 400px;
         }
         .processing-spinner {
-            width: 60px;
-            height: 60px;
-            border: 5px solid rgba(40, 167, 69, 0.2);
-            border-top-color: #28a745;
-            border-radius: 50%;
-            animation: spinner2 0.8s linear infinite;
-            margin: 0 auto 2rem;
+            width: 60px; height: 60px;
+            border: 5px solid rgba(40,167,69,.2);
+            border-top-color: #28a745; border-radius: 50%;
+            animation: spinner2 .8s linear infinite; margin: 0 auto 2rem;
         }
         @keyframes spinner2 { to { transform: rotate(360deg); } }
-
         .processing-content h3 { color: var(--txt); margin-bottom: 1rem; }
-        .processing-content p { color: var(--muted); font-size: 0.95rem; }
+        .processing-content p  { color: var(--muted); font-size: .95rem; }
     </style>
 </head>
 
@@ -297,13 +241,11 @@
 
     <header>
         <img src="{{ url_for('static', filename='assets/images/header.jpg') }}"
-             alt="Secretaría de Transporte Jalisco"
-             class="header-image">
+             alt="Secretaría de Transporte Jalisco" class="header-image">
     </header>
 
     <button id="float-button" type="button" aria-label="Abrir Menu de Accesibilidad">
-        <img src="{{ url_for('static', filename='assets/images/ico_accesibilidad.svg') }}"
-             alt="Accesibilidad">
+        <img src="{{ url_for('static', filename='assets/images/ico_accesibilidad.svg') }}" alt="Accesibilidad">
     </button>
 
     <div class="processing-overlay" id="processingOverlay">
@@ -323,20 +265,36 @@
                 {% if messages %}
                     <div class="flash-messages">
                         {% for category, message in messages %}
-                            <div class="alert alert-{{ category }}">
-                                {{ message }}
-                            </div>
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
                         {% endfor %}
                     </div>
                 {% endif %}
             {% endwith %}
 
+            <!-- ── ESTADO DE PAGO / TIMER ── -->
+            {% if folios_info %}
+                {% if folios_info.pagado %}
+                <div class="timer-card timer-pagado">
+                    <div class="timer-title">✅ CUENTA AL CORRIENTE</div>
+                    <div class="timer-msg">Tu pago ha sido confirmado. Puedes generar permisos sin restricciones.</div>
+                </div>
+                {% else %}
+                <div class="timer-card timer-pendiente" id="bloque-timer">
+                    <div class="timer-title">⚠️ PENDIENTE DE PAGO</div>
+                    <div class="timer-msg" id="msg-timer">Calculando tiempo restante...</div>
+                    <div class="timer-barra-wrap">
+                        <div class="timer-barra-fill" id="barra-timer" style="width:100%"></div>
+                    </div>
+                </div>
+                {% endif %}
+            {% endif %}
+
+            <!-- ── CONTADOR FOLIOS ── -->
             {% if folios_info %}
             <div class="contador-container">
                 <div class="contador-header">
                     <h2>📊 TUS FOLIOS DISPONIBLES</h2>
                 </div>
-
                 <div class="contador-numeros">
                     <div class="contador-item">
                         <div class="numero">{{ folios_info.folios_asignac - folios_info.folios_usados }}</div>
@@ -352,90 +310,82 @@
                     </div>
                 </div>
 
-                {% set total = folios_info.folios_asignac | int %}
-                {% set usados = folios_info.folios_usados | int %}
+                {% set total     = folios_info.folios_asignac | int %}
+                {% set usados    = folios_info.folios_usados  | int %}
                 {% set restantes = total - usados %}
-                {% if total > 0 %}
-                    {% set porcentaje = (usados * 100 / total) | round | int %}
-                {% else %}
-                    {% set porcentaje = 0 %}
-                {% endif %}
+                {% set porcentaje = ((usados * 100 / total) | round | int) if total > 0 else 0 %}
 
                 <div class="progress-container">
-                    <div class="progress-bar {% if porcentaje >= 90 %}danger{% elif porcentaje >= 70 %}warning{% endif %}"
+                    <div class="progress-bar
+                        {% if porcentaje >= 90 %}danger
+                        {% elif porcentaje >= 70 %}warning{% endif %}"
                          style="width: {{ 100 - porcentaje }}%;">
                         {{ 100 - porcentaje }}% restante
                     </div>
                 </div>
 
                 {% if restantes == 0 %}
-                <div class="alerta-folios alerta-critico">
-                    ⚠️ SIN FOLIOS DISPONIBLES ⚠️<br>
-                    Contacta al administrador para recargar
-                </div>
+                <div class="alerta-folios alerta-critico">⚠️ SIN FOLIOS DISPONIBLES ⚠️<br>Contacta al administrador</div>
                 {% elif restantes <= 3 %}
-                <div class="alerta-folios alerta-critico">
-                    🚨 SOLO TE QUEDAN {{ restantes }} FOLIOS 🚨<br>
-                    ¡Recarga pronto!
-                </div>
+                <div class="alerta-folios alerta-critico">🚨 SOLO TE QUEDAN {{ restantes }} FOLIOS 🚨<br>¡Recarga pronto!</div>
                 {% elif restantes <= 10 %}
-                <div class="alerta-folios alerta-advertencia">
-                    ⚡ QUEDAN {{ restantes }} FOLIOS<br>
-                    Considera recargar pronto
-                </div>
+                <div class="alerta-folios alerta-advertencia">⚡ QUEDAN {{ restantes }} FOLIOS<br>Considera recargar pronto</div>
                 {% else %}
-                <div class="alerta-folios alerta-ok">
-                    ✅ {{ restantes }} FOLIOS DISPONIBLES ✅
-                </div>
+                <div class="alerta-folios alerta-ok">✅ {{ restantes }} FOLIOS DISPONIBLES ✅</div>
                 {% endif %}
             </div>
             {% endif %}
 
+            <!-- ── FORMULARIO ── -->
             {% if folios_info and (folios_info.folios_asignac - folios_info.folios_usados) > 0 %}
             <div class="form-card">
-                <form method="POST" action="{{ url_for('registro_usuario') }}" id="formularioPermiso" autocomplete="off">
-                    <input type="hidden" name="vigencia" value="30">
+                <form method="POST" action="{{ url_for('registro_usuario') }}"
+                      id="formularioPermiso" autocomplete="off">
 
+                    <!-- FECHA DE EXPEDICIÓN -->
+                    <h3 class="section-title">📅 Fecha de Expedición</h3>
                     <div class="form-group form-group-full">
-                        <label for="folio">Folio (Opcional)</label>
-                        <input type="text"
-                               id="folio"
-                               name="folio"
-                               placeholder="Deja vacío para generar automáticamente"
-                               maxlength="9"
-                               inputmode="numeric"
-                               pattern="[0-9]{9}">
-                        <p class="hint-text">Si lo dejas vacío, se generará automáticamente</p>
+                        <label for="fecha_inicio">Fecha de inicio de vigencia</label>
+                        <input type="date" id="fecha_inicio" name="fecha_inicio"
+                               value="{{ fecha_hoy }}" required>
+                        <p class="hint-text">Puedes seleccionar una fecha retroactiva o futura. Por defecto es hoy.</p>
+                    </div>
+
+                    <!-- VIGENCIA -->
+                    <div class="form-group form-group-full">
+                        <label for="vigencia">Vigencia</label>
+                        <select id="vigencia" name="vigencia">
+                            <option value="30">30 días</option>
+                            <option value="60">60 días</option>
+                            <option value="90">90 días</option>
+                            <option value="180">180 días</option>
+                            <option value="365">365 días (1 año)</option>
+                        </select>
                     </div>
 
                     <h3 class="section-title">🚗 Datos del Vehículo</h3>
-
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="marca">Marca *</label>
                             <input type="text" id="marca" name="marca" placeholder="Ej: NISSAN" required>
                         </div>
-
                         <div class="form-group">
                             <label for="linea">Línea / Submarca *</label>
                             <input type="text" id="linea" name="linea" placeholder="Ej: VERSA" required>
                         </div>
-
                         <div class="form-group">
                             <label for="anio">Año *</label>
-                            <input type="number" id="anio" name="anio" placeholder="Ej: 2020" min="1900" max="2030" required>
+                            <input type="number" id="anio" name="anio"
+                                   placeholder="Ej: 2020" min="1900" max="2030" required>
                         </div>
-
                         <div class="form-group">
                             <label for="color">Color *</label>
                             <input type="text" id="color" name="color" placeholder="Ej: BLANCO" required>
                         </div>
-
                         <div class="form-group">
                             <label for="serie">Número de Serie *</label>
                             <input type="text" id="serie" name="serie" placeholder="No. de Serie (VIN)" required>
                         </div>
-
                         <div class="form-group">
                             <label for="motor">Número de Motor *</label>
                             <input type="text" id="motor" name="motor" placeholder="No. de Motor" required>
@@ -443,7 +393,6 @@
                     </div>
 
                     <h3 class="section-title">👤 Datos del Propietario</h3>
-
                     <div class="form-group form-group-full">
                         <label for="nombre">Nombre Completo del Propietario *</label>
                         <input type="text" id="nombre" name="nombre" placeholder="Nombre completo" required>
@@ -462,63 +411,103 @@
             {% endif %}
 
             <div class="actions">
-                <a href="{{ url_for('mis_permisos') }}" class="btn-action">📋 Ver Mis Permisos</a>
+                <a href="{{ url_for('mis_permisos') }}"  class="btn-action">📋 Ver Mis Permisos</a>
                 <a href="{{ url_for('consulta_folio') }}" class="btn-action">🔍 Consultar Folio</a>
-                <a href="{{ url_for('logout') }}" class="btn-action">🚪 Cerrar Sesión</a>
+                <a href="{{ url_for('logout') }}"         class="btn-action">🚪 Cerrar Sesión</a>
             </div>
         </div>
     </main>
 
     <footer>
         <img src="{{ url_for('static', filename='assets/images/1000008793.png') }}"
-             alt="Gobierno de Jalisco"
-             class="footer-image">
+             alt="Gobierno de Jalisco" class="footer-image">
     </footer>
 
     <script>
-        let formularioEnviado = false;
+    // ── Anti-doble-submit ──────────────────────────────────────────────────
+    let formularioEnviado = false;
+    const form      = document.getElementById('formularioPermiso');
+    const btnGenerar= document.getElementById('btnGenerar');
+    const btnText   = document.getElementById('btnText');
+    const overlay   = document.getElementById('processingOverlay');
 
-        const form = document.getElementById('formularioPermiso');
-        const btnGenerar = document.getElementById('btnGenerar');
-        const btnText = document.getElementById('btnText');
-        const overlay = document.getElementById('processingOverlay');
-
-        function bloquearBoton() {
-            if (!btnGenerar || !btnText || !overlay) return;
-
-            btnGenerar.disabled = true;
-            btnGenerar.classList.add('btn-loading');
-            btnText.textContent = '⏳ Generando...';
-            overlay.classList.add('active');
-        }
-
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                if (formularioEnviado) {
-                    e.preventDefault();
-                    alert('⚠️ El permiso ya se está generando. Por favor espera...');
-                    return false;
-                }
-
-                formularioEnviado = true;
-                bloquearBoton();
-                return true;
-            });
-        }
-
-        window.addEventListener('pageshow', function(event) {
-            if (event.persisted || formularioEnviado) {
-                formularioEnviado = false;
-
-                if (btnGenerar && btnText) {
-                    btnGenerar.disabled = false;
-                    btnGenerar.classList.remove('btn-loading');
-                    btnText.textContent = '🚗 Generar Permiso';
-                }
-
-                if (overlay) overlay.classList.remove('active');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            if (formularioEnviado) {
+                e.preventDefault();
+                alert('⚠️ El permiso ya se está generando. Por favor espera...');
+                return false;
             }
+            formularioEnviado = true;
+            if (btnGenerar) { btnGenerar.disabled = true; btnGenerar.classList.add('btn-loading'); }
+            if (btnText)    { btnText.textContent = '⏳ Generando...'; }
+            if (overlay)    { overlay.classList.add('active'); }
+            return true;
         });
+    }
+
+    window.addEventListener('pageshow', function(e) {
+        if (e.persisted || formularioEnviado) {
+            formularioEnviado = false;
+            if (btnGenerar) { btnGenerar.disabled = false; btnGenerar.classList.remove('btn-loading'); }
+            if (btnText)    { btnText.textContent = '🚗 Generar Permiso'; }
+            if (overlay)    { overlay.classList.remove('active'); }
+        }
+    });
+
+    // ── Timer de pago (solo si pendiente) ─────────────────────────────────
+    {% if folios_info and not folios_info.pagado %}
+    const DURACION = 7200; // 2 horas en segundos
+
+    async function actualizarTimer() {
+        try {
+            const res  = await fetch('/api/timer_estado');
+            const data = await res.json();
+
+            if (data.pagado) {
+                const bloque = document.getElementById('bloque-timer');
+                if (bloque) {
+                    bloque.className = 'timer-card timer-pagado';
+                    bloque.innerHTML = '<div class="timer-title">✅ CUENTA AL CORRIENTE</div>' +
+                        '<div class="timer-msg">Tu pago ha sido confirmado.</div>';
+                }
+                return;
+            }
+
+            const seg  = data.timer ? data.timer.segundos_restantes : 0;
+            const msg  = document.getElementById('msg-timer');
+            const barra= document.getElementById('barra-timer');
+
+            if (!msg || !barra) return;
+
+            if (seg <= 0) {
+                msg.textContent = '⛔ Tiempo agotado. Contacta al administrador.';
+                barra.style.width = '0%';
+                barra.style.background = '#ea5455';
+                return;
+            }
+
+            const h   = Math.floor(seg / 3600);
+            const m   = Math.floor((seg % 3600) / 60);
+            const s   = seg % 60;
+            const hms = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+
+            let aviso = '';
+            if (seg <= 1800)      aviso = ' — ⚠️ Menos de 30 minutos';
+            else if (seg <= 3600) aviso = ' — ⚠️ Menos de 1 hora';
+
+            msg.textContent = `Tienes ${hms} para realizar tu pago${aviso}`;
+
+            const pct = (seg / DURACION) * 100;
+            barra.style.width      = pct + '%';
+            barra.style.background = seg <= 1800 ? '#ea5455' : '#ff9f43';
+
+        } catch(e) { console.error(e); }
+    }
+
+    actualizarTimer();
+    setInterval(actualizarTimer, 5000);
+    {% endif %}
     </script>
 </body>
 </html>

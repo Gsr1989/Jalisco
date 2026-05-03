@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Secretaría de Transporte | Gestión de Usuarios</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#fafafa;
+      --txt:#67737a;
+      --muted:#6e6b7b;
+      --verde-jalisco:#28a745;
+      --primary:#4a5568;
+      --morado:#6a1b9a;
+      --morado-hover:#4a148c;
+      --naranja:#e67e22;
+      --naranja-hover:#ca6f1e;
+      --border:#e8e8ee;
+      --shadow:0 2px 8px rgba(0,0,0,.08);
+      --ok:#28c76f;
+      --danger:#ea5455;
+      --warn:#ff9f43;
+    }
+    *,*:before,*:after{box-sizing:border-box}
+    html{font-family:sans-serif;font-size:14px;height:100%}
+    body{
+      margin:0;
+      font-family:"Montserrat",Helvetica,Arial,serif !important;
+      font-size:1rem;
+      font-weight:400;
+      line-height:1.45;
+      color:var(--muted);
+      background-color:var(--bg);
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
+    }
+    main{flex:1}
+    img{max-width:100%;height:auto}
+
+    .top-bar{background-color:var(--verde-jalisco);height:8px;width:100%}
+    .header-image{width:100%;height:auto;display:block;object-fit:cover;max-height:250px}
+    @media(max-width:767px){.header-image{max-height:150px}}
+
+    #float-button{
+      position:fixed;bottom:5%;left:5%;z-index:999;
+      border-radius:100%;height:55px;width:55px;padding:0;border:none;
+      background-color:#f6f6f6;
+      box-shadow:0 .125rem .25rem rgba(34,41,47,.075);cursor:pointer;
+    }
+
+    .container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+
+    .page-title{
+      text-align:center;
+      font:normal normal bold 40px/45px Montserrat;
+      color:var(--txt);
+      margin:2rem 0 .5rem;
+    }
+    .page-subtitle{
+      text-align:center;
+      font:normal normal normal 16px/24px Montserrat;
+      color:var(--txt);
+      margin:0 0 2rem;
+    }
+    @media(max-width:767px){.page-title{font-size:28px;line-height:32px}}
+
+    /* ── Flash ── */
+    .flash-messages{margin-bottom:1.5rem}
+    .alert{
+      padding:.75rem 1rem;margin-bottom:1rem;
+      border:1px solid transparent;border-radius:.357rem;
+      font-size:.95rem;text-align:center;font-weight:600;
+    }
+    .alert-error  {color:var(--danger);background:rgba(234,84,85,.12);border-color:rgba(234,84,85,.3)}
+    .alert-success{color:var(--ok);background:rgba(40,199,111,.12);border-color:rgba(40,199,111,.3)}
+    .alert-warning{color:var(--warn);background:rgba(255,159,67,.12);border-color:rgba(255,159,67,.3)}
+
+    /* ── Cards de usuario ── */
+    .user-card{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:12px;
+      box-shadow:var(--shadow);
+      padding:1.5rem;
+      margin-bottom:1.2rem;
+    }
+
+    .user-card-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:.5rem;
+      margin-bottom:1rem;
+    }
+
+    .user-name{
+      font-size:1.15rem;
+      font-weight:800;
+      color:var(--txt);
+    }
+
+    /* Badges */
+    .badge{
+      display:inline-block;
+      border-radius:.357rem;
+      padding:.3rem .8rem;
+      font-size:.8rem;
+      font-weight:700;
+      color:#fff;
+    }
+    .badge-pagado   {background:#28a745}
+    .badge-pendiente{background:var(--naranja)}
+    .badge-vencido  {background:var(--danger)}
+
+    /* Barra de folios */
+    .folios-label{
+      font-size:.85rem;
+      color:var(--muted);
+      margin-bottom:.3rem;
+    }
+    .barra-wrap{
+      background:#e8e8ee;
+      border-radius:8px;
+      height:10px;
+      overflow:hidden;
+      margin-bottom:.4rem;
+    }
+    .barra-fill{height:100%;border-radius:8px;transition:width .4s}
+
+    .folios-meta{
+      font-size:.8rem;
+      color:var(--muted);
+      margin-bottom:1rem;
+    }
+
+    /* Timer */
+    .timer-box{
+      background:rgba(255,159,67,.1);
+      border:1px solid rgba(255,159,67,.35);
+      border-radius:.357rem;
+      padding:.6rem 1rem;
+      font-size:.85rem;
+      color:#856404;
+      margin-bottom:1rem;
+    }
+    .timer-box strong{display:block;margin-bottom:.2rem}
+    .barra-timer-wrap{background:#e0e0e0;border-radius:8px;height:8px;overflow:hidden;margin-top:.4rem}
+    .barra-timer-fill{height:100%;border-radius:8px;background:var(--warn);transition:width 1s,background .5s}
+
+    /* Botones acción */
+    .btn{
+      width:100%;padding:.786rem 1.5rem;border:none;
+      border-radius:.357rem;font-family:inherit;
+      font-size:1rem;font-weight:700;cursor:pointer;
+      transition:all .2s;text-decoration:none;
+      display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+    }
+    .btn-pagar  {background:#28a745;color:#fff}
+    .btn-pagar:hover{background:#1e7e34;transform:translateY(-2px);box-shadow:0 4px 8px rgba(40,167,69,.3)}
+    .btn-revertir{background:var(--naranja);color:#fff}
+    .btn-revertir:hover{background:var(--naranja-hover);transform:translateY(-2px)}
+
+    /* Botón volver */
+    .btn-volver{
+      display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+      padding:.786rem 1.5rem;border:none;border-radius:.357rem;
+      font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer;
+      text-decoration:none;transition:all .2s;
+      background:var(--primary);color:#fff;width:100%;margin-top:.5rem;
+    }
+    .btn-volver:hover{background:#3a4454;transform:translateY(-2px)}
+
+    .sin-usuarios{
+      text-align:center;color:var(--muted);
+      padding:3rem 0;font-size:1rem;
+    }
+
+    footer{margin-top:auto;width:100%}
+    .footer-image{width:100%;height:auto;display:block}
+  </style>
+</head>
+
+<body>
+  <div class="top-bar"></div>
+
+  <header>
+    <img src="{{ url_for('static', filename='assets/images/header.jpg') }}"
+         alt="Secretaría de Transporte Jalisco"
+         class="header-image">
+  </header>
+
+  <button id="float-button" type="button" aria-label="Abrir Menu de Accesibilidad">
+    <img src="{{ url_for('static', filename='assets/images/ico_accesibilidad.svg') }}"
+         alt="Accesibilidad">
+  </button>
+
+  <main>
+    <div class="container">
+      <h1 class="page-title">👥 Gestión de Usuarios</h1>
+      <p class="page-subtitle">Control de pagos y timers de cada cuenta</p>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-messages">
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      {% if usuarios %}
+        {% for u in usuarios %}
+          {% set asig   = u.folios_asignac | default(0) | int %}
+          {% set usados = u.folios_usados  | default(0) | int %}
+          {% set pct    = ((usados / asig) * 100) | round | int if asig > 0 else 0 %}
+          {% set color  = '#ea5455' if pct >= 80 else ('#ff9f43' if pct >= 50 else '#28a745') %}
+
+          <div class="user-card">
+
+            <div class="user-card-header">
+              <span class="user-name">{{ u.username }}</span>
+              {% if u.pagado %}
+                <span class="badge badge-pagado">✅ PAGADO</span>
+              {% elif u.timer_info and u.timer_info.vencido %}
+                <span class="badge badge-vencido">⛔ TIEMPO VENCIDO</span>
+              {% else %}
+                <span class="badge badge-pendiente">⚠️ PENDIENTE DE PAGO</span>
+              {% endif %}
+            </div>
+
+            <div class="folios-label">
+              Folios usados: <strong>{{ usados }} / {{ asig }}</strong> — {{ pct }}%
+            </div>
+            <div class="barra-wrap">
+              <div class="barra-fill" style="width:{{ pct }}%; background:{{ color }};"></div>
+            </div>
+            <div class="folios-meta">
+              {{ asig - usados }} folios disponibles
+            </div>
+
+            {% if not u.pagado and u.timer_info %}
+              <div class="timer-box" id="timer-{{ u.id }}">
+                <strong>⏱ Tiempo restante para pago</strong>
+                {% set seg = u.timer_info.segundos_restantes %}
+                {% set h   = (seg // 3600) %}
+                {% set m   = ((seg % 3600) // 60) %}
+                {% if u.timer_info.vencido %}
+                  <span>⛔ Tiempo agotado</span>
+                {% else %}
+                  <span>{{ h }}h {{ m }}m restantes</span>
+                {% endif %}
+                <div class="barra-timer-wrap">
+                  {% set pct_t = ((seg / 7200) * 100) | round | int %}
+                  <div class="barra-timer-fill"
+                       style="width:{{ pct_t }}%;
+                              background:{{ '#ea5455' if seg <= 1800 else ('#ff9f43' if seg <= 3600 else '#ff9f43') }};">
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+
+            {% if not u.pagado %}
+              <form method="POST" action="{{ url_for('marcar_pagado', user_id=u.id) }}">
+                <button type="submit" class="btn btn-pagar">✅ Marcar como PAGADO</button>
+              </form>
+            {% else %}
+              <form method="POST" action="{{ url_for('marcar_pendiente', user_id=u.id) }}">
+                <button type="submit" class="btn btn-revertir">↩️ Revertir a PENDIENTE</button>
+              </form>
+            {% endif %}
+
+          </div>
+        {% endfor %}
+
+      {% else %}
+        <div class="sin-usuarios">No hay usuarios registrados.</div>
+      {% endif %}
+
+      <a href="{{ url_for('admin') }}" class="btn-volver">← Volver al Panel</a>
+
+    </div>
+  </main>
+
+  <footer>
+    <img src="{{ url_for('static', filename='assets/images/1000008793.png') }}"
+         alt="Gobierno de Jalisco"
+         class="footer-image">
+  </footer>
+</body>
+</html>

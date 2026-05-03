@@ -125,8 +125,6 @@ def generar_folio_automatico_jalisco():
         except:
             pass
 
-    logger.info(f"[FOLIO] Folios válidos: {len(folios_jalisco)}")
-
     if not folios_jalisco:
         siguiente = PREFIJO_JALISCO
     else:
@@ -140,8 +138,6 @@ def generar_folio_automatico_jalisco():
         if candidato not in folios_jalisco:
             logger.info(f"[FOLIO] ✅ {folio_str} (intento {intento+1})")
             return folio_str
-        if intento > 0 and intento % 10000 == 0:
-            logger.info(f"[FOLIO] Buscando... intento {intento}")
 
     raise Exception("Sin folio disponible tras 10,000,000 intentos")
 
@@ -161,7 +157,6 @@ def guardar_folio_con_reintento(datos, username):
     for intento in range(10000000):
         folio_actual = folio_inicial + intento
         if folio_actual < PREFIJO_JALISCO or folio_actual > LIMITE_MAXIMO:
-            logger.error(f"[ERROR] Folio {folio_actual} fuera de rango")
             return False
 
         folio_str = f"{folio_actual:09d}"
@@ -190,10 +185,7 @@ def guardar_folio_con_reintento(datos, username):
                 continue
             logger.error(f"[ERROR BD] {e}")
             return False
-        if intento > 0 and intento % 10000 == 0:
-            logger.info(f"[DB] intento {intento}")
 
-    logger.error("[ERROR] Sin folio disponible")
     return False
 
 # ===================== TIMER DE PAGO =====================
@@ -240,7 +232,6 @@ def generar_qr_dinamico(folio):
         qr.add_data(url)
         qr.make(fit=True)
         img = qr.make_image(fill_color="black", back_color=(220,220,220)).convert("RGB")
-        logger.info(f"[QR] ✅ {folio}")
         return img, url
     except Exception as e:
         logger.error(f"[ERROR QR] {e}")
@@ -254,7 +245,7 @@ def generar_codigo_ine(contenido, ruta_salida):
         if image.mode != 'RGB':
             image = image.convert('RGB')
         ancho, alto = image.size
-        img_gris = Image.new('RGB', (ancho, alto), color=(220,220,220))
+        img_gris    = Image.new('RGB', (ancho, alto), color=(220,220,220))
         pixels      = image.load()
         pixels_gris = img_gris.load()
         for y in range(alto):
@@ -267,7 +258,6 @@ def generar_codigo_ine(contenido, ruta_salida):
                     if pixel < 128:
                         pixels_gris[x, y] = (0,0,0)
         img_gris.save(ruta_salida)
-        logger.info(f"[PDF417] ✅ {ruta_salida}")
     except Exception as e:
         logger.error(f"[ERROR PDF417] {e}")
         Image.new('RGB', (200,50), color=(220,220,220)).save(ruta_salida)
@@ -312,7 +302,7 @@ def generar_pdf_unificado(datos: dict) -> str:
         pg1.insert_text((860,364), fol, fontsize=14, color=(0,0,0), fontname="hebo")
         pg1.insert_text((475,830), fecha_exp_dt.strftime("%d/%m/%Y"), fontsize=32, color=(0,0,0), fontname="hebo")
 
-        fol_rep     = obtener_folio_representativo()
+        fol_rep      = obtener_folio_representativo()
         folio_grande = f"4A-DVM/{fol_rep}"
         pg1.insert_text((240,830), folio_grande, fontsize=32, color=(0,0,0), fontname="hebo")
         pg1.insert_text((480,182), folio_grande, fontsize=63, color=(0,0,0), fontname="hebo")
@@ -450,7 +440,7 @@ def crear_usuario():
                 "password":       password,
                 "folios_asignac": folios,
                 "folios_usados":  0,
-                "pagado":         False      # <── campo nuevo
+                "pagado":         False
             }).execute()
             flash('Usuario creado.','success')
 
@@ -496,10 +486,10 @@ def registro_admin():
 
         datos = {
             "folio":     folio_manual if folio_manual else None,
-            "marca":     marca, "linea":  linea,  "anio":  anio,
+            "marca":     marca,  "linea":  linea,  "anio":  anio,
             "serie":     numero_serie,  "motor": numero_motor,
-            "color":     color,         "nombre":nombre,
-            "fecha_exp": fecha_exp,     "fecha_ven": fecha_ven
+            "color":     color,  "nombre": nombre,
+            "fecha_exp": fecha_exp,  "fecha_ven": fecha_ven
         }
 
         if not guardar_folio_con_reintento(datos, "ADMIN"):
@@ -516,16 +506,44 @@ def registro_admin():
     return render_template('registro_admin.html')
 
 
+# ── admin_folios CON FILTROS GET ─────────────────────────────────────────────
+
 @app.route('/admin_folios')
 def admin_folios():
     if not session.get('admin'):
         return redirect(url_for('login'))
 
-    folios = supabase.table("folios_registrados")\
-        .select("*").eq("entidad",ENTIDAD)\
-        .order("fecha_expedicion",desc=True).execute().data or []
+    # Parámetros GET
+    filtro       = request.args.get('filtro', '').strip()
+    criterio     = request.args.get('criterio', 'folio')        # folio | numero_serie
+    ordenar      = request.args.get('ordenar', 'desc')          # desc | asc
+    estado_filtro= request.args.get('estado', 'todos')          # todos | vigente | vencido
+    fecha_inicio = request.args.get('fecha_inicio', '')
+    fecha_fin    = request.args.get('fecha_fin', '')
+
+    # Traer todos los folios de Jalisco ordenados
+    orden_desc = (ordenar == 'desc')
+    query = supabase.table("folios_registrados")\
+        .select("*").eq("entidad", ENTIDAD)\
+        .order("fecha_expedicion", desc=orden_desc)
+
+    # Filtro por texto (folio o serie exacto desde BD)
+    if filtro:
+        if criterio == 'numero_serie':
+            query = query.ilike("numero_serie", f"%{filtro}%")
+        else:
+            query = query.ilike("folio", f"%{filtro}%")
+
+    # Filtro por rango de fechas
+    if fecha_inicio:
+        query = query.gte("fecha_expedicion", fecha_inicio)
+    if fecha_fin:
+        query = query.lte("fecha_expedicion", fecha_fin)
+
+    folios = query.execute().data or []
 
     hoy = today_cdmx()
+    resultado = []
     for f in folios:
         try:
             fv = parse_date_any(f.get('fecha_vencimiento'))
@@ -533,7 +551,22 @@ def admin_folios():
         except:
             f['estado'] = 'ERROR'
 
-    return render_template('admin_folios.html', folios=folios)
+        # Filtro por estado (en Python después de calcular)
+        if estado_filtro == 'vigente' and f['estado'] != 'VIGENTE':
+            continue
+        if estado_filtro == 'vencido' and f['estado'] != 'VENCIDO':
+            continue
+
+        resultado.append(f)
+
+    return render_template('admin_folios.html',
+                           folios=resultado,
+                           filtro=filtro,
+                           criterio=criterio,
+                           ordenar=ordenar,
+                           estado=estado_filtro,
+                           fecha_inicio=fecha_inicio,
+                           fecha_fin=fecha_fin)
 
 
 @app.route('/editar_folio/<folio>', methods=['GET','POST'])
@@ -564,11 +597,42 @@ def editar_folio(folio):
 
 @app.route('/eliminar_folio', methods=['POST'])
 def eliminar_folio():
+    """Elimina un solo folio."""
     if not session.get('admin'):
         return redirect(url_for('login'))
     folio = request.form['folio']
     supabase.table("folios_registrados").delete().eq("folio",folio).execute()
     flash("Folio eliminado.","success")
+    return redirect(url_for('admin_folios'))
+
+
+@app.route('/eliminar_folios_masivo', methods=['POST'])
+def eliminar_folios_masivo():
+    """Elimina múltiples folios seleccionados con checkbox."""
+    if not session.get('admin'):
+        return redirect(url_for('login'))
+
+    folios_a_eliminar = request.form.getlist('folios')
+
+    if not folios_a_eliminar:
+        flash("No seleccionaste ningún folio.","error")
+        return redirect(url_for('admin_folios'))
+
+    eliminados = 0
+    errores    = 0
+    for folio in folios_a_eliminar:
+        try:
+            supabase.table("folios_registrados").delete().eq("folio", folio).execute()
+            eliminados += 1
+        except Exception as e:
+            logger.error(f"[ERROR] Eliminar {folio}: {e}")
+            errores += 1
+
+    if eliminados:
+        flash(f"✅ {eliminados} folio(s) eliminado(s) correctamente.", "success")
+    if errores:
+        flash(f"⚠️ {errores} folio(s) no pudieron eliminarse.", "error")
+
     return redirect(url_for('admin_folios'))
 
 
@@ -683,7 +747,6 @@ def registro_usuario():
                                    porcentaje=pct,
                                    fecha_hoy=today_cdmx().isoformat())
 
-        # Fecha editable (retroactivo / futuro)
         fecha_inicio_str = request.form.get('fecha_inicio','').strip()
         if fecha_inicio_str:
             try:
@@ -703,9 +766,9 @@ def registro_usuario():
         datos = {
             "folio":     None,
             "marca":     marca,   "linea":  linea,  "anio":  anio,
-            "serie":     numero_serie,       "motor": numero_motor,
-            "color":     color,             "nombre":nombre,
-            "fecha_exp": ahora,             "fecha_ven": venc
+            "serie":     numero_serie,  "motor": numero_motor,
+            "color":     color,   "nombre": nombre,
+            "fecha_exp": ahora,   "fecha_ven": venc
         }
 
         if not guardar_folio_con_reintento(datos, session['username']):
@@ -727,7 +790,6 @@ def registro_usuario():
                                serie=numero_serie,
                                fecha_generacion=ahora.strftime('%d/%m/%Y %H:%M'))
 
-    # GET
     return render_template('registro_usuario.html',
                            folios_info=folios_info,
                            timer_info=get_timer_info(folios_info),
@@ -783,10 +845,10 @@ def consulta_folio():
         if not registros:
             resultado = {"estado":"NO REGISTRADO","color":"rojo","folio":folio}
         else:
-            r     = registros[0]
-            fexp  = parse_date_any(r.get('fecha_expedicion'))
-            fven  = parse_date_any(r.get('fecha_vencimiento'))
-            hoy   = today_cdmx()
+            r      = registros[0]
+            fexp   = parse_date_any(r.get('fecha_expedicion'))
+            fven   = parse_date_any(r.get('fecha_vencimiento'))
+            hoy    = today_cdmx()
             estado = "VIGENTE" if hoy <= fven else "VENCIDO"
             resultado = {
                 "estado":           estado,
@@ -815,10 +877,10 @@ def consulta_folio_directo(folio):
         return render_template("resultado_consulta.html",
                                resultado={"estado":"NO REGISTRADO","color":"rojo","folio":folio})
 
-    r     = row[0]
-    fe    = parse_date_any(r.get('fecha_expedicion'))
-    fv    = parse_date_any(r.get('fecha_vencimiento'))
-    hoy   = today_cdmx()
+    r      = row[0]
+    fe     = parse_date_any(r.get('fecha_expedicion'))
+    fv     = parse_date_any(r.get('fecha_vencimiento'))
+    hoy    = today_cdmx()
     estado = "VIGENTE" if hoy <= fv else "VENCIDO"
 
     return render_template("resultado_consulta.html", resultado={

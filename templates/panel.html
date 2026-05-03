@@ -10,7 +10,6 @@
 
   <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
 
-  <!-- Montserrat Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
@@ -22,6 +21,10 @@
       --muted:#6e6b7b;
       --verde-jalisco:#28a745;
       --primary:#4a5568;
+      --morado:#6a1b9a;
+      --morado-hover:#4a148c;
+      --rojo:#c0392b;
+      --rojo-hover:#a93226;
       --border:#e8e8ee;
       --shadow:0 2px 8px rgba(0,0,0,.08);
       --shadow2:0 8px 20px rgba(0,0,0,.12);
@@ -127,6 +130,9 @@
       color:var(--muted);
     }
 
+    /* Cards de ancho completo */
+    .card-full{grid-column:span 12}
+
     .btn{
       width:100%;
       padding:.786rem 1.5rem;
@@ -154,6 +160,14 @@
     }
     .btn-outline:hover{transform:translateY(-2px);box-shadow:0 4px 8px rgba(0,0,0,.08);border-color:rgba(40,167,69,.35)}
 
+    /* Botón morado — gestión de usuarios */
+    .btn-usuarios{background:var(--morado);color:#fff}
+    .btn-usuarios:hover{background:var(--morado-hover);transform:translateY(-2px);box-shadow:0 4px 8px rgba(106,27,154,.3)}
+
+    /* Botón rojo — ver folios */
+    .btn-folios{background:var(--rojo);color:#fff}
+    .btn-folios:hover{background:var(--rojo-hover);transform:translateY(-2px);box-shadow:0 4px 8px rgba(192,57,43,.3)}
+
     .actions-bottom{
       display:flex;
       gap:1rem;
@@ -178,6 +192,10 @@
       transition:all .2s;
     }
     .btn-action:hover{background:#3a4454;transform:translateY(-2px)}
+    .btn-action-morado{background:var(--morado)}
+    .btn-action-morado:hover{background:var(--morado-hover)}
+    .btn-action-rojo{background:var(--rojo)}
+    .btn-action-rojo:hover{background:var(--rojo-hover)}
     @media (max-width:767px){
       .actions-bottom{flex-direction:column}
       .btn-action{min-width:unset}
@@ -218,6 +236,7 @@
       {% endwith %}
 
       <div class="grid">
+
         <div class="card">
           <h3>👤 Crear usuario</h3>
           <p>Da de alta usuarios y asígnales folios.</p>
@@ -232,8 +251,21 @@
 
         <div class="card">
           <h3>🔍 Consultar folio</h3>
-          <p>Verifica el estado de un folio por consulta.</p>
+          <p>Verifica el estado de un folio.</p>
           <a class="btn btn-outline" href="{{ url_for('consulta_folio') }}">🔎 Consultar</a>
+        </div>
+
+        <div class="card">
+          <h3>📋 Ver folios registrados</h3>
+          <p>Administra, edita y elimina folios del sistema.</p>
+          <a class="btn btn-folios" href="{{ url_for('admin_folios') }}">📋 Ver Folios</a>
+        </div>
+
+        <!-- NUEVO: Gestión de usuarios y pagos — ancho completo -->
+        <div class="card card-full">
+          <h3>👥 Gestión de Usuarios y Pagos</h3>
+          <p>Marca usuarios como pagados, revierte pagos y monitorea el timer de cada cuenta.</p>
+          <a class="btn btn-usuarios" href="{{ url_for('admin_usuarios') }}">👥 Gestión de Usuarios y Pagos</a>
         </div>
 
         <div class="card">
@@ -241,14 +273,18 @@
           <p>Salir del panel de administración.</p>
           <a class="btn btn-outline" href="{{ url_for('logout') }}">Salir</a>
         </div>
+
       </div>
 
       <div class="actions-bottom">
         <a href="{{ url_for('crear_usuario') }}" class="btn-action">👤 Crear Usuario</a>
         <a href="{{ url_for('registro_admin') }}" class="btn-action">📄 Permiso Admin</a>
         <a href="{{ url_for('consulta_folio') }}" class="btn-action">🔍 Consultar</a>
+        <a href="{{ url_for('admin_folios') }}" class="btn-action btn-action-rojo">📋 Ver Folios</a>
+        <a href="{{ url_for('admin_usuarios') }}" class="btn-action btn-action-morado">👥 Usuarios y Pagos</a>
         <a href="{{ url_for('logout') }}" class="btn-action">🚪 Salir</a>
       </div>
+
     </div>
   </main>
 

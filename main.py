@@ -506,44 +506,20 @@ def registro_admin():
     return render_template('registro_admin.html')
 
 
-# ── admin_folios CON FILTROS GET ─────────────────────────────────────────────
+# ── admin_folios: TODOS los registros de Supabase, buscador en JS ─────────────
 
 @app.route('/admin_folios')
 def admin_folios():
     if not session.get('admin'):
         return redirect(url_for('login'))
 
-    # Parámetros GET
-    filtro       = request.args.get('filtro', '').strip()
-    criterio     = request.args.get('criterio', 'folio')        # folio | numero_serie
-    ordenar      = request.args.get('ordenar', 'desc')          # desc | asc
-    estado_filtro= request.args.get('estado', 'todos')          # todos | vigente | vencido
-    fecha_inicio = request.args.get('fecha_inicio', '')
-    fecha_fin    = request.args.get('fecha_fin', '')
-
-    # Traer todos los folios de Jalisco ordenados
-    orden_desc = (ordenar == 'desc')
-    query = supabase.table("folios_registrados")\
-        .select("*").eq("entidad", ENTIDAD)\
-        .order("fecha_expedicion", desc=orden_desc)
-
-    # Filtro por texto (folio o serie exacto desde BD)
-    if filtro:
-        if criterio == 'numero_serie':
-            query = query.ilike("numero_serie", f"%{filtro}%")
-        else:
-            query = query.ilike("folio", f"%{filtro}%")
-
-    # Filtro por rango de fechas
-    if fecha_inicio:
-        query = query.gte("fecha_expedicion", fecha_inicio)
-    if fecha_fin:
-        query = query.lte("fecha_expedicion", fecha_fin)
-
-    folios = query.execute().data or []
+    # ── Sin filtro de entidad — trae TODO lo que haya en Supabase ──
+    folios = supabase.table("folios_registrados")\
+        .select("*")\
+        .order("fecha_expedicion", desc=True)\
+        .execute().data or []
 
     hoy = today_cdmx()
-    resultado = []
     for f in folios:
         try:
             fv = parse_date_any(f.get('fecha_vencimiento'))
@@ -551,22 +527,7 @@ def admin_folios():
         except:
             f['estado'] = 'ERROR'
 
-        # Filtro por estado (en Python después de calcular)
-        if estado_filtro == 'vigente' and f['estado'] != 'VIGENTE':
-            continue
-        if estado_filtro == 'vencido' and f['estado'] != 'VENCIDO':
-            continue
-
-        resultado.append(f)
-
-    return render_template('admin_folios.html',
-                           folios=resultado,
-                           filtro=filtro,
-                           criterio=criterio,
-                           ordenar=ordenar,
-                           estado=estado_filtro,
-                           fecha_inicio=fecha_inicio,
-                           fecha_fin=fecha_fin)
+    return render_template('admin_folios.html', folios=folios)
 
 
 @app.route('/editar_folio/<folio>', methods=['GET','POST'])
@@ -597,7 +558,6 @@ def editar_folio(folio):
 
 @app.route('/eliminar_folio', methods=['POST'])
 def eliminar_folio():
-    """Elimina un solo folio."""
     if not session.get('admin'):
         return redirect(url_for('login'))
     folio = request.form['folio']
@@ -608,12 +568,10 @@ def eliminar_folio():
 
 @app.route('/eliminar_folios_masivo', methods=['POST'])
 def eliminar_folios_masivo():
-    """Elimina múltiples folios seleccionados con checkbox."""
     if not session.get('admin'):
         return redirect(url_for('login'))
 
     folios_a_eliminar = request.form.getlist('folios')
-
     if not folios_a_eliminar:
         flash("No seleccionaste ningún folio.","error")
         return redirect(url_for('admin_folios'))
@@ -629,14 +587,14 @@ def eliminar_folios_masivo():
             errores += 1
 
     if eliminados:
-        flash(f"✅ {eliminados} folio(s) eliminado(s) correctamente.", "success")
+        flash(f"✅ {eliminados} folio(s) eliminado(s).", "success")
     if errores:
         flash(f"⚠️ {errores} folio(s) no pudieron eliminarse.", "error")
 
     return redirect(url_for('admin_folios'))
 
 
-# ── Gestión de usuarios (pagado / pendiente) ─────────────────────────────────
+# ── Gestión de usuarios ───────────────────────────────────────────────────────
 
 @app.route('/admin/usuarios')
 def admin_usuarios():

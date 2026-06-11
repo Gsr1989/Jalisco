@@ -10,7 +10,6 @@
 
     <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
     
-    <!-- Montserrat Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
@@ -35,14 +34,12 @@
             height: auto;
         }
 
-        /* ========== BARRA VERDE SUPERIOR ========== */
         .top-bar {
             background-color: #28a745;
             height: 8px;
             width: 100%;
         }
 
-        /* ========== HEADER CON IMAGEN ========== */
         .header-image {
             width: 100%;
             height: auto;
@@ -57,7 +54,6 @@
             }
         }
 
-        /* ========== BOTÓN ACCESIBILIDAD ========== */
         #float-button {
             position: fixed;
             bottom: 5%;
@@ -77,7 +73,6 @@
             transform: scale(1.05);
         }
 
-        /* ========== HEADER TEXTO ========== */
         .header-title {
             text-align: center;
             padding: 30px 20px 10px;
@@ -97,7 +92,6 @@
             letter-spacing: 2px;
         }
 
-        /* ========== CAJA DE ESTADO ========== */
         .estado-box {
             margin: 30px 20px;
             padding: 25px;
@@ -124,7 +118,6 @@
             letter-spacing: 1px;
         }
 
-        /* ========== TARJETA DE DETALLES ========== */
         .detalles-container {
             margin: 0 20px 30px;
             padding: 0;
@@ -157,7 +150,6 @@
             color: #333;
         }
 
-        /* ========== MENSAJE NO REGISTRADO ========== */
         .mensaje-no-registrado {
             text-align: center;
             padding: 40px 20px;
@@ -170,7 +162,6 @@
             margin-bottom: 15px;
         }
 
-        /* ========== TEXTO DOCUMENTO VÁLIDO ========== */
         .documento-valido {
             text-align: center;
             font-size: 17px;
@@ -180,31 +171,6 @@
             line-height: 1.4;
         }
 
-        /* ========== BOTÓN REGRESAR ========== */
-        .btn-regresar-container {
-            text-align: center;
-            margin: 30px 20px 50px;
-        }
-
-        .btn-regresar {
-            background-color: #4a5568;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 12px 50px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            transition: background-color 0.2s;
-        }
-
-        .btn-regresar:hover {
-            background-color: #3a4454;
-        }
-
-        /* ========== FOOTER ========== */
         footer {
             margin-top: auto;
             width: 100%;
@@ -216,7 +182,6 @@
             display: block;
         }
 
-        /* ========== RESPONSIVE ========== */
         @media (max-width: 600px) {
             .gobierno-text {
                 font-size: 26px;
@@ -251,30 +216,25 @@
 </head>
 
 <body>
-    <!-- Barra Verde Superior -->
     <div class="top-bar"></div>
 
-    <!-- HEADER CON IMAGEN -->
     <header>
         <img src="{{ url_for('static', filename='assets/images/header.jpg') }}" 
              alt="Secretaría de Transporte Jalisco" 
              class="header-image">
     </header>
 
-    <!-- Botón Accesibilidad Flotante -->
     <button id="float-button" type="button" aria-label="Abrir Menu de Accesibilidad">
         <img src="{{ url_for('static', filename='assets/images/ico_accesibilidad.svg') }}" 
              alt="Accesibilidad del Sitio">
     </button>
 
-    <!-- HEADER TEXTO -->
     <div class="header-title">
         <div class="gobierno-text">Gobierno de Jalisco</div>
         <div class="secretaria-text">SECRETARÍA DE TRANSPORTE</div>
     </div>
 
     {% if resultado %}
-        <!-- CAJA DE ESTADO -->
         <div class="estado-box {% if resultado.estado == 'VIGENTE' %}vigente{% elif resultado.estado == 'VENCIDO' %}vencido{% else %}no-registrado{% endif %}">
             <div class="estado-text">
                 FOLIO {{ resultado.folio }} : {{ resultado.estado }}
@@ -282,13 +242,11 @@
         </div>
 
         {% if resultado.estado == 'NO SE ENCUENTRA REGISTRADO' %}
-            <!-- MENSAJE NO REGISTRADO -->
             <div class="mensaje-no-registrado">
                 <p>Este folio <strong>no se encuentra registrado</strong> en el sistema.</p>
                 <p>Verifica que hayas ingresado el número correcto.</p>
             </div>
         {% else %}
-            <!-- DETALLES DEL FOLIO -->
             <div class="detalles-container">
                 <div class="detalles-card">
                     <div class="detalle-item">
@@ -329,28 +287,16 @@
             </div>
         {% endif %}
 
-        <!-- TEXTO DOCUMENTO VÁLIDO -->
         <div class="documento-valido">
             DOCUMENTO DIGITAL VÁLIDO EN TODO MÉXICO
         </div>
 
-        <!-- BOTÓN REGRESAR -->
-        <div class="btn-regresar-container">
-            <a href="{{ url_for('consulta_folio') }}" class="btn-regresar">Regresar</a>
-        </div>
-
     {% else %}
-        <!-- SIN RESULTADO -->
         <div class="mensaje-no-registrado">
             <p>No se encontró información para mostrar.</p>
         </div>
-
-        <div class="btn-regresar-container">
-            <a href="{{ url_for('consulta_folio') }}" class="btn-regresar">Regresar</a>
-        </div>
     {% endif %}
 
-    <!-- FOOTER CON IMAGEN -->
     <footer>
         <img src="{{ url_for('static', filename='assets/images/1000008793.png') }}" 
              alt="Gobierno de Jalisco" 

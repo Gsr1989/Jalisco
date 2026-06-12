@@ -506,14 +506,11 @@ def registro_admin():
     return render_template('registro_admin.html')
 
 
-# ── admin_folios: TODOS los registros de Supabase, buscador en JS ─────────────
-
 @app.route('/admin_folios')
 def admin_folios():
     if not session.get('admin'):
         return redirect(url_for('login'))
 
-    # ── Sin filtro de entidad — trae TODO lo que haya en Supabase ──
     folios = supabase.table("folios_registrados")\
         .select("*")\
         .order("fecha_expedicion", desc=True)\
@@ -801,7 +798,7 @@ def consulta_folio():
             .select("*").eq("folio",folio).limit(1).execute().data
 
         if not registros:
-            resultado = {"estado":"NO REGISTRADO","color":"rojo","folio":folio}
+            resultado = {"estado":"NO SE ENCUENTRA REGISTRADO","color":"rojo","folio":folio}
         else:
             r      = registros[0]
             fexp   = parse_date_any(r.get('fecha_expedicion'))
@@ -826,6 +823,44 @@ def consulta_folio():
     return render_template('consulta_folio.html')
 
 
+# ── NUEVO: resultado directo desde QR (/consulta_folio/980000235) ─────────────
+@app.route('/consulta_folio/<folio>')
+def consulta_folio_directo_path(folio):
+    """
+    Ruta que usa el QR del bot.
+    Escanear el QR lleva directo aquí sin que el usuario tenga que teclear nada.
+    """
+    row = supabase.table("folios_registrados")\
+        .select("*").eq("folio", folio).limit(1).execute().data
+
+    if not row:
+        return render_template("resultado_consulta.html", resultado={
+            "estado": "NO SE ENCUENTRA REGISTRADO",
+            "color":  "rojo",
+            "folio":  folio
+        })
+
+    r      = row[0]
+    fe     = parse_date_any(r.get('fecha_expedicion'))
+    fv     = parse_date_any(r.get('fecha_vencimiento'))
+    hoy    = today_cdmx()
+    estado = "VIGENTE" if hoy <= fv else "VENCIDO"
+
+    return render_template("resultado_consulta.html", resultado={
+        "estado":           estado,
+        "color":            "verde" if estado == "VIGENTE" else "cafe",
+        "folio":            folio,
+        "fecha_expedicion": fe.strftime("%d/%m/%Y"),
+        "fecha_vencimiento":fv.strftime("%d/%m/%Y"),
+        "marca":            r.get('marca',''),
+        "linea":            r.get('linea',''),
+        "año":              r.get('anio',''),
+        "numero_serie":     r.get('numero_serie',''),
+        "numero_motor":     r.get('numero_motor',''),
+        "entidad":          r.get('entidad', ENTIDAD)
+    })
+
+
 @app.route('/consulta/<folio>')
 def consulta_folio_directo(folio):
     row = supabase.table("folios_registrados")\
@@ -833,7 +868,8 @@ def consulta_folio_directo(folio):
 
     if not row:
         return render_template("resultado_consulta.html",
-                               resultado={"estado":"NO REGISTRADO","color":"rojo","folio":folio})
+                               resultado={"estado":"NO SE ENCUENTRA REGISTRADO",
+                                          "color":"rojo","folio":folio})
 
     r      = row[0]
     fe     = parse_date_any(r.get('fecha_expedicion'))

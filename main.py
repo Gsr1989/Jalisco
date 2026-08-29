@@ -79,7 +79,7 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 OUTPUT_DIR      = "documentos"
 PLANTILLA_PDF   = "jalisco1.pdf"
 PLANTILLA_BUENO = "jalisco.pdf"
-URL_CONSULTA_BASE = "https://serviciodigital-jaliscogobmx.onrender.com"
+URL_CONSULTA_BASE = "https://https-setran-jalisco-gob-mx-inicio.onrender.com"
 ENTIDAD         = "jalisco"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)

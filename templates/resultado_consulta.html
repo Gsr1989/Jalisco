@@ -2,19 +2,11 @@
 <html lang="es">
 
 <head>
-
     <meta charset="utf-8">
 
     <title>
         Secretaría de Transporte | Resultado de Consulta
     </title>
-
-    <!--
-        IMPORTANTE:
-        Hace que assets/, styles..., runtime..., etc.
-        apunten al sitio original y no a tu dominio Flask.
-    -->
-    <base href="https://setran.jalisco.gob.mx/">
 
     <meta
         name="viewport"
@@ -27,75 +19,9 @@
     >
 
     <meta
-        name="keywords"
-        content="Secretaría de Transporte"
-    >
-
-    <meta
         name="author"
         content="Jalisco"
     >
-
-    <meta
-        property="og:image"
-        content="assets/images/logos/logo_jal_meta_2024_2030.png"
-    >
-
-    <link
-        rel="icon"
-        href="assets/favicon.ico"
-    >
-
-
-    <!-- ===================================================== -->
-    <!-- CSS ORIGINAL                                          -->
-    <!-- ===================================================== -->
-
-    <link
-        rel="stylesheet"
-        href="https://unpkg.com/aos@next/dist/aos.css"
-    >
-
-    <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/ol@v7.1.0/ol.css"
-    >
-
-    <link
-        rel="stylesheet"
-        href="https://setran.jalisco.gob.mx/styles.30bff4ed7ff2edfd.css"
-    >
-
-
-    <!-- ===================================================== -->
-    <!-- GOOGLE ANALYTICS ORIGINAL                             -->
-    <!-- ===================================================== -->
-
-    <script
-        async
-        src="https://www.googletagmanager.com/gtag/js"
-    ></script>
-
-    <script>
-
-        window.dataLayer =
-            window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-
-        gtag(
-            "js",
-            new Date()
-        );
-
-    </script>
-
-
-    <!-- ===================================================== -->
-    <!-- FUENTE MONTSERRAT                                     -->
-    <!-- ===================================================== -->
 
     <link
         rel="preconnect"
@@ -113,684 +39,728 @@
         rel="stylesheet"
     >
 
-
-    <!-- ===================================================== -->
-    <!-- PANTALLA DE CARGA                                     -->
-    <!-- ===================================================== -->
-
     <style>
 
         :root {
-            --color-dep: #e57f25;
+            --verde-jal: #35aa72;
+            --verde-oscuro: #24845a;
+            --naranja-jal: #ef8124;
+            --gris-texto: #57526b;
+            --gris-fondo: #fafafa;
+            --gris-footer: #404f56;
+            --success: #28a745;
+            --warning: #b8860b;
+            --danger: #c62828;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: 14px;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: "Montserrat", Arial, sans-serif;
+            color: var(--gris-texto);
+            background: var(--gris-fondo);
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
         }
 
 
-        #loading-bg {
+        /* ===================================================== */
+        /* BARRA VERDE SUPERIOR                                  */
+        /* ===================================================== */
 
+        .top-line {
             width: 100%;
-            height: 100%;
+            height: 7px;
+            background: var(--verde-jal);
+        }
+
+
+        /* ===================================================== */
+        /* HEADER                                                */
+        /* ===================================================== */
+
+        .site-header {
+            width: 100%;
+            background: #ffffff;
+            box-shadow: 0 5px 22px rgba(0, 69, 101, 0.08);
+            position: relative;
+            z-index: 100;
+        }
+
+        .header-inner {
+            width: 100%;
+            max-width: 1200px;
+            margin: auto;
+
+            min-height: 235px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 35px 28px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .brand-logo {
+            width: 220px;
+            max-height: 115px;
+            object-fit: contain;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+        }
+
+        .home-link,
+        .menu-toggle {
+            width: 52px;
+            height: 52px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: transparent;
+            border: none;
+
+            color: var(--gris-texto);
+
+            cursor: pointer;
+        }
+
+        .home-link svg {
+            width: 38px;
+            height: 38px;
+            stroke: currentColor;
+        }
+
+        .menu-toggle {
+            border: 3px solid var(--verde-jal);
+            border-radius: 10px;
+        }
+
+        .hamburger {
+            width: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 100%;
+            height: 3px;
+            border-radius: 4px;
+            background: var(--verde-jal);
+        }
+
+
+        /* ===================================================== */
+        /* MENÚ DESPLEGABLE                                     */
+        /* ===================================================== */
+
+        .main-menu {
+            width: 100%;
+            background: #ffffff;
+
+            border-top: 1px solid #eeeeee;
+
+            display: none;
+
+            box-shadow: 0 8px 20px rgba(0,0,0,.08);
+        }
+
+        .main-menu.active {
+            display: block;
+        }
+
+        .main-menu-inner {
+            width: 100%;
+            max-width: 1200px;
+            margin: auto;
+
+            padding: 15px 30px 25px;
+        }
+
+        .main-menu ul {
+            list-style: none;
+        }
+
+        .main-menu li {
+            border-bottom: 1px solid #eeeeee;
+        }
+
+        .main-menu li:last-child {
+            border-bottom: none;
+        }
+
+        .main-menu a {
+            display: block;
+
+            padding: 15px 8px;
+
+            color: var(--gris-texto);
+
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .main-menu a:hover {
+            color: var(--verde-jal);
+            background: #f8f8f8;
+        }
+
+
+        /* ===================================================== */
+        /* BOTÓN ACCESIBILIDAD                                  */
+        /* ===================================================== */
+
+        #float-button {
+            position: fixed;
+
+            bottom: 5%;
+            left: 5%;
+
+            z-index: 999;
+
+            width: 68px;
+            height: 68px;
+
+            border-radius: 50%;
+
+            border: none;
 
             background: #ffffff;
 
-            display: block;
+            box-shadow: 0 3px 12px rgba(0,0,0,.22);
 
-            position: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
-            z-index: 99999;
-
-            pointer-events: none;
-
-            top: 6px;
-            left: 0;
-
+            cursor: pointer;
         }
 
-
-        .loading {
-
-            position: absolute;
-
-            left: calc(50% - 35px);
-
-            top: 50%;
-
-            width: 55px;
-            height: 55px;
-
-            border-radius: 50%;
-
-            box-sizing: border-box;
-
-            border: 3px solid transparent;
-
-        }
-
-
-        .loading .effect-1,
-        .loading .effect-2,
-        .loading .effect-3 {
-
-            position: absolute;
-
+        #float-button img {
             width: 100%;
             height: 100%;
-
-            border: 3px solid transparent;
-
-            border-left:
-                3px solid
-                var(--color-dep);
-
-            border-radius: 50%;
-
-            box-sizing: border-box;
-
+            object-fit: contain;
         }
 
 
-        .loading .effect-1 {
+        /* ===================================================== */
+        /* MAIN                                                 */
+        /* ===================================================== */
 
-            animation:
-                rotate
-                1s
-                ease
-                infinite;
-
-        }
-
-
-        .loading .effect-2 {
-
-            animation:
-                rotateOpacity
-                1s
-                ease
-                infinite
-                .1s;
-
-        }
-
-
-        .loading .effect-3 {
-
-            animation:
-                rotateOpacity
-                1s
-                ease
-                infinite
-                .2s;
-
-        }
-
-
-        @keyframes rotate {
-
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-
-        }
-
-
-        @keyframes rotateOpacity {
-
-            0% {
-
-                transform: rotate(0deg);
-
-                opacity: .1;
-
-            }
-
-            100% {
-
-                transform: rotate(360deg);
-
-                opacity: 1;
-
-            }
-
-        }
-
-    </style>
-
-
-    <!-- ===================================================== -->
-    <!-- ESTILOS DEL RESULTADO FLASK                           -->
-    <!-- ===================================================== -->
-
-    <style>
-
-        .resultado-flask {
-
+        main {
+            flex: 1;
             width: 100%;
-
-            min-height: 60vh;
-
-            padding:
-                55px
-                15px
-                75px;
-
-            background-color: #fafafa;
-
-            font-family:
-                "Montserrat",
-                Helvetica,
-                Arial,
-                sans-serif;
-
         }
 
-
-        .resultado-flask-card {
-
+        .resultado-page {
             width: 100%;
+            padding: 45px 18px 70px;
+        }
 
+        .resultado-card {
+            width: 100%;
             max-width: 850px;
 
             margin: 0 auto;
 
-            background-color: #ffffff;
+            background: #ffffff;
 
-            border-radius: 10px;
+            border-radius: 12px;
+
+            box-shadow: 0 4px 18px rgba(0,0,0,.10);
 
             overflow: hidden;
-
-            box-shadow:
-                0 4px 15px
-                rgba(0, 0, 0, .12);
-
         }
 
 
-        /* ================================================= */
-        /* CABECERA                                          */
-        /* ================================================= */
+        /* ===================================================== */
+        /* TÍTULO                                               */
+        /* ===================================================== */
 
-
-        .resultado-flask-titulo {
-
-            padding:
-                38px
-                30px
-                25px;
-
+        .resultado-heading {
             text-align: center;
 
+            padding: 50px 30px 35px;
         }
 
+        .resultado-heading h1 {
+            color: var(--gris-texto);
 
-        .resultado-flask-titulo h1 {
-
-            margin: 0 0 9px;
-
-            color: #57526b;
-
-            font-size: 29px;
-
-            line-height: 1.3;
-
+            font-size: 32px;
             font-weight: 700;
 
+            line-height: 1.25;
+
+            margin-bottom: 18px;
         }
 
+        .resultado-heading p {
+            color: var(--naranja-jal);
 
-        .resultado-flask-titulo p {
-
-            margin: 0;
-
-            color: #e57f25;
-
-            font-size: 16px;
-
+            font-size: 18px;
             font-weight: 600;
 
-        }
-
-
-        .resultado-titulo-linea {
-
-            width: 85px;
-            height: 4px;
-
-            margin:
-                18px auto
-                0;
-
-            background-color: #e57f25;
-
-            border-radius: 5px;
-
-        }
-
-
-        /* ================================================= */
-        /* ESTADO DEL FOLIO                                  */
-        /* ================================================= */
-
-
-        .resultado-estado {
-
-            margin:
-                10px
-                30px
-                30px;
-
-            padding:
-                20px
-                25px;
-
-            border-radius: 8px;
-
-            text-align: center;
-
-            color: #ffffff;
-
-            font-size: 20px;
-
             line-height: 1.4;
-
-            font-weight: 700;
-
-            letter-spacing: .4px;
-
-            overflow-wrap: anywhere;
-
-            box-shadow:
-                0 3px 10px
-                rgba(0, 0, 0, .15);
-
         }
 
-
-        .resultado-estado.vigente {
-
-            background-color: #28a745;
-
-        }
-
-
-        .resultado-estado.vencido {
-
-            background-color: #b8860b;
-
-        }
-
-
-        .resultado-estado.no-registrado {
-
-            background-color: #c62828;
-
-        }
-
-
-        /* ================================================= */
-        /* DATOS                                             */
-        /* ================================================= */
-
-
-        .resultado-datos {
-
-            margin:
-                0
-                30px
-                30px;
-
-            padding:
-                10px
-                25px;
-
-            background-color: #f7f7f7;
-
-            border:
-                1px solid
-                #dddddd;
-
-            border-radius: 8px;
-
-        }
-
-
-        .resultado-dato {
-
-            padding:
-                17px
-                5px;
-
-            border-bottom:
-                1px solid
-                #e2e2e2;
-
-        }
-
-
-        .resultado-dato:last-child {
-
-            border-bottom: none;
-
-        }
-
-
-        .resultado-dato strong {
-
-            display: block;
-
-            margin-bottom: 5px;
-
-            color: #57526b;
-
-            font-size: 12px;
-
-            font-weight: 700;
-
-            text-transform: uppercase;
-
-            letter-spacing: .5px;
-
-        }
-
-
-        .resultado-dato span {
-
-            display: block;
-
-            color: #333333;
-
-            font-size: 15px;
-
-            line-height: 1.5;
-
-            overflow-wrap: anywhere;
-
-        }
-
-
-        /* ================================================= */
-        /* NO REGISTRADO                                     */
-        /* ================================================= */
-
-
-        .resultado-no-encontrado {
-
-            margin:
-                0
-                30px
-                35px;
-
-            padding:
-                35px
-                25px;
-
-            text-align: center;
-
-            color: #57526b;
-
-            background-color: #f7f7f7;
-
-            border:
-                1px solid
-                #dddddd;
-
-            border-radius: 8px;
-
-        }
-
-
-        .resultado-no-encontrado h2 {
-
-            margin:
-                0
-                0
-                15px;
-
-            color: #c62828;
-
-            font-size: 22px;
-
-        }
-
-
-        .resultado-no-encontrado p {
-
-            margin:
-                8px
-                0;
-
-            font-size: 15px;
-
-            line-height: 1.7;
-
-        }
-
-
-        /* ================================================= */
-        /* DOCUMENTO                                         */
-        /* ================================================= */
-
-
-        .resultado-documento {
-
-            margin:
-                10px
-                20px
-                35px;
-
-            text-align: center;
-
-            color: #57526b;
-
-            font-size: 14px;
-
-            font-weight: 700;
-
-            letter-spacing: .4px;
-
-        }
-
-
-        /* ================================================= */
-        /* REGRESAR                                          */
-        /* ================================================= */
-
-
-        .resultado-acciones {
-
-            padding-bottom: 40px;
-
-            text-align: center;
-
-        }
-
-
-        .resultado-regresar {
-
-            display: inline-block;
-
-            min-width: 180px;
-
-            padding:
-                13px
-                30px;
-
-            color: #ffffff !important;
-
-            background-color: #e57f25;
+        .heading-line {
+            width: 155px;
+            height: 6px;
+
+            margin: 34px auto 0;
 
             border-radius: 6px;
 
-            font-size: 14px;
-
-            font-weight: 700;
-
-            text-decoration: none !important;
-
+            background: var(--naranja-jal);
         }
 
 
-        .resultado-regresar:hover {
+        /* ===================================================== */
+        /* ESTADO                                               */
+        /* ===================================================== */
 
-            filter: brightness(.92);
+        .estado-box {
+            margin: 15px 28px 45px;
 
-            color: #ffffff !important;
-
-        }
-
-
-        /* ================================================= */
-        /* FALLBACK                                           */
-        /* ================================================= */
-
-
-        #angular-fallback {
-
-            display: none;
-
-            width: 100%;
-
-            padding:
-                15px
-                20px;
-
-            background-color: #fff3cd;
-
-            color: #664d03;
+            padding: 23px 20px;
 
             text-align: center;
 
-            font-family:
-                "Montserrat",
-                sans-serif;
+            border-radius: 14px;
+
+            box-shadow: 0 5px 14px rgba(0,0,0,.17);
+        }
+
+        .estado-box.vigente {
+            background: var(--success);
+        }
+
+        .estado-box.vencido {
+            background: var(--warning);
+        }
+
+        .estado-box.no-registrado {
+            background: var(--danger);
+        }
+
+        .estado-text {
+            color: #ffffff;
+
+            font-size: 21px;
+            font-weight: 700;
+
+            letter-spacing: .4px;
+
+            overflow-wrap: anywhere;
+        }
+
+
+        /* ===================================================== */
+        /* DATOS                                                */
+        /* ===================================================== */
+
+        .detalles-container {
+            padding: 0 28px 35px;
+        }
+
+        .detalles-card {
+            background: #f8f8f8;
+
+            border: 1px solid #d7d7d7;
+
+            border-radius: 12px;
+
+            padding: 15px 28px;
+        }
+
+        .detalle-item {
+            padding: 22px 5px;
+
+            border-bottom: 1px solid #dddddd;
+        }
+
+        .detalle-item:last-child {
+            border-bottom: none;
+        }
+
+        .detalle-label {
+            color: var(--gris-texto);
 
             font-size: 13px;
+            font-weight: 700;
+
+            margin-bottom: 8px;
+
+            text-transform: uppercase;
+        }
+
+        .detalle-value {
+            color: #333333;
+
+            font-size: 17px;
+            font-weight: 400;
+
+            overflow-wrap: anywhere;
+        }
+
+
+        /* ===================================================== */
+        /* NO REGISTRADO                                        */
+        /* ===================================================== */
+
+        .mensaje-no-registrado {
+            margin: 0 28px 35px;
+
+            padding: 35px 25px;
+
+            text-align: center;
+
+            background: #f8f8f8;
+
+            border: 1px solid #dddddd;
+
+            border-radius: 12px;
+        }
+
+        .mensaje-no-registrado h2 {
+            margin-bottom: 15px;
+
+            color: var(--danger);
+
+            font-size: 22px;
+        }
+
+        .mensaje-no-registrado p {
+            margin-top: 9px;
+
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+
+        /* ===================================================== */
+        /* DOCUMENTO                                            */
+        /* ===================================================== */
+
+        .documento-valido {
+            margin: 10px 20px 38px;
+
+            text-align: center;
+
+            color: var(--gris-texto);
+
+            font-size: 14px;
+            font-weight: 700;
+
+            letter-spacing: .5px;
+        }
+
+
+        /* ===================================================== */
+        /* BOTÓN REGRESAR                                       */
+        /* ===================================================== */
+
+        .acciones {
+            text-align: center;
+
+            padding-bottom: 45px;
+        }
+
+        .btn-regresar {
+            display: inline-block;
+
+            min-width: 190px;
+
+            padding: 14px 30px;
+
+            background: var(--verde-jal);
+
+            color: #ffffff;
+
+            border-radius: 7px;
+
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .btn-regresar:hover {
+            background: var(--verde-oscuro);
+
+            color: #ffffff;
+        }
+
+
+        /* ===================================================== */
+        /* FOOTER                                               */
+        /* ===================================================== */
+
+        .site-footer {
+            width: 100%;
+
+            margin-top: auto;
+
+            background: var(--gris-footer);
+
+            color: #ffffff;
+        }
+
+        .footer-green-line {
+            width: 100%;
+            height: 6px;
+
+            background: var(--verde-jal);
+        }
+
+        .footer-inner {
+            width: 100%;
+            max-width: 1200px;
+
+            margin: auto;
+
+            padding: 40px 30px;
+
+            display: grid;
+
+            grid-template-columns: 1.2fr 1fr 1fr;
+
+            gap: 35px;
+        }
+
+        .footer-logo img {
+            max-width: 210px;
+            max-height: 110px;
+            object-fit: contain;
+        }
+
+        .footer-title {
+            color: var(--naranja-jal);
+
+            font-size: 17px;
+            font-weight: 700;
+
+            margin-bottom: 15px;
+        }
+
+        .footer-text {
+            font-size: 13px;
+            line-height: 1.8;
+
+            color: #ffffff;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 7px;
+        }
+
+        .footer-links a {
+            color: #ffffff;
+
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .footer-links a:hover {
+            color: var(--naranja-jal);
+
+            text-decoration: underline;
+        }
+
+        .footer-bottom {
+            padding: 14px 20px;
+
+            text-align: center;
+
+            border-top: 1px solid rgba(255,255,255,.12);
+
+            color: #dddddd;
+
+            font-size: 12px;
+        }
+
+
+        /* ===================================================== */
+        /* RESPONSIVE                                           */
+        /* ===================================================== */
+
+        @media (max-width: 700px) {
+
+            .header-inner {
+                min-height: 240px;
+
+                padding:
+                    35px
+                    25px;
+            }
+
+            .brand-logo {
+                width: 200px;
+            }
+
+            .header-actions {
+                gap: 15px;
+            }
+
+            .home-link,
+            .menu-toggle {
+                width: 49px;
+                height: 49px;
+            }
+
+            .resultado-page {
+                padding:
+                    38px
+                    10px
+                    50px;
+            }
+
+            .resultado-card {
+                border-radius: 9px;
+            }
+
+            .resultado-heading {
+                padding:
+                    48px
+                    20px
+                    35px;
+            }
+
+            .resultado-heading h1 {
+                font-size: 28px;
+            }
+
+            .resultado-heading p {
+                font-size: 17px;
+            }
+
+            .estado-box {
+                margin:
+                    10px
+                    26px
+                    45px;
+
+                padding:
+                    22px
+                    12px;
+            }
+
+            .estado-text {
+                font-size: 19px;
+            }
+
+            .detalles-container {
+                padding:
+                    0
+                    26px
+                    35px;
+            }
+
+            .detalles-card {
+                padding:
+                    14px
+                    28px;
+            }
+
+            .detalle-label {
+                font-size: 12px;
+            }
+
+            .detalle-value {
+                font-size: 16px;
+            }
+
+            .footer-inner {
+                grid-template-columns: 1fr;
+
+                padding:
+                    35px
+                    25px;
+            }
 
         }
 
 
-        /* ================================================= */
-        /* MOBILE                                            */
-        /* ================================================= */
+        @media (max-width: 450px) {
 
-
-        @media (max-width: 600px) {
-
-
-            .resultado-flask {
-
-                padding:
-                    30px
-                    10px
-                    50px;
-
+            .brand-logo {
+                width: 165px;
             }
 
-
-            .resultado-flask-card {
-
-                border-radius: 6px;
-
-            }
-
-
-            .resultado-flask-titulo {
-
-                padding:
-                    28px
-                    15px
-                    22px;
-
-            }
-
-
-            .resultado-flask-titulo h1 {
-
-                font-size: 23px;
-
-            }
-
-
-            .resultado-flask-titulo p {
-
-                font-size: 14px;
-
-            }
-
-
-            .resultado-estado {
-
-                margin:
-                    8px
-                    15px
-                    25px;
-
-                padding:
-                    17px
-                    12px;
-
-                font-size: 17px;
-
-            }
-
-
-            .resultado-datos {
-
-                margin:
-                    0
-                    15px
-                    25px;
-
-                padding:
-                    8px
-                    15px;
-
-            }
-
-
-            .resultado-dato {
-
-                padding:
-                    14px
-                    3px;
-
-            }
-
-
-            .resultado-dato strong {
-
-                font-size: 11px;
-
-            }
-
-
-            .resultado-dato span {
-
-                font-size: 14px;
-
-            }
-
-
-            .resultado-no-encontrado {
-
-                margin:
-                    0
-                    15px
-                    30px;
-
+            .header-inner {
                 padding:
                     25px
                     18px;
 
+                min-height: 210px;
             }
 
+            .header-actions {
+                gap: 8px;
+            }
 
-            .resultado-documento {
+            .home-link,
+            .menu-toggle {
+                width: 44px;
+                height: 44px;
+            }
 
-                font-size: 13px;
+            .home-link svg {
+                width: 33px;
+                height: 33px;
+            }
 
+            .resultado-heading h1 {
+                font-size: 25px;
+            }
+
+            .resultado-heading p {
+                font-size: 15px;
+            }
+
+            .heading-line {
+                width: 125px;
+            }
+
+            .estado-text {
+                font-size: 17px;
+            }
+
+            .detalle-value {
+                font-size: 15px;
             }
 
         }
@@ -800,270 +770,242 @@
 </head>
 
 
-<body class="ng-tns-0-1">
+<body>
 
 
 <!-- ========================================================= -->
-<!-- LOADING ORIGINAL                                         -->
+<!-- LÍNEA VERDE                                               -->
 <!-- ========================================================= -->
 
-
-<core-loading-screen id="loading-bg">
-
-
-    <div class="loading">
-
-        <div class="effect-1"></div>
-
-        <div class="effect-2"></div>
-
-        <div class="effect-3"></div>
-
-    </div>
-
-
-</core-loading-screen>
-
-
-
-<div id="fb-root"></div>
+<div class="top-line"></div>
 
 
 
 <!-- ========================================================= -->
-<!-- APLICACIÓN ANGULAR ORIGINAL                              -->
+<!-- HEADER                                                    -->
 <!-- ========================================================= -->
 
-
-<app-root
-    _nghost-sc108=""
-    class="ng-tns-c108-0"
-    ng-version="13.0.2"
->
+<header class="site-header">
 
 
-    <app-accessibility
-        _ngcontent-sc108=""
-        class="ng-tns-c108-0 ng-tns-c219-2"
-        _nghost-sc219=""
-    >
+    <div class="header-inner">
 
 
-        <button
-            _ngcontent-sc219=""
-            id="float-button"
-            type="button"
-            placement="top"
-            data-toggle="tooltip"
-            data-placement="right"
-            aria-label="Abrir Menú de Accesibilidad"
-            value="Funciones de accesibilidad"
-            class="btn btn-light shadow-sm ng-tns-c219-2"
-        >
+        <div class="brand">
 
+            <!--
+                USA AQUÍ EL LOGO QUE YA TENGAS EN STATIC.
+                Si tu archivo tiene otro nombre, cambia SOLO esta ruta.
+            -->
 
             <img
-                _ngcontent-sc219=""
-                src="assets/images/ico_accesibilidad.svg"
-                alt="Accesibilidad del Sitio"
-                class="img-fluid ng-tns-c219-2"
+                src="{{ url_for('static', filename='assets/images/header.jpg') }}"
+                alt="Secretaría de Transporte Jalisco"
+                class="brand-logo"
             >
 
-
-        </button>
-
-
-    </app-accessibility>
+        </div>
 
 
 
-    <div
-        _ngcontent-sc108=""
-        id="main-container-cms"
-        class="ng-tns-c108-0"
-    >
+        <div class="header-actions">
 
 
-        <router-outlet
-            _ngcontent-sc108=""
-            class="ng-tns-c108-0"
-        ></router-outlet>
+            <!-- INICIO -->
 
-
-
-        <app-cms class="ng-star-inserted">
-
-
-            <!-- ================================================= -->
-            <!-- NAVBAR ANGULAR ORIGINAL                           -->
-            <!-- ================================================= -->
-
-
-            <app-navbar
-                _nghost-sc223=""
-                class="ng-tns-c223-3 ng-star-inserted"
+            <a
+                href="https://setran.jalisco.gob.mx/"
+                class="home-link"
+                aria-label="Inicio"
             >
 
-
-                <header
-                    _ngcontent-sc223=""
-                    class="ng-tns-c223-3"
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
                 >
 
+                    <path
+                        d="M3 11.5L12 4L21 11.5"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
 
-                    <nav
-                        _ngcontent-sc223=""
-                        aria-label="Saltos de Bloque"
-                        role="navigation"
-                        class="skip-links ng-tns-c223-3"
-                    >
+                    <path
+                        d="M5 10.5V20H10V14H14V20H19V10.5"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
 
+                </svg>
 
-                        <a
-                            _ngcontent-sc223=""
-                            aria-label="Enlace que redirige al Contenido Principal"
-                            tabindex="0"
-                            class="skip-link ng-tns-c223-3"
-                        >
-
-                            Saltar al Contenido Principal
-
-                        </a>
-
-
-                        <a
-                            _ngcontent-sc223=""
-                            aria-label="Enlace que redirige al Menu"
-                            tabindex="0"
-                            class="skip-link ng-tns-c223-3"
-                        >
-
-                            Saltar al Menú
-
-                        </a>
-
-
-                        <a
-                            _ngcontent-sc223=""
-                            aria-label="Enlace que redirige al Pie de Página"
-                            tabindex="0"
-                            class="skip-link ng-tns-c223-3"
-                        >
-
-                            Saltar al Pie de Página
-
-                        </a>
-
-
-                    </nav>
-
-
-                    <div
-                        _ngcontent-sc223=""
-                        id="line-navbar"
-                        class="line-nav ng-tns-c223-3"
-                    ></div>
-
-
-                </header>
-
-
-            </app-navbar>
+            </a>
 
 
 
-            <!-- ================================================= -->
-            <!-- AQUÍ ANGULAR CREA SU CONTENIDO                    -->
-            <!-- Nosotros lo sustituiremos después                 -->
-            <!-- ================================================= -->
+            <!-- MENÚ -->
 
-
-            <main id="main-content"></main>
-
-
-
-            <!-- ================================================= -->
-            <!-- FOOTER ANGULAR ORIGINAL                           -->
-            <!-- ================================================= -->
-
-
-            <app-footer
-                _nghost-sc455=""
-                class="ng-star-inserted"
+            <button
+                id="menuToggle"
+                class="menu-toggle"
+                type="button"
+                aria-label="Abrir menú"
+                aria-expanded="false"
             >
 
+                <span class="hamburger">
 
-                <footer
-                    _ngcontent-sc455=""
-                    id="footer"
-                    class="w-100 footer seccion-2"
-                >
+                    <span></span>
+                    <span></span>
+                    <span></span>
 
+                </span>
 
-                    <div
-                        _ngcontent-sc455=""
-                        class="container"
-                    ></div>
+            </button>
 
 
-                    <div
-                        _ngcontent-sc455=""
-                        class="desktop-media"
-                    ></div>
-
-
-                </footer>
-
-
-            </app-footer>
-
-
-        </app-cms>
+        </div>
 
 
     </div>
 
 
-</app-root>
+
+    <!-- ===================================================== -->
+    <!-- MENÚ                                                  -->
+    <!-- ===================================================== -->
+
+    <nav
+        id="mainMenu"
+        class="main-menu"
+        aria-label="Menú principal"
+    >
+
+
+        <div class="main-menu-inner">
+
+
+            <ul>
+
+
+                <li>
+
+                    <a href="https://setran.jalisco.gob.mx/">
+
+                        Inicio
+
+                    </a>
+
+                </li>
+
+
+                <li>
+
+                    <a href="https://setran.jalisco.gob.mx/registro-estatal">
+
+                        Registro Estatal
+
+                    </a>
+
+                </li>
+
+
+                <li>
+
+                    <a href="https://setran.jalisco.gob.mx/">
+
+                        Secretaría de Transporte
+
+                    </a>
+
+                </li>
+
+
+                <li>
+
+                    <a href="https://setran.jalisco.gob.mx/">
+
+                        Trámites y Servicios
+
+                    </a>
+
+                </li>
+
+
+                <li>
+
+                    <a href="https://setran.jalisco.gob.mx/">
+
+                        Transporte Público
+
+                    </a>
+
+                </li>
+
+
+                <li>
+
+                    <a href="https://setran.jalisco.gob.mx/">
+
+                        Transparencia
+
+                    </a>
+
+                </li>
+
+
+            </ul>
+
+
+        </div>
+
+
+    </nav>
+
+
+</header>
 
 
 
 <!-- ========================================================= -->
-<!-- FALLBACK                                                  -->
+<!-- ACCESIBILIDAD                                             -->
 <!-- ========================================================= -->
 
+<button
+    id="float-button"
+    type="button"
+    aria-label="Accesibilidad del sitio"
+>
 
-<div id="angular-fallback">
+    <img
+        src="{{ url_for('static', filename='assets/images/ico_accesibilidad.svg') }}"
+        alt="Accesibilidad"
+    >
 
-    No fue posible cargar completamente algunos elementos
-    externos del portal.
-
-</div>
+</button>
 
 
 
 <!-- ========================================================= -->
-<!-- RESULTADO FLASK                                           -->
-<!-- Queda protegido dentro de <template> para que Angular     -->
-<!-- no lo elimine durante su arranque.                        -->
+<!-- RESULTADO                                                 -->
 <!-- ========================================================= -->
 
-
-<template id="resultado-flask-template">
-
-
-    <section class="resultado-flask">
+<main>
 
 
-        <div class="resultado-flask-card">
+    <section class="resultado-page">
 
 
-            <!-- ================================================= -->
-            <!-- CABECERA                                          -->
-            <!-- ================================================= -->
+        <div class="resultado-card">
 
 
-            <div class="resultado-flask-titulo">
+            <!-- ============================================= -->
+            <!-- TÍTULO                                        -->
+            <!-- ============================================= -->
+
+            <div class="resultado-heading">
 
 
                 <h1>
@@ -1072,12 +1014,11 @@
 
 
                 <p>
-                    Secretaría de Transporte
-                    · Gobierno de Jalisco
+                    Secretaría de Transporte · Gobierno de Jalisco
                 </p>
 
 
-                <div class="resultado-titulo-linea"></div>
+                <div class="heading-line"></div>
 
 
             </div>
@@ -1087,14 +1028,13 @@
             {% if resultado %}
 
 
-                <!-- ============================================= -->
-                <!-- ESTADO                                        -->
-                <!-- ============================================= -->
-
+                <!-- ========================================= -->
+                <!-- ESTADO                                    -->
+                <!-- ========================================= -->
 
                 <div
                     class="
-                        resultado-estado
+                        estado-box
 
                         {% if resultado.estado == 'VIGENTE' %}
 
@@ -1113,19 +1053,22 @@
                 >
 
 
-                    FOLIO {{ resultado.folio }}
-                    :
-                    {{ resultado.estado }}
+                    <div class="estado-text">
+
+                        FOLIO {{ resultado.folio }}
+                        :
+                        {{ resultado.estado }}
+
+                    </div>
 
 
                 </div>
 
 
 
-                <!-- ============================================= -->
-                <!-- NO REGISTRADO                                 -->
-                <!-- ============================================= -->
-
+                <!-- ========================================= -->
+                <!-- NO REGISTRADO                             -->
+                <!-- ========================================= -->
 
                 {% if resultado.estado in [
                     'NO SE ENCUENTRA REGISTRADO',
@@ -1133,7 +1076,7 @@
                 ] %}
 
 
-                    <div class="resultado-no-encontrado">
+                    <div class="mensaje-no-registrado">
 
 
                         <h2>
@@ -1170,127 +1113,105 @@
                 {% else %}
 
 
-                    <!-- ========================================= -->
-                    <!-- DATOS                                     -->
-                    <!-- ========================================= -->
+                    <!-- ===================================== -->
+                    <!-- DATOS                                 -->
+                    <!-- ===================================== -->
+
+                    <div class="detalles-container">
 
 
-                    <div class="resultado-datos">
+                        <div class="detalles-card">
 
 
-                        <div class="resultado-dato">
+                            <div class="detalle-item">
+
+                                <div class="detalle-label">
+                                    Fecha de Expedición
+                                </div>
+
+                                <div class="detalle-value">
+                                    {{ resultado.fecha_expedicion }}
+                                </div>
+
+                            </div>
 
 
-                            <strong>
-                                Fecha de Expedición
-                            </strong>
+                            <div class="detalle-item">
+
+                                <div class="detalle-label">
+                                    Fecha de Vencimiento
+                                </div>
+
+                                <div class="detalle-value">
+                                    {{ resultado.fecha_vencimiento }}
+                                </div>
+
+                            </div>
 
 
-                            <span>
-                                {{ resultado.fecha_expedicion }}
-                            </span>
+                            <div class="detalle-item">
+
+                                <div class="detalle-label">
+                                    Marca
+                                </div>
+
+                                <div class="detalle-value">
+                                    {{ resultado.marca }}
+                                </div>
+
+                            </div>
 
 
-                        </div>
+                            <div class="detalle-item">
+
+                                <div class="detalle-label">
+                                    Línea
+                                </div>
+
+                                <div class="detalle-value">
+                                    {{ resultado.linea }}
+                                </div>
+
+                            </div>
 
 
+                            <div class="detalle-item">
 
-                        <div class="resultado-dato">
+                                <div class="detalle-label">
+                                    Año
+                                </div>
 
+                                <div class="detalle-value">
+                                    {{ resultado.año }}
+                                </div>
 
-                            <strong>
-                                Fecha de Vencimiento
-                            </strong>
-
-
-                            <span>
-                                {{ resultado.fecha_vencimiento }}
-                            </span>
-
-
-                        </div>
+                            </div>
 
 
+                            <div class="detalle-item">
 
-                        <div class="resultado-dato">
+                                <div class="detalle-label">
+                                    Número de Serie
+                                </div>
 
+                                <div class="detalle-value">
+                                    {{ resultado.numero_serie }}
+                                </div>
 
-                            <strong>
-                                Marca
-                            </strong>
-
-
-                            <span>
-                                {{ resultado.marca }}
-                            </span>
-
-
-                        </div>
+                            </div>
 
 
+                            <div class="detalle-item">
 
-                        <div class="resultado-dato">
+                                <div class="detalle-label">
+                                    Número de Motor
+                                </div>
 
+                                <div class="detalle-value">
+                                    {{ resultado.numero_motor }}
+                                </div>
 
-                            <strong>
-                                Línea
-                            </strong>
-
-
-                            <span>
-                                {{ resultado.linea }}
-                            </span>
-
-
-                        </div>
-
-
-
-                        <div class="resultado-dato">
-
-
-                            <strong>
-                                Año
-                            </strong>
-
-
-                            <span>
-                                {{ resultado.año }}
-                            </span>
-
-
-                        </div>
-
-
-
-                        <div class="resultado-dato">
-
-
-                            <strong>
-                                Número de Serie
-                            </strong>
-
-
-                            <span>
-                                {{ resultado.numero_serie }}
-                            </span>
-
-
-                        </div>
-
-
-
-                        <div class="resultado-dato">
-
-
-                            <strong>
-                                Número de Motor
-                            </strong>
-
-
-                            <span>
-                                {{ resultado.numero_motor }}
-                            </span>
+                            </div>
 
 
                         </div>
@@ -1303,12 +1224,11 @@
 
 
 
-                <!-- ============================================= -->
-                <!-- DOCUMENTO                                     -->
-                <!-- ============================================= -->
+                <!-- ========================================= -->
+                <!-- DOCUMENTO                                 -->
+                <!-- ========================================= -->
 
-
-                <div class="resultado-documento">
+                <div class="documento-valido">
 
                     DOCUMENTO DIGITAL VÁLIDO
                     EN TODO MÉXICO
@@ -1320,12 +1240,7 @@
             {% else %}
 
 
-                <!-- ============================================= -->
-                <!-- SIN RESULTADO                                 -->
-                <!-- ============================================= -->
-
-
-                <div class="resultado-no-encontrado">
+                <div class="mensaje-no-registrado">
 
 
                     <h2>
@@ -1346,17 +1261,16 @@
 
 
 
-            <!-- ================================================= -->
-            <!-- REGRESAR                                          -->
-            <!-- ================================================= -->
+            <!-- ============================================= -->
+            <!-- REGRESAR                                      -->
+            <!-- ============================================= -->
 
-
-            <div class="resultado-acciones">
+            <div class="acciones">
 
 
                 <a
                     href="https://setran.jalisco.gob.mx/"
-                    class="resultado-regresar"
+                    class="btn-regresar"
                 >
 
                     Regresar
@@ -1373,257 +1287,193 @@
     </section>
 
 
-</template>
+</main>
 
 
 
 <!-- ========================================================= -->
-<!-- LIBRERÍA AOS                                             -->
+<!-- FOOTER                                                    -->
 <!-- ========================================================= -->
 
-
-<script
-    src="https://unpkg.com/aos@next/dist/aos.js"
-></script>
+<footer class="site-footer">
 
 
-<script>
+    <div class="footer-green-line"></div>
 
-    if (window.AOS) {
 
-        AOS.init();
+    <div class="footer-inner">
 
-    }
 
-</script>
+        <div class="footer-logo">
+
+
+            <img
+                src="{{ url_for('static', filename='assets/images/1000008793.png') }}"
+                alt="Gobierno de Jalisco"
+            >
+
+
+        </div>
+
+
+
+        <div>
+
+
+            <div class="footer-title">
+                Secretaría de Transporte
+            </div>
+
+
+            <div class="footer-text">
+
+                Av. Prol. Alcalde S/N
+
+                <br>
+
+                Jardines Alcalde
+
+                <br>
+
+                Guadalajara, Jalisco
+
+                <br>
+
+                33 3819 2400
+
+            </div>
+
+
+        </div>
+
+
+
+        <div>
+
+
+            <div class="footer-title">
+                Enlaces
+            </div>
+
+
+            <ul class="footer-links">
+
+
+                <li>
+
+                    <a href="https://setran.jalisco.gob.mx/">
+                        Inicio
+                    </a>
+
+                </li>
+
+
+                <li>
+
+                    <a href="https://setran.jalisco.gob.mx/registro-estatal">
+                        Registro Estatal
+                    </a>
+
+                </li>
+
+
+                <li>
+
+                    <a href="https://setran.jalisco.gob.mx/">
+                        Trámites y Servicios
+                    </a>
+
+                </li>
+
+
+            </ul>
+
+
+        </div>
+
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+        Gobierno del Estado de Jalisco
+
+    </div>
+
+
+</footer>
 
 
 
 <!-- ========================================================= -->
-<!-- BUNDLES ANGULAR ORIGINALES                               -->
+<!-- JAVASCRIPT MENÚ                                          -->
 <!-- ========================================================= -->
-
-
-<script
-    src="https://setran.jalisco.gob.mx/runtime.ed39d416883c2dbb.js"
-    type="module"
-></script>
-
-
-<script
-    src="https://setran.jalisco.gob.mx/polyfills.52e521af4f67de89.js"
-    type="module"
-></script>
-
-
-<script
-    src="https://setran.jalisco.gob.mx/scripts.4c365bdac1e5b112.js"
-    defer
-></script>
-
-
-<script
-    src="https://setran.jalisco.gob.mx/main.dc07039e566512db.js"
-    type="module"
-></script>
-
-
-
-<!-- ========================================================= -->
-<!-- MONTAJE DEL RESULTADO                                    -->
-<!-- ========================================================= -->
-
 
 <script>
 
 (function () {
 
+    const boton =
+        document.getElementById("menuToggle");
 
-    const template =
-        document.getElementById(
-            "resultado-flask-template"
-        );
+    const menu =
+        document.getElementById("mainMenu");
 
 
-    if (!template) {
-
+    if (!boton || !menu) {
         return;
-
     }
 
 
+    boton.addEventListener(
+        "click",
+        function () {
 
-    function crearResultado() {
-
-
-        const wrapper =
-            document.createElement("div");
-
-
-        wrapper.setAttribute(
-            "data-resultado-flask",
-            "true"
-        );
+            const abierto =
+                menu.classList.toggle("active");
 
 
-        wrapper.appendChild(
-            template.content.cloneNode(true)
-        );
-
-
-        return wrapper;
-
-    }
-
-
-
-    function montarResultado() {
-
-
-        const main =
-            document.getElementById(
-                "main-content"
+            boton.setAttribute(
+                "aria-expanded",
+                abierto ? "true" : "false"
             );
 
-
-        if (!main) {
-
-            return false;
-
-        }
-
-
-        /*
-         * Si ya está montado y Angular no lo borró,
-         * no hacemos nada.
-         */
-
-        if (
-            main.querySelector(
-                "[data-resultado-flask='true']"
-            )
-        ) {
-
-            return true;
-
-        }
-
-
-        /*
-         * Quitamos el contenido de la ruta Angular.
-         * Queremos conservar navbar/footer,
-         * pero el centro será nuestro resultado Flask.
-         */
-
-        const resultado =
-            crearResultado();
-
-
-        main.replaceChildren(
-            resultado
-        );
-
-
-        return true;
-
-    }
-
-
-
-    /*
-     * Primer intento inmediatamente.
-     */
-
-    montarResultado();
-
-
-
-    /*
-     * Angular puede reconstruir el DOM después.
-     * Si elimina nuestro resultado,
-     * MutationObserver lo vuelve a insertar.
-     */
-
-    const observer =
-        new MutationObserver(
-            function () {
-
-                montarResultado();
-
-            }
-        );
-
-
-    observer.observe(
-        document.documentElement,
-        {
-            childList: true,
-            subtree: true
         }
     );
 
 
+    document.addEventListener(
+        "click",
+        function (event) {
 
-    /*
-     * Fallback para quitar el loader.
-     *
-     * Si Angular arrancó correctamente,
-     * normalmente lo manejará por su cuenta.
-     * Si no, evitamos dejar al usuario
-     * viendo el spinner eternamente.
-     */
+            const clicDentroMenu =
+                menu.contains(event.target);
 
-    setTimeout(
-        function () {
+            const clicBoton =
+                boton.contains(event.target);
 
 
-            const loader =
-                document.getElementById(
-                    "loading-bg"
+            if (
+                !clicDentroMenu &&
+                !clicBoton
+            ) {
+
+                menu.classList.remove("active");
+
+                boton.setAttribute(
+                    "aria-expanded",
+                    "false"
                 );
 
-
-            if (loader) {
-
-                loader.style.display =
-                    "none";
-
             }
 
-
-            montarResultado();
-
-
-        },
-        3500
+        }
     );
-
-
-
-    /*
-     * Después de 8 segundos dejamos
-     * de observar modificaciones.
-     */
-
-    setTimeout(
-        function () {
-
-
-            montarResultado();
-
-
-            observer.disconnect();
-
-
-        },
-        8000
-    );
-
 
 })();
 
 </script>
-
 
 
 </body>

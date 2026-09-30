@@ -1,270 +1,328 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="utf-8">
+    <title>Secretaría de Transporte | Resultado de Consulta</title>
 
-    <title>
-        Secretaría de Transporte | Resultado de Consulta
-    </title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    >
+    <meta name="description"
+          content="Resultado de consulta - Secretaría de Transporte">
 
-    <meta
-        name="description"
-        content="Resultado de Consulta - Secretaría de Transporte"
-    >
+    <meta name="author" content="Jalisco">
 
-    <meta
-        name="author"
-        content="Jalisco"
-    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
-
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet"
-    >
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap"
+          rel="stylesheet">
 
     <style>
-
         :root {
-            --verde-jal: #35aa72;
-            --verde-oscuro: #24845a;
-            --naranja-jal: #ef8124;
-            --gris-texto: #57526b;
-            --gris-fondo: #fafafa;
+            --verde: #35ad7b;
+            --verde-fuerte: #1faa4b;
+            --naranja: #f58220;
+            --texto: #57526b;
             --gris-footer: #404f56;
-            --success: #28a745;
-            --warning: #b8860b;
-            --danger: #c62828;
+            --gris-fondo: #f7f7f7;
         }
 
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
-        html {
-            font-size: 14px;
+        html,
+        body {
+            width: 100%;
+            min-height: 100%;
         }
 
         body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
             font-family: "Montserrat", Arial, sans-serif;
-            color: var(--gris-texto);
             background: var(--gris-fondo);
+            color: var(--texto);
+        }
+
+        img {
+            max-width: 100%;
         }
 
         a {
             text-decoration: none;
         }
 
-        img {
-            max-width: 100%;
-            height: auto;
-        }
+        /* =========================================================
+           BARRA SUPERIOR
+        ========================================================= */
 
-
-        /* ===================================================== */
-        /* BARRA VERDE SUPERIOR                                  */
-        /* ===================================================== */
-
-        .top-line {
-            width: 100%;
+        .line-nav {
             height: 7px;
-            background: var(--verde-jal);
+            width: 100%;
+            background: var(--verde);
         }
 
-
-        /* ===================================================== */
-        /* HEADER                                                */
-        /* ===================================================== */
+        /* =========================================================
+           NAVBAR
+        ========================================================= */
 
         .site-header {
             width: 100%;
-            background: #ffffff;
-            box-shadow: 0 5px 22px rgba(0, 69, 101, 0.08);
+            background: #fff;
+            box-shadow: 0 5px 25px rgba(0, 69, 101, 0.08);
             position: relative;
             z-index: 100;
         }
 
-        .header-inner {
-            width: 100%;
-            max-width: 1200px;
-            margin: auto;
-
-            min-height: 235px;
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            padding: 35px 28px;
+        .nav-shell {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 18px 30px;
         }
 
-        .brand {
+        .nav-top {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 30px;
         }
 
-        .brand-logo {
-            width: 220px;
-            max-height: 115px;
+        .brand-link {
+            display: block;
+            flex-shrink: 0;
+        }
+
+        .logo-transporte {
+            width: 275px;
+            max-height: 125px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .nav-right {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .institution-row {
+            min-height: 55px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .jalisco-header-logo {
+            width: 135px;
+            height: auto;
             object-fit: contain;
         }
 
-        .header-actions {
-            display: flex;
+        .social-link {
+            display: inline-flex;
             align-items: center;
-            gap: 22px;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            color: #465055;
+            border-radius: 50%;
+            transition: background .2s ease;
+        }
+
+        .social-link:hover {
+            background: #f1f3f4;
+        }
+
+        .social-link svg {
+            width: 25px;
+            height: 25px;
+            fill: currentColor;
+        }
+
+        .menu-row {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding-top: 12px;
+            gap: 4px;
+            flex-wrap: wrap;
         }
 
         .home-link,
-        .menu-toggle {
-            width: 52px;
-            height: 52px;
-
-            display: flex;
+        .nav-link {
+            color: #57526b;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 9px 10px;
+            border: 1px solid #57526b;
+            border-radius: 4px;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
+            white-space: nowrap;
+            transition: background .2s ease,
+                        color .2s ease,
+                        border .2s ease;
+        }
 
-            background: transparent;
+        .home-link {
             border: none;
-
-            color: var(--gris-texto);
-
-            cursor: pointer;
+            padding: 8px;
         }
 
         .home-link svg {
-            width: 38px;
-            height: 38px;
-            stroke: currentColor;
+            width: 30px;
+            height: 30px;
+            fill: #57526b;
         }
 
-        .menu-toggle {
-            border: 3px solid var(--verde-jal);
-            border-radius: 10px;
+        .nav-link:hover,
+        .home-link:hover {
+            background: #f2f5f7;
+            color: var(--verde);
+            border-color: var(--verde);
         }
 
-        .hamburger {
-            width: 25px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
+        .home-link:hover svg {
+            fill: var(--verde);
         }
 
-        .hamburger span {
-            display: block;
-            width: 100%;
-            height: 3px;
-            border-radius: 4px;
-            background: var(--verde-jal);
-        }
-
-
-        /* ===================================================== */
-        /* MENÚ DESPLEGABLE                                     */
-        /* ===================================================== */
-
-        .main-menu {
-            width: 100%;
-            background: #ffffff;
-
-            border-top: 1px solid #eeeeee;
-
+        .mobile-actions {
             display: none;
-
-            box-shadow: 0 8px 20px rgba(0,0,0,.08);
+            margin-left: auto;
+            align-items: center;
+            gap: 14px;
         }
 
-        .main-menu.active {
-            display: block;
-        }
-
-        .main-menu-inner {
-            width: 100%;
-            max-width: 1200px;
-            margin: auto;
-
-            padding: 15px 30px 25px;
-        }
-
-        .main-menu ul {
-            list-style: none;
-        }
-
-        .main-menu li {
-            border-bottom: 1px solid #eeeeee;
-        }
-
-        .main-menu li:last-child {
-            border-bottom: none;
-        }
-
-        .main-menu a {
-            display: block;
-
-            padding: 15px 8px;
-
-            color: var(--gris-texto);
-
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .main-menu a:hover {
-            color: var(--verde-jal);
-            background: #f8f8f8;
-        }
-
-
-        /* ===================================================== */
-        /* BOTÓN ACCESIBILIDAD                                  */
-        /* ===================================================== */
-
-        #float-button {
-            position: fixed;
-
-            bottom: 5%;
-            left: 5%;
-
-            z-index: 999;
-
-            width: 68px;
-            height: 68px;
-
-            border-radius: 50%;
-
-            border: none;
-
-            background: #ffffff;
-
-            box-shadow: 0 3px 12px rgba(0,0,0,.22);
-
+        .mobile-home {
+            width: 42px;
+            height: 42px;
+            border: 0;
+            background: transparent;
             display: flex;
             align-items: center;
             justify-content: center;
+        }
 
+        .mobile-home svg {
+            width: 36px;
+            height: 36px;
+            fill: #57526b;
+        }
+
+        .mobile-menu-button {
+            width: 52px;
+            height: 52px;
+            border: 3px solid var(--verde);
+            border-radius: 9px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
             cursor: pointer;
+        }
+
+        .mobile-menu-button span {
+            display: block;
+            width: 29px;
+            height: 4px;
+            border-radius: 10px;
+            background: var(--verde);
+        }
+
+        /* =========================================================
+           SIDEBAR MÓVIL
+        ========================================================= */
+
+        .mobile-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: min(330px, 86vw);
+            height: 100vh;
+            background: #fff;
+            z-index: 5000;
+            transform: translateX(-110%);
+            transition: transform .28s ease;
+            box-shadow: 4px 0 20px rgba(0,0,0,.18);
+            overflow-y: auto;
+        }
+
+        .mobile-sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.35);
+            z-index: 4900;
+            display: none;
+        }
+
+        .sidebar-overlay.open {
+            display: block;
+        }
+
+        .sidebar-close {
+            width: 100%;
+            height: 55px;
+            border: 0;
+            background: white;
+            text-align: left;
+            padding-left: 20px;
+            font-size: 36px;
+            cursor: pointer;
+            color: var(--texto);
+        }
+
+        .sidebar-logo {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .sidebar-logo img {
+            width: 210px;
+        }
+
+        .sidebar-links {
+            padding: 15px 20px 50px;
+        }
+
+        .sidebar-links a {
+            display: block;
+            padding: 15px 8px;
+            color: #57526b;
+            font-size: 15px;
+            font-weight: 600;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .sidebar-links a:hover {
+            color: var(--verde);
+        }
+
+        /* =========================================================
+           BOTÓN ACCESIBILIDAD
+        ========================================================= */
+
+        #float-button {
+            position: fixed;
+            bottom: 5%;
+            left: 4%;
+            z-index: 900;
+            border-radius: 100%;
+            width: 72px;
+            height: 72px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            background: #fff;
+            box-shadow: 0 7px 20px rgba(0,0,0,.22);
         }
 
         #float-button img {
@@ -273,1209 +331,1231 @@
             object-fit: contain;
         }
 
+        /* =========================================================
+           RESULTADO
+        ========================================================= */
 
-        /* ===================================================== */
-        /* MAIN                                                 */
-        /* ===================================================== */
-
-        main {
-            flex: 1;
-            width: 100%;
+        .page-area {
+            padding: 70px 20px;
         }
 
-        .resultado-page {
+        .result-card {
             width: 100%;
-            padding: 45px 18px 70px;
-        }
-
-        .resultado-card {
-            width: 100%;
-            max-width: 850px;
-
+            max-width: 900px;
             margin: 0 auto;
-
-            background: #ffffff;
-
-            border-radius: 12px;
-
-            box-shadow: 0 4px 18px rgba(0,0,0,.10);
-
-            overflow: hidden;
+            background: #fff;
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: 0 6px 30px rgba(0,0,0,.08);
         }
 
-
-        /* ===================================================== */
-        /* TÍTULO                                               */
-        /* ===================================================== */
-
-        .resultado-heading {
+        .title {
             text-align: center;
-
-            padding: 50px 30px 35px;
-        }
-
-        .resultado-heading h1 {
-            color: var(--gris-texto);
-
-            font-size: 32px;
+            font-size: 38px;
             font-weight: 700;
-
-            line-height: 1.25;
-
-            margin-bottom: 18px;
+            color: #57526b;
+            margin-bottom: 22px;
         }
 
-        .resultado-heading p {
-            color: var(--naranja-jal);
-
-            font-size: 18px;
+        .subtitle {
+            text-align: center;
+            color: var(--naranja);
+            font-size: 21px;
             font-weight: 600;
-
-            line-height: 1.4;
+            line-height: 1.5;
         }
 
-        .heading-line {
-            width: 155px;
-            height: 6px;
-
-            margin: 34px auto 0;
-
-            border-radius: 6px;
-
-            background: var(--naranja-jal);
+        .orange-line {
+            width: 190px;
+            height: 7px;
+            border-radius: 20px;
+            margin: 45px auto;
+            background: var(--naranja);
         }
-
-
-        /* ===================================================== */
-        /* ESTADO                                               */
-        /* ===================================================== */
 
         .estado-box {
-            margin: 15px 28px 45px;
-
-            padding: 23px 20px;
-
+            width: 100%;
+            max-width: 760px;
+            margin: 0 auto 45px;
+            border-radius: 15px;
+            padding: 30px 20px;
             text-align: center;
-
-            border-radius: 14px;
-
-            box-shadow: 0 5px 14px rgba(0,0,0,.17);
+            box-shadow: 0 12px 24px rgba(0,0,0,.15);
         }
 
         .estado-box.vigente {
-            background: var(--success);
+            background: #20ae48;
         }
 
         .estado-box.vencido {
-            background: var(--warning);
+            background: #b8860b;
         }
 
         .estado-box.no-registrado {
-            background: var(--danger);
+            background: #c62828;
         }
 
         .estado-text {
-            color: #ffffff;
-
-            font-size: 21px;
-            font-weight: 700;
-
+            color: #fff;
+            font-size: 25px;
+            font-weight: 800;
             letter-spacing: .4px;
-
-            overflow-wrap: anywhere;
         }
 
-
-        /* ===================================================== */
-        /* DATOS                                                */
-        /* ===================================================== */
-
-        .detalles-container {
-            padding: 0 28px 35px;
-        }
-
-        .detalles-card {
+        .datos-card {
+            width: 100%;
+            max-width: 760px;
+            margin: 0 auto;
             background: #f8f8f8;
-
-            border: 1px solid #d7d7d7;
-
-            border-radius: 12px;
-
-            padding: 15px 28px;
+            border: 1px solid #d4d4d4;
+            border-radius: 15px;
+            padding: 20px 30px;
         }
 
-        .detalle-item {
-            padding: 22px 5px;
-
-            border-bottom: 1px solid #dddddd;
+        .dato {
+            padding: 23px 5px;
+            border-bottom: 1px solid #ddd;
         }
 
-        .detalle-item:last-child {
-            border-bottom: none;
+        .dato:last-child {
+            border-bottom: 0;
         }
 
-        .detalle-label {
-            color: var(--gris-texto);
-
-            font-size: 13px;
+        .dato-label {
+            font-size: 15px;
             font-weight: 700;
-
-            margin-bottom: 8px;
-
-            text-transform: uppercase;
+            color: #57526b;
+            margin-bottom: 10px;
         }
 
-        .detalle-value {
-            color: #333333;
-
-            font-size: 17px;
+        .dato-value {
+            font-size: 20px;
             font-weight: 400;
-
-            overflow-wrap: anywhere;
+            color: #333;
+            word-break: break-word;
         }
-
-
-        /* ===================================================== */
-        /* NO REGISTRADO                                        */
-        /* ===================================================== */
 
         .mensaje-no-registrado {
-            margin: 0 28px 35px;
-
-            padding: 35px 25px;
-
-            text-align: center;
-
+            width: 100%;
+            max-width: 760px;
+            margin: 0 auto;
             background: #f8f8f8;
-
-            border: 1px solid #dddddd;
-
-            border-radius: 12px;
+            border-radius: 15px;
+            padding: 45px 30px;
+            text-align: center;
         }
 
         .mensaje-no-registrado h2 {
-            margin-bottom: 15px;
-
-            color: var(--danger);
-
-            font-size: 22px;
+            margin-bottom: 20px;
+            color: #444;
         }
 
         .mensaje-no-registrado p {
-            margin-top: 9px;
-
-            font-size: 15px;
-            line-height: 1.7;
+            line-height: 1.6;
+            color: #666;
         }
-
-
-        /* ===================================================== */
-        /* DOCUMENTO                                            */
-        /* ===================================================== */
 
         .documento-valido {
-            margin: 10px 20px 38px;
-
             text-align: center;
-
-            color: var(--gris-texto);
-
-            font-size: 14px;
-            font-weight: 700;
-
-            letter-spacing: .5px;
+            margin: 50px 20px 30px;
+            font-size: 20px;
+            line-height: 1.4;
+            font-weight: 800;
+            color: #57526b;
         }
 
-
-        /* ===================================================== */
-        /* BOTÓN REGRESAR                                       */
-        /* ===================================================== */
-
-        .acciones {
+        .return-wrapper {
             text-align: center;
-
-            padding-bottom: 45px;
+            padding-bottom: 10px;
         }
 
-        .btn-regresar {
+        .return-button {
             display: inline-block;
-
-            min-width: 190px;
-
-            padding: 14px 30px;
-
-            background: var(--verde-jal);
-
-            color: #ffffff;
-
-            border-radius: 7px;
-
-            font-size: 14px;
-            font-weight: 700;
-        }
-
-        .btn-regresar:hover {
-            background: var(--verde-oscuro);
-
-            color: #ffffff;
-        }
-
-
-        /* ===================================================== */
-        /* FOOTER                                               */
-        /* ===================================================== */
-
-        .site-footer {
             width: 100%;
-
-            margin-top: auto;
-
-            background: var(--gris-footer);
-
-            color: #ffffff;
+            max-width: 350px;
+            padding: 19px 30px;
+            background: var(--verde);
+            color: white;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            transition: background .2s ease;
         }
+
+        .return-button:hover {
+            background: #28996b;
+        }
+
+        /* =========================================================
+           FOOTER
+        ========================================================= */
 
         .footer-green-line {
             width: 100%;
-            height: 6px;
+            height: 8px;
+            background: var(--verde);
+        }
 
-            background: var(--verde-jal);
+        .site-footer {
+            background: var(--gris-footer);
+            color: #fff;
+            padding: 35px 20px 20px;
         }
 
         .footer-inner {
             width: 100%;
             max-width: 1200px;
+            margin: 0 auto;
+        }
 
-            margin: auto;
+        .footer-title-line {
+            text-align: center;
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
 
-            padding: 40px 30px;
+        .footer-title-line hr {
+            display: inline-block;
+            width: 120px;
+            margin: 0 10px 4px;
+            border: 0;
+            border-top: 1px solid rgba(255,255,255,.45);
+        }
 
+        .footer-grid {
             display: grid;
-
-            grid-template-columns: 1.2fr 1fr 1fr;
-
-            gap: 35px;
+            grid-template-columns: 1.2fr 1.7fr 1.4fr 1fr;
+            gap: 25px;
+            align-items: start;
         }
 
-        .footer-logo img {
-            max-width: 210px;
-            max-height: 110px;
-            object-fit: contain;
+        .footer-column {
+            min-height: 180px;
         }
 
-        .footer-title {
-            color: var(--naranja-jal);
+        .footer-column + .footer-column {
+            border-left: 1px solid rgba(0,0,0,.24);
+            padding-left: 28px;
+        }
 
-            font-size: 17px;
+        .footer-brand img {
+            display: block;
+            max-width: 185px;
+            margin: 15px auto 25px;
+        }
+
+        .footer-social {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .footer-social a {
+            color: #fff;
+            display: inline-flex;
+            width: 32px;
+            height: 32px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-social svg {
+            width: 24px;
+            height: 24px;
+            fill: #fff;
+        }
+
+        .footer-heading {
+            color: var(--naranja);
+            font-size: 20px;
+            margin-bottom: 20px;
             font-weight: 700;
-
-            margin-bottom: 15px;
         }
 
-        .footer-text {
-            font-size: 13px;
+        .footer-info {
+            color: white;
+            font-size: 14px;
             line-height: 1.8;
-
-            color: #ffffff;
         }
 
-        .footer-links {
-            list-style: none;
-        }
-
-        .footer-links li {
-            margin-bottom: 7px;
-        }
-
+        .footer-info a,
         .footer-links a {
-            color: #ffffff;
-
-            font-size: 13px;
-            font-weight: 500;
+            color: white;
         }
 
+        .footer-info a:hover,
         .footer-links a:hover {
-            color: var(--naranja-jal);
-
             text-decoration: underline;
         }
 
-        .footer-bottom {
-            padding: 14px 20px;
-
-            text-align: center;
-
-            border-top: 1px solid rgba(255,255,255,.12);
-
-            color: #dddddd;
-
-            font-size: 12px;
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 13px;
+            font-size: 13px;
         }
 
+        .write-button {
+            display: inline-block;
+            margin-top: 20px;
+            background: var(--naranja);
+            color: #fff;
+            border-radius: 7px;
+            padding: 12px 20px;
+            font-weight: 600;
+        }
 
-        /* ===================================================== */
-        /* RESPONSIVE                                           */
-        /* ===================================================== */
+        .footer-official-logos {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .footer-official-logos img {
+            max-width: 95px;
+            max-height: 90px;
+            object-fit: contain;
+        }
+
+        .copyright {
+            text-align: center;
+            font-size: 12px;
+            margin-top: 25px;
+            color: #fff;
+        }
+
+        /* =========================================================
+           RESPONSIVO
+        ========================================================= */
+
+        @media (max-width: 1000px) {
+
+            .institution-row,
+            .menu-row {
+                display: none;
+            }
+
+            .nav-shell {
+                padding: 15px 30px;
+            }
+
+            .nav-top {
+                min-height: 180px;
+            }
+
+            .mobile-actions {
+                display: flex;
+            }
+
+            .logo-transporte {
+                width: 160px;
+            }
+
+            .nav-right {
+                display: none;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .footer-column + .footer-column {
+                border-left: none;
+                padding-left: 0;
+            }
+        }
 
         @media (max-width: 700px) {
 
-            .header-inner {
-                min-height: 240px;
-
-                padding:
-                    35px
-                    25px;
+            .nav-shell {
+                padding: 0 32px;
             }
 
-            .brand-logo {
-                width: 200px;
+            .nav-top {
+                min-height: 190px;
             }
 
-            .header-actions {
-                gap: 15px;
+            .logo-transporte {
+                width: 150px;
             }
 
-            .home-link,
-            .menu-toggle {
-                width: 49px;
-                height: 49px;
+            .mobile-home svg {
+                width: 38px;
+                height: 38px;
             }
 
-            .resultado-page {
-                padding:
-                    38px
-                    10px
-                    50px;
+            .mobile-menu-button {
+                width: 55px;
+                height: 55px;
             }
 
-            .resultado-card {
-                border-radius: 9px;
+            .page-area {
+                padding: 70px 18px 90px;
             }
 
-            .resultado-heading {
-                padding:
-                    48px
-                    20px
-                    35px;
+            .result-card {
+                padding: 70px 28px;
+                border-radius: 17px;
             }
 
-            .resultado-heading h1 {
-                font-size: 28px;
+            .title {
+                font-size: 29px;
             }
 
-            .resultado-heading p {
-                font-size: 17px;
+            .subtitle {
+                font-size: 18px;
+            }
+
+            .orange-line {
+                width: 180px;
+                margin: 45px auto;
             }
 
             .estado-box {
-                margin:
-                    10px
-                    26px
-                    45px;
-
-                padding:
-                    22px
-                    12px;
+                padding: 24px 15px;
             }
 
             .estado-text {
-                font-size: 19px;
+                font-size: 18px;
             }
 
-            .detalles-container {
-                padding:
-                    0
-                    26px
-                    35px;
+            .datos-card {
+                padding: 20px 28px;
             }
 
-            .detalles-card {
-                padding:
-                    14px
-                    28px;
+            .dato {
+                padding: 22px 5px;
             }
 
-            .detalle-label {
-                font-size: 12px;
+            .dato-label {
+                font-size: 13px;
             }
 
-            .detalle-value {
-                font-size: 16px;
-            }
-
-            .footer-inner {
-                grid-template-columns: 1fr;
-
-                padding:
-                    35px
-                    25px;
-            }
-
-        }
-
-
-        @media (max-width: 450px) {
-
-            .brand-logo {
-                width: 165px;
-            }
-
-            .header-inner {
-                padding:
-                    25px
-                    18px;
-
-                min-height: 210px;
-            }
-
-            .header-actions {
-                gap: 8px;
-            }
-
-            .home-link,
-            .menu-toggle {
-                width: 44px;
-                height: 44px;
-            }
-
-            .home-link svg {
-                width: 33px;
-                height: 33px;
-            }
-
-            .resultado-heading h1 {
-                font-size: 25px;
-            }
-
-            .resultado-heading p {
-                font-size: 15px;
-            }
-
-            .heading-line {
-                width: 125px;
-            }
-
-            .estado-text {
+            .dato-value {
                 font-size: 17px;
             }
 
-            .detalle-value {
+            .documento-valido {
+                font-size: 17px;
+                margin-top: 45px;
+            }
+
+            #float-button {
+                width: 70px;
+                height: 70px;
+                left: 5%;
+                bottom: 4%;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 35px;
+            }
+
+            .footer-column {
+                padding: 0 !important;
+                border: 0 !important;
+            }
+
+            .footer-brand img {
+                margin-left: 0;
+                max-width: 180px;
+            }
+
+            .footer-social {
+                justify-content: flex-start;
+            }
+
+            .footer-heading {
+                font-size: 20px;
+            }
+
+            .footer-info {
+                font-size: 16px;
+            }
+
+            .footer-links {
                 font-size: 15px;
             }
 
+            .footer-official-logos {
+                justify-content: flex-start;
+            }
+
+            .copyright {
+                border-top: 1px solid rgba(255,255,255,.15);
+                padding-top: 20px;
+            }
         }
 
     </style>
-
 </head>
-
 
 <body>
 
+<!-- =========================================================
+     BARRA VERDE
+========================================================= -->
 
-<!-- ========================================================= -->
-<!-- LÍNEA VERDE                                               -->
-<!-- ========================================================= -->
-
-<div class="top-line"></div>
-
+<div class="line-nav"></div>
 
 
-<!-- ========================================================= -->
-<!-- HEADER                                                    -->
-<!-- ========================================================= -->
+<!-- =========================================================
+     NAVBAR
+========================================================= -->
 
 <header class="site-header">
 
+    <div class="nav-shell">
 
-    <div class="header-inner">
+        <div class="nav-top">
 
+            <a class="brand-link"
+               href="https://setrans.jalisco.gob.mx/"
+               target="_blank"
+               rel="noopener noreferrer">
 
-        <div class="brand">
-
-            <!--
-                USA AQUÍ EL LOGO QUE YA TENGAS EN STATIC.
-                Si tu archivo tiene otro nombre, cambia SOLO esta ruta.
-            -->
-
-            <img
-                src="{{ url_for('static', filename='assets/images/header.jpg') }}"
-                alt="Secretaría de Transporte Jalisco"
-                class="brand-logo"
-            >
-
-        </div>
-
-
-
-        <div class="header-actions">
-
-
-            <!-- INICIO -->
-
-            <a
-                href="https://setran.jalisco.gob.mx/"
-                class="home-link"
-                aria-label="Inicio"
-            >
-
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-
-                    <path
-                        d="M3 11.5L12 4L21 11.5"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    />
-
-                    <path
-                        d="M5 10.5V20H10V14H14V20H19V10.5"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    />
-
-                </svg>
+                <img
+                    class="logo-transporte"
+                    src="https://d33pa0ahsb9wzi.cloudfront.net/setran/original_images/logo_transporte25.png"
+                    alt="Secretaría de Transporte, Gobierno del Estado de Jalisco">
 
             </a>
 
 
-
-            <!-- MENÚ -->
-
-            <button
-                id="menuToggle"
-                class="menu-toggle"
-                type="button"
-                aria-label="Abrir menú"
-                aria-expanded="false"
-            >
-
-                <span class="hamburger">
-
-                    <span></span>
-                    <span></span>
-                    <span></span>
-
-                </span>
-
-            </button>
-
-
-        </div>
-
-
-    </div>
-
-
-
-    <!-- ===================================================== -->
-    <!-- MENÚ                                                  -->
-    <!-- ===================================================== -->
-
-    <nav
-        id="mainMenu"
-        class="main-menu"
-        aria-label="Menú principal"
-    >
-
-
-        <div class="main-menu-inner">
-
-
-            <ul>
-
-
-                <li>
-
-                    <a href="https://setran.jalisco.gob.mx/">
-
-                        Inicio
-
-                    </a>
-
-                </li>
-
-
-                <li>
-
-                    <a href="https://setran.jalisco.gob.mx/registro-estatal">
-
-                        Registro Estatal
-
-                    </a>
-
-                </li>
-
-
-                <li>
-
-                    <a href="https://setran.jalisco.gob.mx/">
-
-                        Secretaría de Transporte
-
-                    </a>
-
-                </li>
-
-
-                <li>
-
-                    <a href="https://setran.jalisco.gob.mx/">
-
-                        Trámites y Servicios
-
-                    </a>
-
-                </li>
-
-
-                <li>
-
-                    <a href="https://setran.jalisco.gob.mx/">
-
-                        Transporte Público
-
-                    </a>
-
-                </li>
-
-
-                <li>
-
-                    <a href="https://setran.jalisco.gob.mx/">
-
-                        Transparencia
-
-                    </a>
-
-                </li>
-
-
-            </ul>
-
-
-        </div>
-
-
-    </nav>
-
-
-</header>
-
-
-
-<!-- ========================================================= -->
-<!-- ACCESIBILIDAD                                             -->
-<!-- ========================================================= -->
-
-<button
-    id="float-button"
-    type="button"
-    aria-label="Accesibilidad del sitio"
->
-
-    <img
-        src="{{ url_for('static', filename='assets/images/ico_accesibilidad.svg') }}"
-        alt="Accesibilidad"
-    >
-
-</button>
-
-
-
-<!-- ========================================================= -->
-<!-- RESULTADO                                                 -->
-<!-- ========================================================= -->
-
-<main>
-
-
-    <section class="resultado-page">
-
-
-        <div class="resultado-card">
-
-
-            <!-- ============================================= -->
-            <!-- TÍTULO                                        -->
-            <!-- ============================================= -->
-
-            <div class="resultado-heading">
-
-
-                <h1>
-                    Resultado de Consulta
-                </h1>
-
-
-                <p>
-                    Secretaría de Transporte · Gobierno de Jalisco
-                </p>
-
-
-                <div class="heading-line"></div>
-
-
-            </div>
-
-
-
-            {% if resultado %}
-
-
-                <!-- ========================================= -->
-                <!-- ESTADO                                    -->
-                <!-- ========================================= -->
-
-                <div
-                    class="
-                        estado-box
-
-                        {% if resultado.estado == 'VIGENTE' %}
-
-                            vigente
-
-                        {% elif resultado.estado == 'VENCIDO' %}
-
-                            vencido
-
-                        {% else %}
-
-                            no-registrado
-
-                        {% endif %}
-                    "
-                >
-
-
-                    <div class="estado-text">
-
-                        FOLIO {{ resultado.folio }}
-                        :
-                        {{ resultado.estado }}
-
-                    </div>
-
-
-                </div>
-
-
-
-                <!-- ========================================= -->
-                <!-- NO REGISTRADO                             -->
-                <!-- ========================================= -->
-
-                {% if resultado.estado in [
-                    'NO SE ENCUENTRA REGISTRADO',
-                    'NO REGISTRADO'
-                ] %}
-
-
-                    <div class="mensaje-no-registrado">
-
-
-                        <h2>
-                            Folio no registrado
-                        </h2>
-
-
-                        <p>
-
-                            El folio
-
-                            <strong>
-                                {{ resultado.folio }}
-                            </strong>
-
-                            no se encuentra registrado
-                            en el sistema.
-
-                        </p>
-
-
-                        <p>
-
-                            Verifica que hayas ingresado
-                            correctamente el número de folio.
-
-                        </p>
-
-
-                    </div>
-
-
-
-                {% else %}
-
-
-                    <!-- ===================================== -->
-                    <!-- DATOS                                 -->
-                    <!-- ===================================== -->
-
-                    <div class="detalles-container">
-
-
-                        <div class="detalles-card">
-
-
-                            <div class="detalle-item">
-
-                                <div class="detalle-label">
-                                    Fecha de Expedición
-                                </div>
-
-                                <div class="detalle-value">
-                                    {{ resultado.fecha_expedicion }}
-                                </div>
-
-                            </div>
-
-
-                            <div class="detalle-item">
-
-                                <div class="detalle-label">
-                                    Fecha de Vencimiento
-                                </div>
-
-                                <div class="detalle-value">
-                                    {{ resultado.fecha_vencimiento }}
-                                </div>
-
-                            </div>
-
-
-                            <div class="detalle-item">
-
-                                <div class="detalle-label">
-                                    Marca
-                                </div>
-
-                                <div class="detalle-value">
-                                    {{ resultado.marca }}
-                                </div>
-
-                            </div>
-
-
-                            <div class="detalle-item">
-
-                                <div class="detalle-label">
-                                    Línea
-                                </div>
-
-                                <div class="detalle-value">
-                                    {{ resultado.linea }}
-                                </div>
-
-                            </div>
-
-
-                            <div class="detalle-item">
-
-                                <div class="detalle-label">
-                                    Año
-                                </div>
-
-                                <div class="detalle-value">
-                                    {{ resultado.año }}
-                                </div>
-
-                            </div>
-
-
-                            <div class="detalle-item">
-
-                                <div class="detalle-label">
-                                    Número de Serie
-                                </div>
-
-                                <div class="detalle-value">
-                                    {{ resultado.numero_serie }}
-                                </div>
-
-                            </div>
-
-
-                            <div class="detalle-item">
-
-                                <div class="detalle-label">
-                                    Número de Motor
-                                </div>
-
-                                <div class="detalle-value">
-                                    {{ resultado.numero_motor }}
-                                </div>
-
-                            </div>
-
-
-                        </div>
-
-
-                    </div>
-
-
-                {% endif %}
-
-
-
-                <!-- ========================================= -->
-                <!-- DOCUMENTO                                 -->
-                <!-- ========================================= -->
-
-                <div class="documento-valido">
-
-                    DOCUMENTO DIGITAL VÁLIDO
-                    EN TODO MÉXICO
-
-                </div>
-
-
-
-            {% else %}
-
-
-                <div class="mensaje-no-registrado">
-
-
-                    <h2>
-                        Sin información
-                    </h2>
-
-
-                    <p>
-                        No se encontró información
-                        para mostrar.
-                    </p>
-
-
-                </div>
-
-
-            {% endif %}
-
-
-
-            <!-- ============================================= -->
-            <!-- REGRESAR                                      -->
-            <!-- ============================================= -->
-
-            <div class="acciones">
-
-
-                <a
-                    href="https://setran.jalisco.gob.mx/"
-                    class="btn-regresar"
-                >
-
-                    Regresar
+            <!-- ACCIONES MÓVILES -->
+
+            <div class="mobile-actions">
+
+                <a class="mobile-home"
+                   href="https://setrans.jalisco.gob.mx/inicio"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   aria-label="Inicio">
+
+                    <svg viewBox="0 0 36 36">
+                        <path d="M27.79,30.27h-11.3v-6.27c0-.67-.55-1.22-1.22-1.22s-1.22.55-1.22,1.22v6.27H3.02v-13.59c0-1.02.48-1.99,1.29-2.6l9.5-7.23c.87-.66,2.08-.67,2.96-.02l9.69,7.16c.83.61,1.33,1.6,1.33,2.63v13.66ZM19.44,27.32h5.39v-10.7c0-.1-.05-.2-.13-.25l-9.4-6.94-9.21,7c-.08.06-.12.15-.12.25v10.64h5.13v-3.31c0-2.3,1.87-4.17,4.17-4.17s4.17,1.87,4.17,4.17v3.31Z"></path>
+                        <path d="M1.48,13.27c-.45,0-.9-.2-1.19-.59-.49-.65-.35-1.58.3-2.07L14.41.29c.53-.39,1.25-.39,1.78,0l13.58,10.31c.65.49.78,1.42.28,2.07-.49.65-1.42.78-2.07.28L15.28,3.33,2.36,12.98c-.27.2-.58.29-.88.29Z"></path>
+                    </svg>
 
                 </a>
 
 
+                <button
+                    type="button"
+                    id="openMenu"
+                    class="mobile-menu-button"
+                    aria-label="Abrir menú">
+
+                    <span></span>
+                    <span></span>
+                    <span></span>
+
+                </button>
+
             </div>
 
 
+            <!-- DESKTOP -->
+
+            <div class="nav-right">
+
+                <div class="institution-row">
+
+                    <img
+                        class="jalisco-header-logo"
+                        src="https://d33pa0ahsb9wzi.cloudfront.net/transparencia-demo/original_images/estilo_jal_header.png"
+                        alt="Gobierno del Estado de Jalisco">
+
+
+                    <a
+                        href="https://es-la.facebook.com/SecretariadeTransporteJal"
+                        class="social-link"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Facebook">
+
+                        <svg viewBox="0 0 24 24">
+                            <path d="M13.5 22v-9h3l.5-3h-3.5V8.1c0-.9.3-1.6 1.7-1.6H17V3.8c-.3 0-1.4-.1-2.6-.1-2.6 0-4.4 1.6-4.4 4.5V10H7v3h3v9h3.5z"/>
+                        </svg>
+
+                    </a>
+
+
+                    <a
+                        href="https://x.com/TransporteJal"
+                        class="social-link"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="X">
+
+                        <svg viewBox="0 0 24 24">
+                            <path d="M18.4 2H22l-7.9 9L23 22h-7l-5.5-7.2L4.2 22H.6l8.2-9.4L.3 2h7.2l5 6.6L18.4 2zm-1.3 18h2L6.4 3.9H4.2L17.1 20z"/>
+                        </svg>
+
+                    </a>
+
+                </div>
+
+
+                <nav class="menu-row">
+
+                    <a class="home-link"
+                       href="https://setrans.jalisco.gob.mx/inicio"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       aria-label="Inicio">
+
+                        <svg viewBox="0 0 36 36">
+                            <path d="M27.79,30.27h-11.3v-6.27c0-.67-.55-1.22-1.22-1.22s-1.22.55-1.22,1.22v6.27H3.02v-13.59c0-1.02.48-1.99,1.29-2.6l9.5-7.23c.87-.66,2.08-.67,2.96-.02l9.69,7.16c.83.61,1.33,1.6,1.33,2.63v13.66Z"></path>
+                            <path d="M1.48,13.27c-.45,0-.9-.2-1.19-.59-.49-.65-.35-1.58.3-2.07L14.41.29c.53-.39,1.25-.39,1.78,0l13.58,10.31c.65.49.78,1.42.28,2.07-.49.65-1.42.78-2.07.28L15.28,3.33,2.36,12.98c-.27.2-.58.29-.88.29Z"></path>
+                        </svg>
+
+                    </a>
+
+                    <a class="nav-link"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       href="https://setrans.jalisco.gob.mx/acerca-de">
+                        Acerca de
+                    </a>
+
+                    <a class="nav-link"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       href="https://setrans.jalisco.gob.mx/tramites-y-servicios">
+                        Trámites y servicios
+                    </a>
+
+                    <a class="nav-link"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       href="https://setrans.jalisco.gob.mx/transparencia">
+                        Transparencia
+                    </a>
+
+                    <a class="nav-link"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       href="https://setrans.jalisco.gob.mx/prensa">
+                        Prensa
+                    </a>
+
+                    <a class="nav-link"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       href="https://setrans.jalisco.gob.mx/proyectos">
+                        Proyectos
+                    </a>
+
+                    <a class="nav-link"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       href="https://setrans.jalisco.gob.mx/registro-estatal">
+                        Registro Estatal
+                    </a>
+
+                    <a class="nav-link"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       href="https://setrans.jalisco.gob.mx/contacto-setrans">
+                        Contacto Setrans
+                    </a>
+
+                </nav>
+
+            </div>
+
         </div>
 
+    </div>
+
+</header>
+
+
+<!-- =========================================================
+     SIDEBAR MÓVIL
+========================================================= -->
+
+<div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+<aside id="mobileSidebar" class="mobile-sidebar">
+
+    <button
+        id="closeMenu"
+        type="button"
+        class="sidebar-close"
+        aria-label="Cerrar menú">
+        ‹
+    </button>
+
+    <div class="sidebar-logo">
+
+        <img
+            src="https://d33pa0ahsb9wzi.cloudfront.net/setran/original_images/logo_transporte25.png"
+            alt="Secretaría de Transporte">
+
+    </div>
+
+    <nav class="sidebar-links">
+
+        <a target="_blank"
+           rel="noopener noreferrer"
+           href="https://setrans.jalisco.gob.mx/inicio">
+            Inicio
+        </a>
+
+        <a target="_blank"
+           rel="noopener noreferrer"
+           href="https://setrans.jalisco.gob.mx/acerca-de">
+            Acerca de
+        </a>
+
+        <a target="_blank"
+           rel="noopener noreferrer"
+           href="https://setrans.jalisco.gob.mx/tramites-y-servicios">
+            Trámites y servicios
+        </a>
+
+        <a target="_blank"
+           rel="noopener noreferrer"
+           href="https://setrans.jalisco.gob.mx/transparencia">
+            Transparencia
+        </a>
+
+        <a target="_blank"
+           rel="noopener noreferrer"
+           href="https://setrans.jalisco.gob.mx/prensa">
+            Prensa
+        </a>
+
+        <a target="_blank"
+           rel="noopener noreferrer"
+           href="https://setrans.jalisco.gob.mx/proyectos">
+            Proyectos
+        </a>
+
+        <a target="_blank"
+           rel="noopener noreferrer"
+           href="https://setrans.jalisco.gob.mx/registro-estatal">
+            Registro Estatal
+        </a>
+
+        <a target="_blank"
+           rel="noopener noreferrer"
+           href="https://setrans.jalisco.gob.mx/programas">
+            Programas
+        </a>
+
+        <a target="_blank"
+           rel="noopener noreferrer"
+           href="https://setrans.jalisco.gob.mx/transporte-publico">
+            Transporte Público
+        </a>
+
+        <a target="_blank"
+           rel="noopener noreferrer"
+           href="https://setrans.jalisco.gob.mx/siniestralidad">
+            Siniestralidad Vial
+        </a>
+
+        <a target="_blank"
+           rel="noopener noreferrer"
+           href="https://setrans.jalisco.gob.mx/contacto-setrans">
+            Contacto Setrans
+        </a>
+
+    </nav>
+
+</aside>
+
+
+<!-- =========================================================
+     BOTÓN ACCESIBILIDAD
+========================================================= -->
+
+<button
+    id="float-button"
+    type="button"
+    aria-label="Funciones de accesibilidad">
+
+    <img
+        src="https://setrans.jalisco.gob.mx/assets/images/ico_accesibilidad.svg"
+        alt="Accesibilidad">
+
+</button>
+
+
+<!-- =========================================================
+     RESULTADO
+========================================================= -->
+
+<main class="page-area">
+
+    <section class="result-card">
+
+        <h1 class="title">
+            Resultado de Consulta
+        </h1>
+
+        <div class="subtitle">
+            Secretaría de Transporte · Gobierno de Jalisco
+        </div>
+
+        <div class="orange-line"></div>
+
+
+        {% if resultado %}
+
+
+            {% set estado = resultado.estado|upper %}
+
+            <div
+                class="estado-box
+                {% if estado == 'VIGENTE' %}
+                    vigente
+                {% elif estado == 'VENCIDO' %}
+                    vencido
+                {% else %}
+                    no-registrado
+                {% endif %}
+                ">
+
+                <div class="estado-text">
+
+                    FOLIO {{ resultado.folio }} :
+                    {{ resultado.estado }}
+
+                </div>
+
+            </div>
+
+
+            {% if estado == 'NO SE ENCUENTRA REGISTRADO' %}
+
+                <div class="mensaje-no-registrado">
+
+                    <h2>
+                        Folio no registrado
+                    </h2>
+
+                    <p>
+                        El folio
+                        <strong>{{ resultado.folio }}</strong>
+                        no se encuentra registrado en el sistema.
+                    </p>
+
+                    <p style="margin-top:15px;">
+                        Verifica que el número ingresado sea correcto.
+                    </p>
+
+                </div>
+
+            {% else %}
+
+                <div class="datos-card">
+
+                    <div class="dato">
+                        <div class="dato-label">
+                            FECHA DE EXPEDICIÓN
+                        </div>
+
+                        <div class="dato-value">
+                            {{ resultado.fecha_expedicion }}
+                        </div>
+                    </div>
+
+
+                    <div class="dato">
+                        <div class="dato-label">
+                            FECHA DE VENCIMIENTO
+                        </div>
+
+                        <div class="dato-value">
+                            {{ resultado.fecha_vencimiento }}
+                        </div>
+                    </div>
+
+
+                    <div class="dato">
+                        <div class="dato-label">
+                            MARCA
+                        </div>
+
+                        <div class="dato-value">
+                            {{ resultado.marca }}
+                        </div>
+                    </div>
+
+
+                    <div class="dato">
+                        <div class="dato-label">
+                            LÍNEA
+                        </div>
+
+                        <div class="dato-value">
+                            {{ resultado.linea }}
+                        </div>
+                    </div>
+
+
+                    <div class="dato">
+                        <div class="dato-label">
+                            AÑO
+                        </div>
+
+                        <div class="dato-value">
+                            {{ resultado.año }}
+                        </div>
+                    </div>
+
+
+                    <div class="dato">
+                        <div class="dato-label">
+                            NÚMERO DE SERIE
+                        </div>
+
+                        <div class="dato-value">
+                            {{ resultado.numero_serie }}
+                        </div>
+                    </div>
+
+
+                    <div class="dato">
+                        <div class="dato-label">
+                            NÚMERO DE MOTOR
+                        </div>
+
+                        <div class="dato-value">
+                            {{ resultado.numero_motor }}
+                        </div>
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+
+            <div class="documento-valido">
+                DOCUMENTO DIGITAL VÁLIDO EN TODO MÉXICO
+            </div>
+
+
+        {% else %}
+
+            <div class="mensaje-no-registrado">
+
+                <h2>
+                    Sin información
+                </h2>
+
+                <p>
+                    No se encontró información para mostrar.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+
+        <div class="return-wrapper">
+
+            <a
+                class="return-button"
+                href="https://setrans.jalisco.gob.mx/"
+                target="_blank"
+                rel="noopener noreferrer">
+
+                Regresar
+
+            </a>
+
+        </div>
 
     </section>
-
 
 </main>
 
 
+<!-- =========================================================
+     FOOTER
+========================================================= -->
 
-<!-- ========================================================= -->
-<!-- FOOTER                                                    -->
-<!-- ========================================================= -->
+<div class="footer-green-line"></div>
 
 <footer class="site-footer">
 
-
-    <div class="footer-green-line"></div>
-
-
     <div class="footer-inner">
 
+        <div class="footer-title-line">
 
-        <div class="footer-logo">
+            <hr>
 
+            Secretaría de Transporte
 
-            <img
-                src="{{ url_for('static', filename='assets/images/1000008793.png') }}"
-                alt="Gobierno de Jalisco"
-            >
-
+            <hr>
 
         </div>
 
 
+        <div class="footer-grid">
 
-        <div>
+
+            <!-- LOGO -->
+
+            <div class="footer-column footer-brand">
+
+                <img
+                    src="https://d33pa0ahsb9wzi.cloudfront.net/setran/original_images/logo_transporte25.png"
+                    alt="Secretaría de Transporte">
 
 
-            <div class="footer-title">
-                Secretaría de Transporte
+                <div class="footer-social">
+
+                    <a
+                        href="https://es-la.facebook.com/SecretariadeTransporteJal"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Facebook">
+
+                        <svg viewBox="0 0 24 24">
+                            <path d="M13.5 22v-9h3l.5-3h-3.5V8.1c0-.9.3-1.6 1.7-1.6H17V3.8c-.3 0-1.4-.1-2.6-.1-2.6 0-4.4 1.6-4.4 4.5V10H7v3h3v9h3.5z"/>
+                        </svg>
+
+                    </a>
+
+
+                    <a
+                        href="https://x.com/TransporteJal"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="X">
+
+                        <svg viewBox="0 0 24 24">
+                            <path d="M18.4 2H22l-7.9 9L23 22h-7l-5.5-7.2L4.2 22H.6l8.2-9.4L.3 2h7.2l5 6.6L18.4 2zm-1.3 18h2L6.4 3.9H4.2L17.1 20z"/>
+                        </svg>
+
+                    </a>
+
+                </div>
+
             </div>
 
 
-            <div class="footer-text">
+            <!-- CONTACTO -->
 
-                Av. Prol. Alcalde S/N
+            <div class="footer-column">
 
-                <br>
+                <h2 class="footer-heading">
+                    Secretaría de Transporte
+                </h2>
 
-                Jardines Alcalde
+                <div class="footer-info">
 
-                <br>
+                    <a
+                        href="https://www.google.com/maps/search/?api=1&query=Av.%20Prol.%20Alcalde%20S%2FN%2C%20Jardines%20Alcalde%2C%2044290%20Guadalajara%2C%20Jal."
+                        target="_blank"
+                        rel="noopener noreferrer">
 
-                Guadalajara, Jalisco
+                        Av. Prol. Alcalde S/N<br>
+                        Jardines Alcalde<br>
+                        44290 Guadalajara, Jal.
 
-                <br>
+                    </a>
 
-                33 3819 2400
+                    <br><br>
+
+                    33 3819 2400
+
+                    <br>
+
+                    <a
+                        class="write-button"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href="https://setrans.jalisco.gob.mx/acerca-de/ubicacion-y-contacto">
+
+                        Escríbenos
+
+                    </a>
+
+                </div>
 
             </div>
 
+
+            <!-- ENLACES -->
+
+            <div class="footer-column">
+
+                <div class="footer-links">
+
+                    <a
+                        href="https://setrans.jalisco.gob.mx/site-map"
+                        target="_blank"
+                        rel="noopener noreferrer">
+
+                        Mapa de sitio
+
+                    </a>
+
+
+                    <a
+                        href="https://info.jalisco.gob.mx/politicas/?remote=true"
+                        target="_blank"
+                        rel="noopener noreferrer">
+
+                        Políticas de uso y privacidad
+
+                    </a>
+
+
+                    <a
+                        href="https://www.jalisco.gob.mx/es/acerca-de-este-portal"
+                        target="_blank"
+                        rel="noopener noreferrer">
+
+                        Acerca de este portal
+
+                    </a>
+
+
+                    <a
+                        href="https://consultapublicamx.plataformadetransparencia.org.mx/"
+                        target="_blank"
+                        rel="noopener noreferrer">
+
+                        Plataforma Nacional de Transparencia
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- LOGOS OFICIALES -->
+
+            <div class="footer-column">
+
+                <div class="footer-official-logos">
+
+                    <img
+                        src="https://d33pa0ahsb9wzi.cloudfront.net/transparencia-demo/original_images/isologo_leones_footer.png"
+                        alt="Gobierno del Estado de Jalisco">
+
+
+                    <a
+                        href="https://www.hearcolors.com.mx/SelloAccesibilidad.php?num_clte=J5R4T84N"
+                        target="_blank"
+                        rel="noopener noreferrer">
+
+                        <img
+                            src="https://d2shyreu57721j.cloudfront.net/jalisco/images/distintivo_accesibilidad.max-800x600.png"
+                            alt="Declaración de accesibilidad">
+
+                    </a>
+
+                </div>
+
+
+                <div class="copyright">
+
+                    Gobierno de Jalisco © 2026
+
+                </div>
+
+            </div>
 
         </div>
-
-
-
-        <div>
-
-
-            <div class="footer-title">
-                Enlaces
-            </div>
-
-
-            <ul class="footer-links">
-
-
-                <li>
-
-                    <a href="https://setran.jalisco.gob.mx/">
-                        Inicio
-                    </a>
-
-                </li>
-
-
-                <li>
-
-                    <a href="https://setran.jalisco.gob.mx/registro-estatal">
-                        Registro Estatal
-                    </a>
-
-                </li>
-
-
-                <li>
-
-                    <a href="https://setran.jalisco.gob.mx/">
-                        Trámites y Servicios
-                    </a>
-
-                </li>
-
-
-            </ul>
-
-
-        </div>
-
 
     </div>
-
-
-    <div class="footer-bottom">
-
-        Gobierno del Estado de Jalisco
-
-    </div>
-
 
 </footer>
 
 
-
-<!-- ========================================================= -->
-<!-- JAVASCRIPT MENÚ                                          -->
-<!-- ========================================================= -->
+<!-- =========================================================
+     JS MÓVIL
+========================================================= -->
 
 <script>
 
-(function () {
+    const openMenu = document.getElementById("openMenu");
+    const closeMenu = document.getElementById("closeMenu");
 
-    const boton =
-        document.getElementById("menuToggle");
+    const mobileSidebar =
+        document.getElementById("mobileSidebar");
 
-    const menu =
-        document.getElementById("mainMenu");
+    const sidebarOverlay =
+        document.getElementById("sidebarOverlay");
 
 
-    if (!boton || !menu) {
-        return;
+    function abrirMenu() {
+
+        mobileSidebar.classList.add("open");
+        sidebarOverlay.classList.add("open");
+
+        document.body.style.overflow = "hidden";
+
     }
 
 
-    boton.addEventListener(
-        "click",
-        function () {
+    function cerrarMenu() {
 
-            const abierto =
-                menu.classList.toggle("active");
+        mobileSidebar.classList.remove("open");
+        sidebarOverlay.classList.remove("open");
+
+        document.body.style.overflow = "";
+
+    }
 
 
-            boton.setAttribute(
-                "aria-expanded",
-                abierto ? "true" : "false"
-            );
+    if (openMenu) {
 
-        }
-    );
+        openMenu.addEventListener(
+            "click",
+            abrirMenu
+        );
+
+    }
+
+
+    if (closeMenu) {
+
+        closeMenu.addEventListener(
+            "click",
+            cerrarMenu
+        );
+
+    }
+
+
+    if (sidebarOverlay) {
+
+        sidebarOverlay.addEventListener(
+            "click",
+            cerrarMenu
+        );
+
+    }
 
 
     document.addEventListener(
-        "click",
-        function (event) {
+        "keydown",
+        function(event) {
 
-            const clicDentroMenu =
-                menu.contains(event.target);
+            if (event.key === "Escape") {
 
-            const clicBoton =
-                boton.contains(event.target);
-
-
-            if (
-                !clicDentroMenu &&
-                !clicBoton
-            ) {
-
-                menu.classList.remove("active");
-
-                boton.setAttribute(
-                    "aria-expanded",
-                    "false"
-                );
+                cerrarMenu();
 
             }
 
         }
     );
 
-})();
-
 </script>
 
-
 </body>
-
 </html>

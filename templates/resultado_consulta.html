@@ -1,9 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
     <meta charset="utf-8">
 
-    <title>Secretaría de Transporte | Resultado de Consulta</title>
+    <title>
+        Secretaría de Transporte | Resultado de Consulta
+    </title>
 
     <meta
         name="viewport"
@@ -15,7 +19,10 @@
         content="Resultado de Consulta - Secretaría de Transporte"
     >
 
-    <meta name="author" content="Jalisco">
+    <meta
+        name="author"
+        content="Jalisco"
+    >
 
     <link
         rel="preconnect"
@@ -33,1462 +40,2599 @@
         rel="stylesheet"
     >
 
+
     <style>
+
         :root {
+
             --verde: #35ad7d;
             --verde-oscuro: #2c966c;
+
             --naranja: #f58220;
+
             --texto: #57526b;
+
             --gris-footer: #404f56;
+
             --gris-claro: #f7f7f7;
+
             --borde: #dddddd;
         }
+
 
         * {
             box-sizing: border-box;
         }
 
+
         html,
         body {
+
             margin: 0;
+
             padding: 0;
+
             width: 100%;
+
             min-height: 100%;
         }
 
+
         body {
-            font-family: "Montserrat", Arial, sans-serif;
-            background: #f8f8f8;
-            color: var(--texto);
+
+            font-family:
+                "Montserrat",
+                Arial,
+                sans-serif;
+
+            background:
+                #f8f8f8;
+
+            color:
+                var(--texto);
         }
+
 
         a {
             text-decoration: none;
         }
 
+
         img {
+
             max-width: 100%;
+
+            height: auto;
         }
+
 
         /* =========================================================
            LÍNEA SUPERIOR
         ========================================================= */
 
         .top-line {
+
             height: 7px;
+
             width: 100%;
-            background: var(--verde);
+
+            background:
+                var(--verde);
         }
+
 
         /* =========================================================
            HEADER
         ========================================================= */
 
         .site-header {
+
             width: 100%;
-            background: #ffffff;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, .04);
-            position: relative;
-            z-index: 50;
+
+            background:
+                #ffffff;
+
+            box-shadow:
+                0 6px 20px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    .04
+                );
+
+            position:
+                relative;
+
+            z-index:
+                50;
         }
+
 
         .header-container {
-            max-width: 1440px;
-            margin: 0 auto;
-            min-height: 180px;
-            padding: 30px 45px;
-            display: flex;
-            align-items: center;
-            gap: 30px;
+
+            max-width:
+                1440px;
+
+            margin:
+                0 auto;
+
+            min-height:
+                180px;
+
+            padding:
+                30px 45px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                30px;
         }
+
 
         .brand-link {
-            display: flex;
-            align-items: center;
-            flex-shrink: 0;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            flex-shrink:
+                0;
         }
+
 
         .brand-logo {
-            width: 270px;
-            max-height: 110px;
-            object-fit: contain;
-            display: block;
+
+            width:
+                270px;
+
+            max-height:
+                110px;
+
+            object-fit:
+                contain;
+
+            display:
+                block;
         }
+
 
         .header-right {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            min-width: 0;
+
+            flex:
+                1;
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            justify-content:
+                center;
+
+            min-width:
+                0;
         }
+
 
         .header-upper {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 25px;
-            min-height: 65px;
+
+            display:
+                flex;
+
+            justify-content:
+                flex-end;
+
+            align-items:
+                center;
+
+            gap:
+                25px;
+
+            min-height:
+                65px;
         }
+
 
         .jalisco-header-logo {
-            width: 140px;
-            height: auto;
-            display: block;
+
+            width:
+                140px;
+
+            height:
+                auto;
+
+            display:
+                block;
         }
+
 
         .social-links {
-            display: flex;
-            gap: 10px;
-            align-items: center;
+
+            display:
+                flex;
+
+            gap:
+                10px;
+
+            align-items:
+                center;
         }
+
 
         .social-link {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: #465055;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 14px;
+
+            width:
+                35px;
+
+            height:
+                35px;
+
+            border-radius:
+                50%;
+
+            background:
+                #465055;
+
+            color:
+                #ffffff;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            font-weight:
+                700;
+
+            font-size:
+                14px;
         }
+
 
         .desktop-nav {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 7px;
-            margin-top: 10px;
+
+            display:
+                flex;
+
+            justify-content:
+                flex-end;
+
+            align-items:
+                center;
+
+            flex-wrap:
+                wrap;
+
+            gap:
+                7px;
+
+            margin-top:
+                10px;
         }
+
 
         .desktop-nav a {
-            color: #57526b;
-            font-size: 13px;
-            font-weight: 500;
-            padding: 9px 10px;
-            border: 1px solid #57526b;
-            border-radius: 4px;
-            transition: .2s;
+
+            color:
+                #57526b;
+
+            font-size:
+                13px;
+
+            font-weight:
+                500;
+
+            padding:
+                9px 10px;
+
+            border:
+                1px solid
+                #57526b;
+
+            border-radius:
+                4px;
+
+            transition:
+                .2s;
         }
+
 
         .desktop-nav a:hover {
-            background: #f2f5f7;
-            color: var(--verde);
-            border-color: var(--verde);
+
+            background:
+                #f2f5f7;
+
+            color:
+                var(--verde);
+
+            border-color:
+                var(--verde);
         }
 
+
         .mobile-actions {
-            display: none;
-            margin-left: auto;
-            align-items: center;
-            gap: 20px;
+
+            display:
+                none;
+
+            margin-left:
+                auto;
+
+            align-items:
+                center;
+
+            gap:
+                20px;
         }
+
 
         .home-button,
         .menu-button {
-            width: 54px;
-            height: 54px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-            border: 0;
-            padding: 5px;
-            cursor: pointer;
+
+            width:
+                54px;
+
+            height:
+                54px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            background:
+                transparent;
+
+            border:
+                0;
+
+            padding:
+                5px;
+
+            cursor:
+                pointer;
         }
+
 
         .home-button svg {
-            width: 43px;
-            height: 43px;
-            fill: #57526b;
+
+            width:
+                43px;
+
+            height:
+                43px;
+
+            fill:
+                #57526b;
         }
+
 
         .menu-button {
-            border: 4px solid var(--verde);
-            border-radius: 13px;
+
+            border:
+                4px solid
+                var(--verde);
+
+            border-radius:
+                13px;
         }
 
+
         .menu-button svg {
-            width: 34px;
-            height: 34px;
-            stroke: var(--verde);
+
+            width:
+                34px;
+
+            height:
+                34px;
+
+            stroke:
+                var(--verde);
         }
+
 
         /* =========================================================
            MENÚ MÓVIL
         ========================================================= */
 
         .mobile-menu {
-            position: fixed;
-            top: 0;
-            right: -330px;
-            height: 100%;
-            width: min(330px, 88vw);
-            background: #ffffff;
-            z-index: 999;
-            box-shadow: -5px 0 25px rgba(0, 0, 0, .15);
-            transition: right .25s ease;
-            overflow-y: auto;
+
+            position:
+                fixed;
+
+            top:
+                0;
+
+            right:
+                -330px;
+
+            height:
+                100%;
+
+            width:
+                min(
+                    330px,
+                    88vw
+                );
+
+            background:
+                #ffffff;
+
+            z-index:
+                999;
+
+            box-shadow:
+                -5px 0 25px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    .15
+                );
+
+            transition:
+                right .25s ease;
+
+            overflow-y:
+                auto;
         }
+
 
         .mobile-menu.open {
             right: 0;
         }
 
+
         .mobile-menu-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 20px;
-            border-bottom: 1px solid #eeeeee;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            padding:
+                20px;
+
+            border-bottom:
+                1px solid
+                #eeeeee;
         }
+
 
         .mobile-menu-header img {
             width: 170px;
         }
 
+
         .mobile-menu-close {
-            border: 0;
-            background: transparent;
-            color: #57526b;
-            font-size: 35px;
-            cursor: pointer;
+
+            border:
+                0;
+
+            background:
+                transparent;
+
+            color:
+                #57526b;
+
+            font-size:
+                35px;
+
+            cursor:
+                pointer;
         }
+
 
         .mobile-menu-links {
-            padding: 15px 25px 40px;
+
+            padding:
+                15px 25px 40px;
         }
 
+
         .mobile-menu-links a {
-            display: block;
-            padding: 15px 5px;
-            color: #57526b;
-            font-size: 15px;
-            font-weight: 600;
-            border-bottom: 1px solid #eeeeee;
+
+            display:
+                block;
+
+            padding:
+                15px 5px;
+
+            color:
+                #57526b;
+
+            font-size:
+                15px;
+
+            font-weight:
+                600;
+
+            border-bottom:
+                1px solid
+                #eeeeee;
         }
+
 
         .mobile-menu-links a:hover {
             color: var(--verde);
         }
 
+
         .mobile-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, .35);
-            z-index: 998;
-            display: none;
+
+            position:
+                fixed;
+
+            inset:
+                0;
+
+            background:
+                rgba(
+                    0,
+                    0,
+                    0,
+                    .35
+                );
+
+            z-index:
+                998;
+
+            display:
+                none;
         }
+
 
         .mobile-overlay.show {
             display: block;
         }
+
 
         /* =========================================================
            CONTENIDO
         ========================================================= */
 
         main {
-            padding: 70px 18px 90px;
+
+            padding:
+                70px 18px
+                90px;
         }
+
 
         .result-wrapper {
-            width: 100%;
-            max-width: 920px;
-            margin: 0 auto;
-            background: #ffffff;
-            border-radius: 18px;
-            padding: 60px 48px 65px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, .07);
+
+            width:
+                100%;
+
+            max-width:
+                920px;
+
+            margin:
+                0 auto;
+
+            background:
+                #ffffff;
+
+            border-radius:
+                18px;
+
+            padding:
+                60px 48px
+                65px;
+
+            box-shadow:
+                0 8px 30px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    .07
+                );
         }
+
 
         .result-heading {
-            text-align: center;
+
+            text-align:
+                center;
         }
+
 
         .result-heading h1 {
-            margin: 0;
-            font-size: 43px;
-            line-height: 1.2;
-            color: #57526b;
-            font-weight: 700;
+
+            margin:
+                0;
+
+            font-size:
+                43px;
+
+            line-height:
+                1.2;
+
+            color:
+                #57526b;
+
+            font-weight:
+                700;
         }
+
 
         .result-heading h2 {
-            margin: 25px auto 0;
-            color: #e4812b;
-            font-size: 24px;
-            line-height: 1.45;
-            font-weight: 600;
+
+            margin:
+                25px auto 0;
+
+            color:
+                #e4812b;
+
+            font-size:
+                24px;
+
+            line-height:
+                1.45;
+
+            font-weight:
+                600;
         }
 
+
         .orange-line {
-            width: 190px;
-            max-width: 45%;
-            height: 7px;
-            border-radius: 10px;
-            margin: 55px auto;
-            background: var(--naranja);
+
+            width:
+                190px;
+
+            max-width:
+                45%;
+
+            height:
+                7px;
+
+            border-radius:
+                10px;
+
+            margin:
+                55px auto;
+
+            background:
+                var(--naranja);
         }
+
 
         /* =========================================================
            ESTADO
         ========================================================= */
 
         .status-box {
-            width: 100%;
-            border-radius: 18px;
-            padding: 28px 22px;
-            text-align: center;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, .14);
+
+            width:
+                100%;
+
+            border-radius:
+                18px;
+
+            padding:
+                28px 22px;
+
+            text-align:
+                center;
+
+            box-shadow:
+                0 10px 20px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    .14
+                );
         }
+
 
         .status-box.vigente {
             background: #20aa48;
         }
 
+
         .status-box.vencido {
             background: #ad8113;
         }
+
 
         .status-box.no-registrado {
             background: #c62828;
         }
 
-        .status-text {
-            color: #ffffff;
-            font-weight: 800;
-            font-size: 28px;
-            line-height: 1.3;
-            word-break: break-word;
+
+        .status-box.desconocido {
+            background: #6c757d;
         }
+
+
+        .status-text {
+
+            color:
+                #ffffff;
+
+            font-weight:
+                800;
+
+            font-size:
+                28px;
+
+            line-height:
+                1.3;
+
+            word-break:
+                break-word;
+        }
+
 
         /* =========================================================
            DETALLES
         ========================================================= */
 
         .details-card {
-            margin-top: 55px;
-            background: #fafafa;
-            border: 2px solid #dddddd;
-            border-radius: 17px;
-            padding: 18px 35px;
+
+            margin-top:
+                55px;
+
+            background:
+                #fafafa;
+
+            border:
+                2px solid
+                #dddddd;
+
+            border-radius:
+                17px;
+
+            padding:
+                18px 35px;
         }
 
+
         .detail-item {
-            padding: 25px 10px;
-            border-bottom: 1px solid #dddddd;
+
+            padding:
+                25px 10px;
+
+            border-bottom:
+                1px solid
+                #dddddd;
         }
+
 
         .detail-item:last-child {
             border-bottom: 0;
         }
 
+
         .detail-label {
-            font-size: 16px;
-            font-weight: 700;
-            color: #57526b;
-            margin-bottom: 10px;
+
+            font-size:
+                16px;
+
+            font-weight:
+                700;
+
+            color:
+                #57526b;
+
+            margin-bottom:
+                10px;
         }
+
 
         .detail-value {
-            font-size: 19px;
-            font-weight: 400;
-            color: #333333;
-            overflow-wrap: anywhere;
+
+            font-size:
+                19px;
+
+            font-weight:
+                400;
+
+            color:
+                #333333;
+
+            overflow-wrap:
+                anywhere;
         }
+
+
+        .detail-value.missing {
+
+            color:
+                #999999;
+
+            font-style:
+                italic;
+        }
+
 
         .not-found {
-            margin: 45px 0 0;
-            padding: 35px 20px;
-            text-align: center;
-            line-height: 1.7;
-            font-size: 17px;
+
+            margin:
+                45px 0 0;
+
+            padding:
+                35px 20px;
+
+            text-align:
+                center;
+
+            line-height:
+                1.7;
+
+            font-size:
+                17px;
         }
+
 
         /* =========================================================
-           RENOVACIÓN
-        ========================================================= */
-
-        .renewal-box {
-            margin-top: 35px;
-            padding: 28px;
-            border-radius: 14px;
-            background: #fff8ea;
-            border: 1px solid #f2d299;
-            text-align: center;
-        }
-
-        .renewal-box p {
-            margin: 0 0 18px;
-            color: #57526b;
-            line-height: 1.6;
-        }
-
-        .renew-button {
-            border: 0;
-            border-radius: 9px;
-            background: var(--verde);
-            color: #ffffff;
-            font-family: inherit;
-            font-size: 17px;
-            font-weight: 700;
-            padding: 16px 30px;
-            cursor: pointer;
-        }
-
-        .renew-button:hover {
-            background: var(--verde-oscuro);
-        }
-
-        .renew-button:disabled {
-            opacity: .6;
-            cursor: not-allowed;
-        }
-
-        .renew-message {
-            margin-top: 15px;
-            font-weight: 600;
-        }
-
-        /* =========================================================
-           VALIDACIÓN Y REGRESAR
+           VALIDACIÓN
         ========================================================= */
 
         .document-valid {
-            margin: 55px auto 35px;
-            text-align: center;
-            color: #57526b;
-            font-size: 21px;
-            line-height: 1.35;
-            font-weight: 800;
+
+            margin:
+                55px auto
+                35px;
+
+            text-align:
+                center;
+
+            color:
+                #57526b;
+
+            font-size:
+                21px;
+
+            line-height:
+                1.35;
+
+            font-weight:
+                800;
         }
+
 
         .return-wrapper {
             text-align: center;
         }
 
+
         .return-button {
-            display: inline-flex;
-            min-width: 330px;
-            justify-content: center;
-            align-items: center;
-            padding: 20px 35px;
-            border-radius: 10px;
-            background: var(--verde);
-            color: #ffffff;
-            font-size: 20px;
-            font-weight: 700;
+
+            display:
+                inline-flex;
+
+            min-width:
+                330px;
+
+            justify-content:
+                center;
+
+            align-items:
+                center;
+
+            padding:
+                20px 35px;
+
+            border-radius:
+                10px;
+
+            background:
+                var(--verde);
+
+            color:
+                #ffffff;
+
+            font-size:
+                20px;
+
+            font-weight:
+                700;
         }
+
 
         .return-button:hover {
             background: var(--verde-oscuro);
         }
+
 
         /* =========================================================
            FOOTER
         ========================================================= */
 
         .footer-top-line {
-            height: 10px;
-            background: var(--verde);
+
+            height:
+                10px;
+
+            background:
+                var(--verde);
         }
+
 
         .site-footer {
-            background: var(--gris-footer);
-            color: #ffffff;
-            padding: 45px 25px 25px;
+
+            background:
+                var(--gris-footer);
+
+            color:
+                #ffffff;
+
+            padding:
+                45px 25px
+                25px;
         }
+
 
         .footer-inner {
-            max-width: 1200px;
-            margin: 0 auto;
+
+            max-width:
+                1200px;
+
+            margin:
+                0 auto;
         }
 
+
         .footer-title-line {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 40px;
-            font-size: 13px;
-            text-align: center;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                15px;
+
+            margin-bottom:
+                40px;
+
+            font-size:
+                13px;
+
+            text-align:
+                center;
         }
+
 
         .footer-title-line::before,
         .footer-title-line::after {
-            content: "";
-            height: 1px;
-            background: rgba(255, 255, 255, .35);
-            flex: 1;
+
+            content:
+                "";
+
+            height:
+                1px;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    .35
+                );
+
+            flex:
+                1;
         }
+
 
         .footer-columns {
-            display: grid;
-            grid-template-columns: 1.1fr 1.5fr 1.5fr .8fr;
-            gap: 25px;
+
+            display:
+                grid;
+
+            grid-template-columns:
+                1.1fr
+                1.5fr
+                1.5fr
+                .8fr;
+
+            gap:
+                25px;
         }
 
+
         .footer-column {
-            padding: 0 20px;
-            border-left: 1px solid rgba(0, 0, 0, .25);
+
+            padding:
+                0 20px;
+
+            border-left:
+                1px solid
+                rgba(
+                    0,
+                    0,
+                    0,
+                    .25
+                );
         }
+
 
         .footer-column:first-child {
             border-left: 0;
         }
 
+
         .footer-main-logo {
-            max-width: 180px;
-            display: block;
-            margin: 0 auto 25px;
+
+            max-width:
+                180px;
+
+            display:
+                block;
+
+            margin:
+                0 auto 25px;
         }
+
 
         .footer-column h3 {
-            color: var(--naranja);
-            margin: 0 0 20px;
-            font-size: 20px;
+
+            color:
+                var(--naranja);
+
+            margin:
+                0 0 20px;
+
+            font-size:
+                20px;
         }
+
 
         .footer-column p {
-            margin: 0 0 13px;
-            line-height: 1.6;
-            font-size: 14px;
+
+            margin:
+                0 0 13px;
+
+            line-height:
+                1.6;
+
+            font-size:
+                14px;
         }
 
+
         .footer-column a {
-            display: block;
-            color: #ffffff;
-            margin: 0 0 14px;
-            line-height: 1.5;
-            font-size: 14px;
+
+            display:
+                block;
+
+            color:
+                #ffffff;
+
+            margin:
+                0 0 14px;
+
+            line-height:
+                1.5;
+
+            font-size:
+                14px;
         }
+
 
         .footer-column a:hover {
             text-decoration: underline;
         }
 
+
         .footer-small-logo {
-            max-width: 120px;
-            display: block;
-            margin: 0 auto 20px;
+
+            max-width:
+                120px;
+
+            display:
+                block;
+
+            margin:
+                0 auto 20px;
         }
 
+
         .footer-copy {
-            margin-top: 40px;
-            border-top: 1px solid rgba(255, 255, 255, .15);
-            padding-top: 22px;
-            text-align: center;
-            font-size: 13px;
-            color: #eeeeee;
+
+            margin-top:
+                40px;
+
+            border-top:
+                1px solid
+                rgba(
+                    255,
+                    255,
+                    255,
+                    .15
+                );
+
+            padding-top:
+                22px;
+
+            text-align:
+                center;
+
+            font-size:
+                13px;
+
+            color:
+                #eeeeee;
         }
+
 
         /* =========================================================
            RESPONSIVE
         ========================================================= */
 
-        @media (max-width: 900px) {
+        @media
+        (max-width: 900px) {
+
             .header-container {
-                min-height: 190px;
-                padding: 35px 32px;
+
+                min-height:
+                    190px;
+
+                padding:
+                    35px 32px;
             }
+
 
             .header-right {
                 display: none;
             }
 
+
             .mobile-actions {
                 display: flex;
             }
+
 
             .brand-logo {
                 width: 200px;
             }
 
+
             .footer-columns {
-                grid-template-columns: 1fr 1fr;
+
+                grid-template-columns:
+                    1fr 1fr;
             }
         }
 
-        @media (max-width: 600px) {
+
+        @media
+        (max-width: 600px) {
+
             .header-container {
-                min-height: 190px;
-                padding: 35px 32px;
+
+                min-height:
+                    190px;
+
+                padding:
+                    35px 32px;
             }
+
 
             .brand-logo {
                 width: 165px;
             }
 
+
             .home-button {
-                width: 48px;
-                height: 48px;
+
+                width:
+                    48px;
+
+                height:
+                    48px;
             }
+
 
             .home-button svg {
-                width: 40px;
-                height: 40px;
+
+                width:
+                    40px;
+
+                height:
+                    40px;
             }
+
 
             .menu-button {
-                width: 54px;
-                height: 54px;
+
+                width:
+                    54px;
+
+                height:
+                    54px;
             }
+
 
             main {
-                padding: 70px 18px 90px;
+
+                padding:
+                    70px 18px
+                    90px;
             }
 
+
             .result-wrapper {
-                padding: 60px 27px;
-                border-radius: 16px;
+
+                padding:
+                    60px 27px;
+
+                border-radius:
+                    16px;
             }
+
 
             .result-heading h1 {
                 font-size: 31px;
             }
 
+
             .result-heading h2 {
                 font-size: 19px;
             }
 
+
             .orange-line {
-                width: 150px;
-                margin: 50px auto;
+
+                width:
+                    150px;
+
+                margin:
+                    50px auto;
             }
 
+
             .status-box {
-                padding: 24px 15px;
+
+                padding:
+                    24px 15px;
             }
+
 
             .status-text {
                 font-size: 21px;
             }
 
+
             .details-card {
-                padding: 12px 18px;
-                margin-top: 45px;
+
+                padding:
+                    12px 18px;
+
+                margin-top:
+                    45px;
             }
+
 
             .detail-item {
                 padding: 23px 0;
             }
 
+
             .detail-label {
                 font-size: 15px;
             }
+
 
             .detail-value {
                 font-size: 18px;
             }
 
+
             .document-valid {
                 font-size: 18px;
             }
 
+
             .return-button {
-                min-width: 0;
-                width: 75%;
-                font-size: 18px;
+
+                min-width:
+                    0;
+
+                width:
+                    75%;
+
+                font-size:
+                    18px;
             }
+
 
             .footer-columns {
-                grid-template-columns: 1fr;
+
+                grid-template-columns:
+                    1fr;
             }
+
 
             .footer-column {
-                border-left: 0;
-                border-top: 1px solid rgba(255, 255, 255, .15);
-                padding: 30px 0 10px;
+
+                border-left:
+                    0;
+
+                border-top:
+                    1px solid
+                    rgba(
+                        255,
+                        255,
+                        255,
+                        .15
+                    );
+
+                padding:
+                    30px 0
+                    10px;
             }
 
+
             .footer-column:first-child {
-                border-top: 0;
-                padding-top: 0;
+
+                border-top:
+                    0;
+
+                padding-top:
+                    0;
             }
         }
+
     </style>
+
 </head>
+
 
 <body>
 
-    <div class="top-line"></div>
-
-    <!-- =======================================================
-         HEADER
-    ======================================================== -->
-
-    <header class="site-header">
-        <div class="header-container">
-
-            <a
-                href="https://setran.jalisco.gob.mx/"
-                class="brand-link"
-                aria-label="Secretaría de Transporte"
-            >
-                <img
-                    src="https://d33pa0ahsb9wzi.cloudfront.net/setran/original_images/logo_transporte25.png"
-                    alt="Secretaría de Transporte, Gobierno del Estado de Jalisco"
-                    class="brand-logo"
-                >
-            </a>
-
-            <div class="header-right">
-
-                <div class="header-upper">
-
-                    <img
-                        src="https://d33pa0ahsb9wzi.cloudfront.net/transparencia-demo/original_images/estilo_jal_header.png"
-                        alt="Gobierno del Estado de Jalisco"
-                        class="jalisco-header-logo"
-                    >
-
-                    <div class="social-links">
-                        <a
-                            href="https://es-la.facebook.com/SecretariadeTransporteJal"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="social-link"
-                            aria-label="Facebook"
-                        >
-                            f
-                        </a>
-
-                        <a
-                            href="https://x.com/TransporteJal"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="social-link"
-                            aria-label="X"
-                        >
-                            X
-                        </a>
-                    </div>
-
-                </div>
-
-                <nav class="desktop-nav" aria-label="Navegación principal">
-
-                    <a href="https://setran.jalisco.gob.mx/inicio">
-                        Inicio
-                    </a>
-
-                    <a href="https://setran.jalisco.gob.mx/acerca-de">
-                        Acerca de
-                    </a>
-
-                    <a href="https://setran.jalisco.gob.mx/tramites-y-servicios">
-                        Trámites y servicios
-                    </a>
-
-                    <a href="https://setran.jalisco.gob.mx/transparencia">
-                        Transparencia
-                    </a>
-
-                    <a href="https://setran.jalisco.gob.mx/prensa">
-                        Prensa
-                    </a>
-
-                    <a href="https://setran.jalisco.gob.mx/proyectos">
-                        Proyectos
-                    </a>
-
-                    <a href="https://setran.jalisco.gob.mx/registro-estatal">
-                        Registro Estatal
-                    </a>
-
-                    <a href="https://setran.jalisco.gob.mx/contacto-setrans">
-                        Contacto Setrans
-                    </a>
-
-                </nav>
-
-            </div>
-
-            <!-- MOBILE -->
-            <div class="mobile-actions">
-
-                <a
-                    href="https://setran.jalisco.gob.mx/inicio"
-                    class="home-button"
-                    aria-label="Inicio"
-                >
-                    <svg viewBox="0 0 36 36">
-                        <path d="M27.79,30.27h-11.3v-6.27c0-.67-.55-1.22-1.22-1.22s-1.22.55-1.22,1.22v6.27H3.02v-13.59c0-1.02.48-1.99,1.29-2.6l9.5-7.23c.87-.66,2.08-.67,2.96-.02l9.69,7.16c.83.61,1.33,1.6,1.33,2.63v13.66ZM19.44,27.32h5.39v-10.7c0-.1-.05-.2-.13-.25l-9.4-6.94-9.21,7c-.08.06-.12.15-.12.25v10.64h5.13v-3.31c0-2.3,1.87-4.17,4.17-4.17s4.17,1.87,4.17,4.17v3.31Z"></path>
-                        <path d="M1.48,13.27c-.45,0-.9-.2-1.19-.59-.49-.65-.35-1.58.3-2.07L14.41.29c.53-.39,1.25-.39,1.78,0l13.58,10.31c.65.49.78,1.42.28,2.07-.49.65-1.42.78-2.07.28L15.28,3.33,2.36,12.98c-.27.2-.58.29-.88.29Z"></path>
-                    </svg>
-                </a>
-
-                <button
-                    type="button"
-                    class="menu-button"
-                    id="open-mobile-menu"
-                    aria-label="Abrir menú"
-                >
-                    <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                    >
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <line x1="3" y1="12" x2="21" y2="12"></line>
-                        <line x1="3" y1="18" x2="21" y2="18"></line>
-                    </svg>
-                </button>
 
-            </div>
+<div class="top-line"></div>
 
-        </div>
-    </header>
 
-    <!-- =======================================================
-         MOBILE MENU
-    ======================================================== -->
-
-    <div class="mobile-overlay" id="mobile-overlay"></div>
-
-    <aside class="mobile-menu" id="mobile-menu">
-
-        <div class="mobile-menu-header">
-
-            <img
-                src="https://d33pa0ahsb9wzi.cloudfront.net/setran/original_images/logo_transporte25.png"
-                alt="Secretaría de Transporte"
-            >
-
-            <button
-                type="button"
-                class="mobile-menu-close"
-                id="close-mobile-menu"
-                aria-label="Cerrar menú"
-            >
-                ×
-            </button>
-
-        </div>
-
-        <nav class="mobile-menu-links">
-
-            <a href="https://setran.jalisco.gob.mx/inicio">
-                Inicio
-            </a>
-
-            <a href="https://setran.jalisco.gob.mx/acerca-de">
-                Acerca de
-            </a>
+<!-- =========================================================
+     HEADER
+========================================================= -->
 
-            <a href="https://setran.jalisco.gob.mx/tramites-y-servicios">
-                Trámites y servicios
-            </a>
+<header class="site-header">
 
-            <a href="https://setran.jalisco.gob.mx/transparencia">
-                Transparencia
-            </a>
+<div class="header-container">
 
-            <a href="https://setran.jalisco.gob.mx/prensa">
-                Prensa
-            </a>
 
-            <a href="https://setran.jalisco.gob.mx/proyectos">
-                Proyectos
-            </a>
+<a
+    href="https://setran.jalisco.gob.mx/"
+    class="brand-link"
+    aria-label="Secretaría de Transporte"
+>
 
-            <a href="https://setran.jalisco.gob.mx/registro-estatal">
-                Registro Estatal
-            </a>
-
-            <a href="https://setran.jalisco.gob.mx/contacto-setrans">
-                Contacto Setrans
-            </a>
-
-            <a href="https://setran.jalisco.gob.mx/programas">
-                Programas
-            </a>
-
-            <a href="https://setran.jalisco.gob.mx/transporte-publico">
-                Transporte Público
-            </a>
-
-            <a href="https://setran.jalisco.gob.mx/siniestralidad">
-                Siniestralidad Vial
-            </a>
-
-        </nav>
-    </aside>
-
-    <!-- =======================================================
-         RESULTADO
-    ======================================================== -->
-
-    <main>
-
-        <section class="result-wrapper">
-
-            <div class="result-heading">
-
-                <h1>Resultado de Consulta</h1>
-
-                <h2>
-                    Secretaría de Transporte · Gobierno de Jalisco
-                </h2>
-
-                <div class="orange-line"></div>
-
-            </div>
-
-            {% if resultado %}
-
-                <div
-                    class="
-                        status-box
-                        {% if resultado.estado == 'VIGENTE' %}
-                            vigente
-                        {% elif resultado.estado == 'VENCIDO' %}
-                            vencido
-                        {% else %}
-                            no-registrado
-                        {% endif %}
-                    "
-                >
-
-                    <div class="status-text">
-                        FOLIO {{ resultado.folio }} : {{ resultado.estado }}
-                    </div>
-
-                </div>
-
-                {% if resultado.estado == 'NO SE ENCUENTRA REGISTRADO' %}
-
-                    <div class="not-found">
-
-                        <p>
-                            Este folio
-                            <strong>no se encuentra registrado</strong>
-                            en el sistema.
-                        </p>
-
-                        <p>
-                            Verifica que hayas ingresado el número correctamente.
-                        </p>
-
-                    </div>
-
-                {% else %}
-
-                    <div class="details-card">
-
-                        <div class="detail-item">
-                            <div class="detail-label">
-                                FECHA DE EXPEDICIÓN
-                            </div>
-
-                            <div class="detail-value">
-                                {{ resultado.fecha_expedicion }}
-                            </div>
-                        </div>
-
-                        <div class="detail-item">
-                            <div class="detail-label">
-                                FECHA DE VENCIMIENTO
-                            </div>
-
-                            <div class="detail-value">
-                                {{ resultado.fecha_vencimiento }}
-                            </div>
-                        </div>
-
-                        <div class="detail-item">
-                            <div class="detail-label">
-                                MARCA
-                            </div>
-
-                            <div class="detail-value">
-                                {{ resultado.marca }}
-                            </div>
-                        </div>
-
-                        <div class="detail-item">
-                            <div class="detail-label">
-                                LÍNEA
-                            </div>
-
-                            <div class="detail-value">
-                                {{ resultado.linea }}
-                            </div>
-                        </div>
-
-                        <div class="detail-item">
-                            <div class="detail-label">
-                                AÑO
-                            </div>
-
-                            <div class="detail-value">
-                                {{ resultado.año }}
-                            </div>
-                        </div>
-
-                        <div class="detail-item">
-                            <div class="detail-label">
-                                NÚMERO DE SERIE
-                            </div>
-
-                            <div class="detail-value">
-                                {{ resultado.numero_serie }}
-                            </div>
-                        </div>
+<img
+    src="https://d33pa0ahsb9wzi.cloudfront.net/setran/original_images/logo_transporte25.png"
+    alt="Secretaría de Transporte, Gobierno del Estado de Jalisco"
+    class="brand-logo"
+>
 
-                        <div class="detail-item">
-                            <div class="detail-label">
-                                NÚMERO DE MOTOR
-                            </div>
+</a>
 
-                            <div class="detail-value">
-                                {{ resultado.numero_motor }}
-                            </div>
-                        </div>
 
-                        <div class="detail-item">
-                            <div class="detail-label">
-                                COLOR
-                            </div>
+<div class="header-right">
 
-                        <div class="detail-value">
-                                {{ resultado.color }}
-                            </div>
-                        </div>
 
-                        <div class="detail-item">
-                            <div class="detail-label">
-                                PROPIETARIO
-                            </div>
+<div class="header-upper">
 
-                            <div class="detail-value">
-                                {{ resultado.nombre }}
-                            </div>
-                        </div>
+<img
+    src="https://d33pa0ahsb9wzi.cloudfront.net/transparencia-demo/original_images/estilo_jal_header.png"
+    alt="Gobierno del Estado de Jalisco"
+    class="jalisco-header-logo"
+>
 
-                    </div>
 
-                    <!-- ==========================================
-                         RENOVACIÓN
-                    =========================================== -->
+<div class="social-links">
 
-                    {% if resultado.ya_renovado %}
+<a
+    href="https://es-la.facebook.com/SecretariadeTransporteJal"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="social-link"
+    aria-label="Facebook"
+>
+    f
+</a>
 
-                        <div class="renewal-box">
 
-                            <p>
-                                Este folio ya cuenta con una renovación
-                                pendiente de pago.
-                            </p>
+<a
+    href="https://x.com/TransporteJal"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="social-link"
+    aria-label="X"
+>
+    X
+</a>
 
-                            <p>
-                                El registro permanecerá pendiente hasta que
-                                se complete el proceso correspondiente.
-                            </p>
+</div>
 
-                        </div>
+</div>
 
-                    {% elif resultado.puede_renovar %}
 
-                        <div class="renewal-box">
+<nav
+    class="desktop-nav"
+    aria-label="Navegación principal"
+>
 
-                            <p>
-                                Este permiso puede ser renovado.
-                            </p>
+<a href="https://setran.jalisco.gob.mx/inicio">
+    Inicio
+</a>
 
-                            <button
-                                type="button"
-                                class="renew-button"
-                                id="renew-button"
-                                data-folio="{{ resultado.folio_actual | e }}"
-                            >
-                                Renovar folio
-                            </button>
+<a href="https://setran.jalisco.gob.mx/acerca-de">
+    Acerca de
+</a>
 
-                            <div
-                                class="renew-message"
-                                id="renew-message"
-                            ></div>
+<a href="https://setran.jalisco.gob.mx/tramites-y-servicios">
+    Trámites y servicios
+</a>
 
-                        </div>
+<a href="https://setran.jalisco.gob.mx/transparencia">
+    Transparencia
+</a>
 
-                    {% endif %}
+<a href="https://setran.jalisco.gob.mx/prensa">
+    Prensa
+</a>
 
-                {% endif %}
+<a href="https://setran.jalisco.gob.mx/proyectos">
+    Proyectos
+</a>
 
-                <div class="document-valid">
-                    DOCUMENTO DIGITAL VÁLIDO EN TODO MÉXICO
-                </div>
+<a href="https://setran.jalisco.gob.mx/registro-estatal">
+    Registro Estatal
+</a>
 
-                <div class="return-wrapper">
+<a href="https://setran.jalisco.gob.mx/contacto-setrans">
+    Contacto Setrans
+</a>
 
-                    <a
-                        href="https://setran.jalisco.gob.mx/"
-                        class="return-button"
-                    >
-                        Regresar
-                    </a>
+</nav>
 
-                </div>
 
-            {% else %}
+</div>
 
-                <div class="not-found">
 
-                    <p>
-                        No se encontró información para mostrar.
-                    </p>
+<!-- =========================================================
+     MOBILE
+========================================================= -->
 
-                </div>
+<div class="mobile-actions">
 
-                <div class="return-wrapper">
 
-                    <a
-                        href="https://setran.jalisco.gob.mx/"
-                        class="return-button"
-                    >
-                        Regresar
-                    </a>
+<a
+    href="https://setran.jalisco.gob.mx/inicio"
+    class="home-button"
+    aria-label="Inicio"
+>
 
-                </div>
+<svg viewBox="0 0 36 36">
 
-            {% endif %}
+<path
+    d="M27.79,30.27h-11.3v-6.27c0-.67-.55-1.22-1.22-1.22s-1.22.55-1.22,1.22v6.27H3.02v-13.59c0-1.02.48-1.99,1.29-2.6l9.5-7.23c.87-.66,2.08-.67,2.96-.02l9.69,7.16c.83.61,1.33,1.6,1.33,2.63v13.66ZM19.44,27.32h5.39v-10.7c0-.1-.05-.2-.13-.25l-9.4-6.94-9.21,7c-.08.06-.12.15-.12.25v10.64h5.13v-3.31c0-2.3,1.87-4.17,4.17-4.17s4.17,1.87,4.17,4.17v3.31Z"
+></path>
 
-        </section>
+<path
+    d="M1.48,13.27c-.45,0-.9-.2-1.19-.59-.49-.65-.35-1.58.3-2.07L14.41.29c.53-.39,1.25-.39,1.78,0l13.58,10.31c.65.49.78,1.42.28,2.07-.49.65-1.42.78-2.07.28L15.28,3.33,2.36,12.98c-.27.2-.58.29-.88.29Z"
+></path>
 
-    </main>
+</svg>
 
-    <!-- =======================================================
-         FOOTER
-    ======================================================== -->
+</a>
 
-    <div class="footer-top-line"></div>
 
-    <footer class="site-footer">
+<button
+    type="button"
+    class="menu-button"
+    id="open-mobile-menu"
+    aria-label="Abrir menú"
+>
 
-        <div class="footer-inner">
+<svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke-width="2"
+    stroke-linecap="round"
+>
 
-            <div class="footer-title-line">
-                Secretaría de Transporte
-            </div>
+<line
+    x1="3"
+    y1="6"
+    x2="21"
+    y2="6"
+></line>
 
-            <div class="footer-columns">
+<line
+    x1="3"
+    y1="12"
+    x2="21"
+    y2="12"
+></line>
 
-                <!-- LOGO -->
-                <div class="footer-column">
+<line
+    x1="3"
+    y1="18"
+    x2="21"
+    y2="18"
+></line>
 
-                    <a href="https://setran.jalisco.gob.mx/">
-                        <img
-                            src="https://d33pa0ahsb9wzi.cloudfront.net/setran/original_images/logo_transporte25.png"
-                            alt="Secretaría de Transporte"
-                            class="footer-main-logo"
-                        >
-                    </a>
-
-                    <a
-                        href="https://es-la.facebook.com/SecretariadeTransporteJal"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Facebook
-                    </a>
-
-                    <a
-                        href="https://x.com/TransporteJal"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        X / Twitter
-                    </a>
-
-                </div>
-
-                <!-- CONTACTO -->
-                <div class="footer-column">
-
-                    <h3>
-                        Secretaría de Transporte
-                    </h3>
-
-                    <p>
-                        Av. Prol. Alcalde S/N
-                    </p>
-
-                    <p>
-                        Jardines Alcalde
-                    </p>
-
-                    <p>
-                        44290 Guadalajara, Jalisco
-                    </p>
+</svg>
 
-                    <p>
-                        33 3819 2400
-                    </p>
+</button>
 
-                    <a
-                        href="https://www.google.com/maps/search/?api=1&query=Av.%20Prol.%20Alcalde%20S%2FN%2C%20Jardines%20Alcalde%2C%2044290%20Guadalajara%2C%20Jal."
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Ver ubicación
-                    </a>
-
-                    <a
-                        href="https://setran.jalisco.gob.mx/acerca-de/ubicacion-y-contacto"
-                    >
-                        Escríbenos
-                    </a>
-
-                </div>
-
-                <!-- ENLACES -->
-                <div class="footer-column">
-
-                    <h3>
-                        Enlaces
-                    </h3>
-
-                    <a href="https://setran.jalisco.gob.mx/inicio">
-                        Inicio
-                    </a>
-
-                    <a href="https://setran.jalisco.gob.mx/registro-estatal">
-                        Registro Estatal
-                    </a>
-
-                    <a href="https://setran.jalisco.gob.mx/tramites-y-servicios">
-                        Trámites y servicios
-                    </a>
-
-                    <a href="https://setran.jalisco.gob.mx/site-map">
-                        Mapa de sitio
-                    </a>
-
-                    <a
-                        href="https://info.jalisco.gob.mx/politicas/?remote=true"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Políticas de uso y privacidad
-                    </a>
 
-                    <a
-                        href="https://www.jalisco.gob.mx/es/acerca-de-este-portal"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Acerca de este portal
-                    </a>
-
-                    <a
-                        href="https://consultapublicamx.plataformadetransparencia.org.mx/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Plataforma Nacional de Transparencia
-                    </a>
+</div>
 
-                </div>
 
-                <!-- JALISCO -->
-                <div class="footer-column">
+</div>
 
-                    <img
-                        src="https://d33pa0ahsb9wzi.cloudfront.net/transparencia-demo/original_images/isologo_leones_footer.png"
-                        alt="Gobierno del Estado de Jalisco"
-                        class="footer-small-logo"
-                    >
+</header>
 
-                    <a
-                        href="https://www.jalisco.gob.mx/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Gobierno de Jalisco
-                    </a>
 
-                </div>
+<!-- =========================================================
+     MENÚ MÓVIL
+========================================================= -->
 
-            </div>
+<div
+    class="mobile-overlay"
+    id="mobile-overlay"
+></div>
 
-            <div class="footer-copy">
-                Gobierno de Jalisco © 2026
-            </div>
 
-        </div>
+<aside
+    class="mobile-menu"
+    id="mobile-menu"
+>
 
-    </footer>
 
-    <!-- =======================================================
-         JAVASCRIPT
-    ======================================================== -->
+<div class="mobile-menu-header">
 
-    <script>
-        const openMenuButton = document.getElementById("open-mobile-menu");
-        const closeMenuButton = document.getElementById("close-mobile-menu");
-        const mobileMenu = document.getElementById("mobile-menu");
-        const mobileOverlay = document.getElementById("mobile-overlay");
+<img
+    src="https://d33pa0ahsb9wzi.cloudfront.net/setran/original_images/logo_transporte25.png"
+    alt="Secretaría de Transporte"
+>
 
-        function openMobileMenu() {
-            mobileMenu.classList.add("open");
-            mobileOverlay.classList.add("show");
-            document.body.style.overflow = "hidden";
-        }
 
-        function closeMobileMenu() {
-            mobileMenu.classList.remove("open");
-            mobileOverlay.classList.remove("show");
-            document.body.style.overflow = "";
-        }
+<button
+    type="button"
+    class="mobile-menu-close"
+    id="close-mobile-menu"
+    aria-label="Cerrar menú"
+>
+    ×
+</button>
 
-        if (openMenuButton) {
-            openMenuButton.addEventListener("click", openMobileMenu);
-        }
+</div>
 
-        if (closeMenuButton) {
-            closeMenuButton.addEventListener("click", closeMobileMenu);
-        }
 
-        if (mobileOverlay) {
-            mobileOverlay.addEventListener("click", closeMobileMenu);
-        }
-    </script>
+<nav class="mobile-menu-links">
 
-    {% if resultado and resultado.puede_renovar and not resultado.ya_renovado %}
+<a href="https://setran.jalisco.gob.mx/inicio">
+    Inicio
+</a>
 
-    <script>
-        const renewButton = document.getElementById("renew-button");
-        const renewMessage = document.getElementById("renew-message");
+<a href="https://setran.jalisco.gob.mx/acerca-de">
+    Acerca de
+</a>
 
-        async function consultarEstadoPDF(folioNuevo) {
+<a href="https://setran.jalisco.gob.mx/tramites-y-servicios">
+    Trámites y servicios
+</a>
 
-            let intentos = 0;
-            const maxIntentos = 15;
+<a href="https://setran.jalisco.gob.mx/transparencia">
+    Transparencia
+</a>
 
-            const intervalo = setInterval(async () => {
+<a href="https://setran.jalisco.gob.mx/prensa">
+    Prensa
+</a>
 
-                intentos++;
+<a href="https://setran.jalisco.gob.mx/proyectos">
+    Proyectos
+</a>
 
-                try {
+<a href="https://setran.jalisco.gob.mx/registro-estatal">
+    Registro Estatal
+</a>
 
-                    const respuesta = await fetch(
-                        `/estado_pdf/${encodeURIComponent(folioNuevo)}`,
-                        {
-                            method: "GET",
-                            headers: {
-                                "Accept": "application/json"
-                            }
-                        }
-                    );
+<a href="https://setran.jalisco.gob.mx/contacto-setrans">
+    Contacto Setrans
+</a>
 
-                    if (!respuesta.ok) {
-                        throw new Error("No fue posible consultar el estado.");
-                    }
+<a href="https://setran.jalisco.gob.mx/programas">
+    Programas
+</a>
 
-                    const data = await respuesta.json();
+<a href="https://setran.jalisco.gob.mx/transporte-publico">
+    Transporte Público
+</a>
 
-                    if (data.pdf_url) {
+<a href="https://setran.jalisco.gob.mx/siniestralidad">
+    Siniestralidad Vial
+</a>
 
-                        clearInterval(intervalo);
+</nav>
 
-                        window.location.href = data.pdf_url;
 
-                        return;
-                    }
+</aside>
 
-                    if (intentos >= maxIntentos) {
 
-                        clearInterval(intervalo);
+<!-- =========================================================
+     RESULTADO
+========================================================= -->
 
-                        window.location.href =
-                            `/consulta/${encodeURIComponent(folioNuevo)}`;
-                    }
+<main>
 
-                } catch (error) {
 
-                    console.error(error);
+<section class="result-wrapper">
 
-                    if (intentos >= maxIntentos) {
 
-                        clearInterval(intervalo);
+<div class="result-heading">
 
-                        window.location.href =
-                            `/consulta/${encodeURIComponent(folioNuevo)}`;
-                    }
-                }
+<h1>
+    Resultado de Consulta
+</h1>
 
-            }, 2000);
-        }
+<h2>
+    Secretaría de Transporte · Gobierno de Jalisco
+</h2>
 
-        async function renovarFolio() {
+<div class="orange-line"></div>
 
-            if (!renewButton) {
-                return;
-            }
+</div>
 
-            const folio = renewButton.dataset.folio;
 
-            if (!folio) {
-                return;
-            }
+{% if resultado %}
 
-            renewButton.disabled = true;
-            renewButton.textContent = "Procesando...";
 
-            renewMessage.textContent = "";
+{# =========================================================
+   NORMALIZACIÓN DE DATOS
 
-            try {
+   Aquí hacemos el template tolerante a diferentes nombres
+   que pueda utilizar el backend.
+========================================================= #}
 
-                const respuesta = await fetch(
-                    `/renovar_folio/${encodeURIComponent(folio)}`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Accept": "application/json"
-                        }
-                    }
-                );
 
-                const data = await respuesta.json();
+{% set estado =
+    resultado.estado
+    | default('', true)
+    | string
+    | upper
+%}
 
-                if (!respuesta.ok || !data.ok) {
 
-                    throw new Error(
-                        data.error ||
-                        "No fue posible realizar la renovación."
-                    );
-                }
+{% set folio =
+    resultado.folio
+    | default('—', true)
+%}
 
-                renewMessage.textContent =
-                    "Renovación generada. Preparando documento...";
 
-                await consultarEstadoPDF(data.folio_nuevo);
+{% set fecha_expedicion =
+    resultado.fecha_expedicion
+    | default(
+        resultado.fecha_exp
+        | default('—', true),
+        true
+    )
+%}
 
-            } catch (error) {
 
-                console.error(error);
+{% set fecha_vencimiento =
+    resultado.fecha_vencimiento
+    | default(
+        resultado.fecha_ven
+        | default('—', true),
+        true
+    )
+%}
 
-                renewMessage.textContent =
-                    error.message ||
-                    "Ocurrió un error al procesar la renovación.";
 
-                renewButton.disabled = false;
-                renewButton.textContent = "Renovar folio";
-            }
-        }
+{% set marca =
+    resultado.marca
+    | default('—', true)
+%}
 
-        if (renewButton) {
-            renewButton.addEventListener("click", renovarFolio);
-        }
-    </script>
 
+{% set linea =
+    resultado.linea
+    | default(
+        resultado.modelo
+        | default(
+            resultado.submarca
+            | default('—', true),
+            true
+        ),
+        true
+    )
+%}
+
+
+{% set anio =
+    resultado.año
+    | default(
+        resultado.anio
+        | default(
+            resultado.year
+            | default('—', true),
+            true
+        ),
+        true
+    )
+%}
+
+
+{% set numero_serie =
+    resultado.numero_serie
+    | default(
+        resultado.serie
+        | default(
+            resultado.vin
+            | default(
+                resultado.VIN
+                | default('—', true),
+                true
+            ),
+            true
+        ),
+        true
+    )
+%}
+
+
+{% set numero_motor =
+    resultado.numero_motor
+    | default(
+        resultado.motor
+        | default(
+            resultado.no_motor
+            | default('—', true),
+            true
+        ),
+        true
+    )
+%}
+
+
+{# =========================================================
+   PROPIETARIO
+
+   Busca varias formas posibles.
+========================================================= #}
+
+{% set propietario =
+    resultado.nombre
+    | default(
+        resultado.propietario
+        | default(
+            resultado.contribuyente
+            | default(
+                resultado.titular
+                | default(
+                    resultado.nombre_propietario
+                    | default(
+                        resultado.nombre_titular
+                        | default('—', true),
+                        true
+                    ),
+                    true
+                ),
+                true
+            ),
+            true
+        ),
+        true
+    )
+%}
+
+
+{# =========================================================
+   COLOR
+
+   Primero intenta variables que inequívocamente sean
+   del vehículo.
+
+   SOLO si no existen intenta resultado.color.
+
+   Si resultado.color contiene "verde", "cafe", "rojo",
+   etc. entendemos que el backend lo usó para el ESTADO,
+   no para el vehículo.
+========================================================= #}
+
+
+{% set color_especifico =
+    resultado.color_vehiculo
+    | default(
+        resultado.color_auto
+        | default(
+            resultado.color_real
+            | default(
+                resultado.color_carro
+                | default(
+                    resultado.color_unidad
+                    | default('', true),
+                    true
+                ),
+                true
+            ),
+            true
+        ),
+        true
+    )
+%}
+
+
+{% set color_generico =
+    resultado.color
+    | default('', true)
+    | string
+%}
+
+
+{% set color_generico_normalizado =
+    color_generico
+    | lower
+    | trim
+%}
+
+
+{% if color_especifico %}
+
+    {% set color_vehiculo = color_especifico %}
+
+{% elif color_generico_normalizado not in [
+    '',
+    'verde',
+    'green',
+    'cafe',
+    'café',
+    'brown',
+    'rojo',
+    'red',
+    'amarillo',
+    'yellow',
+    'vigente',
+    'vencido',
+    'no registrado',
+    'no se encuentra registrado'
+] %}
+
+    {% set color_vehiculo = color_generico %}
+
+{% else %}
+
+    {% set color_vehiculo = '—' %}
+
+{% endif %}
+
+
+{# =========================================================
+   CAJA DE ESTADO
+========================================================= #}
+
+<div
+    class="
+        status-box
+
+        {% if estado == 'VIGENTE' %}
+            vigente
+
+        {% elif estado == 'VENCIDO' %}
+            vencido
+
+        {% elif estado in [
+            'NO SE ENCUENTRA REGISTRADO',
+            'NO REGISTRADO',
+            'NO ENCONTRADO'
+        ] %}
+            no-registrado
+
+        {% else %}
+            desconocido
+        {% endif %}
+    "
+>
+
+
+<div class="status-text">
+
+    FOLIO
+    {{ folio }}
+
+    :
+
+    {% if estado %}
+        {{ estado }}
+    {% else %}
+        ESTADO NO DISPONIBLE
     {% endif %}
 
+</div>
+
+
+</div>
+
+
+{# =========================================================
+   NO ENCONTRADO
+========================================================= #}
+
+
+{% if estado in [
+    'NO SE ENCUENTRA REGISTRADO',
+    'NO REGISTRADO',
+    'NO ENCONTRADO'
+] %}
+
+
+<div class="not-found">
+
+<p>
+
+Este folio
+
+<strong>
+    no se encuentra registrado
+</strong>
+
+en el sistema.
+
+</p>
+
+
+<p>
+    Verifica que hayas ingresado el número correctamente.
+</p>
+
+</div>
+
+
+{% else %}
+
+
+<!-- =========================================================
+     DETALLES
+========================================================= -->
+
+<div class="details-card">
+
+
+<div class="detail-item">
+
+<div class="detail-label">
+    FECHA DE EXPEDICIÓN
+</div>
+
+<div
+    class="
+        detail-value
+        {% if fecha_expedicion == '—' %}
+            missing
+        {% endif %}
+    "
+>
+    {{ fecha_expedicion }}
+</div>
+
+</div>
+
+
+<div class="detail-item">
+
+<div class="detail-label">
+    FECHA DE VENCIMIENTO
+</div>
+
+<div
+    class="
+        detail-value
+        {% if fecha_vencimiento == '—' %}
+            missing
+        {% endif %}
+    "
+>
+    {{ fecha_vencimiento }}
+</div>
+
+</div>
+
+
+<div class="detail-item">
+
+<div class="detail-label">
+    MARCA
+</div>
+
+<div
+    class="
+        detail-value
+        {% if marca == '—' %}
+            missing
+        {% endif %}
+    "
+>
+    {{ marca }}
+</div>
+
+</div>
+
+
+<div class="detail-item">
+
+<div class="detail-label">
+    LÍNEA
+</div>
+
+<div
+    class="
+        detail-value
+        {% if linea == '—' %}
+            missing
+        {% endif %}
+    "
+>
+    {{ linea }}
+</div>
+
+</div>
+
+
+<div class="detail-item">
+
+<div class="detail-label">
+    AÑO
+</div>
+
+<div
+    class="
+        detail-value
+        {% if anio == '—' %}
+            missing
+        {% endif %}
+    "
+>
+    {{ anio }}
+</div>
+
+</div>
+
+
+<div class="detail-item">
+
+<div class="detail-label">
+    NÚMERO DE SERIE
+</div>
+
+<div
+    class="
+        detail-value
+        {% if numero_serie == '—' %}
+            missing
+        {% endif %}
+    "
+>
+    {{ numero_serie }}
+</div>
+
+</div>
+
+
+<div class="detail-item">
+
+<div class="detail-label">
+    NÚMERO DE MOTOR
+</div>
+
+<div
+    class="
+        detail-value
+        {% if numero_motor == '—' %}
+            missing
+        {% endif %}
+    "
+>
+    {{ numero_motor }}
+</div>
+
+</div>
+
+
+<!-- =========================================================
+     COLOR DEL VEHÍCULO
+========================================================= -->
+
+<div class="detail-item">
+
+<div class="detail-label">
+    COLOR
+</div>
+
+<div
+    class="
+        detail-value
+        {% if color_vehiculo == '—' %}
+            missing
+        {% endif %}
+    "
+>
+
+    {{ color_vehiculo }}
+
+</div>
+
+</div>
+
+
+<!-- =========================================================
+     PROPIETARIO
+========================================================= -->
+
+<div class="detail-item">
+
+<div class="detail-label">
+    PROPIETARIO
+</div>
+
+<div
+    class="
+        detail-value
+        {% if propietario == '—' %}
+            missing
+        {% endif %}
+    "
+>
+
+    {{ propietario }}
+
+</div>
+
+</div>
+
+
+</div>
+
+
+{% endif %}
+
+
+<!-- =========================================================
+     DOCUMENTO
+========================================================= -->
+
+<div class="document-valid">
+
+    DOCUMENTO DIGITAL VÁLIDO EN TODO MÉXICO
+
+</div>
+
+
+<div class="return-wrapper">
+
+<a
+    href="https://setran.jalisco.gob.mx/"
+    class="return-button"
+>
+    Regresar
+</a>
+
+</div>
+
+
+{% else %}
+
+
+<!-- =========================================================
+     SIN RESULTADO
+========================================================= -->
+
+<div class="not-found">
+
+<p>
+    No se encontró información para mostrar.
+</p>
+
+</div>
+
+
+<div class="return-wrapper">
+
+<a
+    href="https://setran.jalisco.gob.mx/"
+    class="return-button"
+>
+    Regresar
+</a>
+
+</div>
+
+
+{% endif %}
+
+
+</section>
+
+
+</main>
+
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
+<div class="footer-top-line"></div>
+
+
+<footer class="site-footer">
+
+
+<div class="footer-inner">
+
+
+<div class="footer-title-line">
+    Secretaría de Transporte
+</div>
+
+
+<div class="footer-columns">
+
+
+<!-- =========================================================
+     LOGO
+========================================================= -->
+
+<div class="footer-column">
+
+
+<a href="https://setran.jalisco.gob.mx/">
+
+<img
+    src="https://d33pa0ahsb9wzi.cloudfront.net/setran/original_images/logo_transporte25.png"
+    alt="Secretaría de Transporte"
+    class="footer-main-logo"
+>
+
+</a>
+
+
+<a
+    href="https://es-la.facebook.com/SecretariadeTransporteJal"
+    target="_blank"
+    rel="noopener noreferrer"
+>
+    Facebook
+</a>
+
+
+<a
+    href="https://x.com/TransporteJal"
+    target="_blank"
+    rel="noopener noreferrer"
+>
+    X / Twitter
+</a>
+
+
+</div>
+
+
+<!-- =========================================================
+     CONTACTO
+========================================================= -->
+
+<div class="footer-column">
+
+
+<h3>
+    Secretaría de Transporte
+</h3>
+
+
+<p>
+    Av. Prol. Alcalde S/N
+</p>
+
+
+<p>
+    Jardines Alcalde
+</p>
+
+
+<p>
+    44290 Guadalajara, Jalisco
+</p>
+
+
+<p>
+    33 3819 2400
+</p>
+
+
+<a
+    href="https://www.google.com/maps/search/?api=1&query=Av.%20Prol.%20Alcalde%20S%2FN%2C%20Jardines%20Alcalde%2C%2044290%20Guadalajara%2C%20Jal."
+    target="_blank"
+    rel="noopener noreferrer"
+>
+    Ver ubicación
+</a>
+
+
+<a
+    href="https://setran.jalisco.gob.mx/acerca-de/ubicacion-y-contacto"
+>
+    Escríbenos
+</a>
+
+
+</div>
+
+
+<!-- =========================================================
+     ENLACES
+========================================================= -->
+
+<div class="footer-column">
+
+
+<h3>
+    Enlaces
+</h3>
+
+
+<a href="https://setran.jalisco.gob.mx/inicio">
+    Inicio
+</a>
+
+
+<a href="https://setran.jalisco.gob.mx/registro-estatal">
+    Registro Estatal
+</a>
+
+
+<a href="https://setran.jalisco.gob.mx/tramites-y-servicios">
+    Trámites y servicios
+</a>
+
+
+<a href="https://setran.jalisco.gob.mx/site-map">
+    Mapa de sitio
+</a>
+
+
+<a
+    href="https://info.jalisco.gob.mx/politicas/?remote=true"
+    target="_blank"
+    rel="noopener noreferrer"
+>
+    Políticas de uso y privacidad
+</a>
+
+
+<a
+    href="https://www.jalisco.gob.mx/es/acerca-de-este-portal"
+    target="_blank"
+    rel="noopener noreferrer"
+>
+    Acerca de este portal
+</a>
+
+
+<a
+    href="https://consultapublicamx.plataformadetransparencia.org.mx/"
+    target="_blank"
+    rel="noopener noreferrer"
+>
+    Plataforma Nacional de Transparencia
+</a>
+
+
+</div>
+
+
+<!-- =========================================================
+     JALISCO
+========================================================= -->
+
+<div class="footer-column">
+
+
+<img
+    src="https://d33pa0ahsb9wzi.cloudfront.net/transparencia-demo/original_images/isologo_leones_footer.png"
+    alt="Gobierno del Estado de Jalisco"
+    class="footer-small-logo"
+>
+
+
+<a
+    href="https://www.jalisco.gob.mx/"
+    target="_blank"
+    rel="noopener noreferrer"
+>
+    Gobierno de Jalisco
+</a>
+
+
+</div>
+
+
+</div>
+
+
+<div class="footer-copy">
+
+    Gobierno de Jalisco © 2026
+
+</div>
+
+
+</div>
+
+
+</footer>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script>
+
+const openMenuButton =
+    document.getElementById(
+        "open-mobile-menu"
+    );
+
+
+const closeMenuButton =
+    document.getElementById(
+        "close-mobile-menu"
+    );
+
+
+const mobileMenu =
+    document.getElementById(
+        "mobile-menu"
+    );
+
+
+const mobileOverlay =
+    document.getElementById(
+        "mobile-overlay"
+    );
+
+
+function openMobileMenu() {
+
+    if (!mobileMenu) {
+        return;
+    }
+
+    mobileMenu
+        .classList
+        .add(
+            "open"
+        );
+
+
+    if (mobileOverlay) {
+
+        mobileOverlay
+            .classList
+            .add(
+                "show"
+            );
+    }
+
+
+    document
+        .body
+        .style
+        .overflow =
+            "hidden";
+}
+
+
+function closeMobileMenu() {
+
+    if (mobileMenu) {
+
+        mobileMenu
+            .classList
+            .remove(
+                "open"
+            );
+    }
+
+
+    if (mobileOverlay) {
+
+        mobileOverlay
+            .classList
+            .remove(
+                "show"
+            );
+    }
+
+
+    document
+        .body
+        .style
+        .overflow =
+            "";
+}
+
+
+if (openMenuButton) {
+
+    openMenuButton
+        .addEventListener(
+            "click",
+            openMobileMenu
+        );
+}
+
+
+if (closeMenuButton) {
+
+    closeMenuButton
+        .addEventListener(
+            "click",
+            closeMobileMenu
+        );
+}
+
+
+if (mobileOverlay) {
+
+    mobileOverlay
+        .addEventListener(
+            "click",
+            closeMobileMenu
+        );
+}
+
+
+document
+    .addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key
+                ===
+                "Escape"
+            ) {
+
+                closeMobileMenu();
+            }
+        }
+    );
+
+</script>
+
+
 </body>
-</html>
+
+    </html>

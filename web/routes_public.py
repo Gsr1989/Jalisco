@@ -6,6 +6,7 @@ from flask import render_template, request, redirect, url_for, flash, session, s
 from config import supabase, OUTPUT_DIR, ENTIDAD
 from web.app import app
 from web.utils import today_cdmx, parse_date_any
+from web.pdf import generar_pdf_unificado
 
 
 # ─── CONSULTA PÚBLICA ────────────────────────────────────────────────────────
@@ -120,14 +121,41 @@ def descargar_recibo(folio):
     if not session.get('username'):
         return redirect(url_for('login'))
 
+    resp = supabase.table("folios_registrados")\
+        .select("*").eq("folio",folio).limit(1).execute()
+    registro = resp.data[0] if resp.data else None
+
     if not session.get('admin'):
-        resp = supabase.table("folios_registrados")\
-            .select("creado_por").eq("folio",folio).limit(1).execute()
-        if resp.data and resp.data[0].get("creado_por") != session['username']:
+        if registro and registro.get("creado_por") != session['username']:
             flash("No tienes permiso para descargar este archivo.","error")
             return redirect(url_for('mis_permisos'))
 
     ruta_pdf = os.path.join(OUTPUT_DIR, f"{folio}.pdf")
+
+    if not os.path.exists(ruta_pdf):
+        # 1) PDF generado por el bot
+        ruta_bot = os.path.join(OUTPUT_DIR, f"{folio}_completo.pdf")
+        if os.path.exists(ruta_bot):
+            ruta_pdf = ruta_bot
+        # 2) Se borró en un deploy: se vuelve a generar con los datos de Supabase
+        elif registro:
+            try:
+                datos = {
+                    "folio":     folio,
+                    "marca":     registro.get("marca",""),
+                    "linea":     registro.get("linea",""),
+                    "anio":      registro.get("anio",""),
+                    "serie":     registro.get("numero_serie",""),
+                    "motor":     registro.get("numero_motor",""),
+                    "color":     registro.get("color") or "BLANCO",
+                    "nombre":    registro.get("nombre") or "SIN NOMBRE",
+                    "fecha_exp": parse_date_any(registro.get("fecha_expedicion")),
+                    "fecha_ven": parse_date_any(registro.get("fecha_vencimiento")),
+                }
+                generar_pdf_unificado(datos)
+            except Exception as e:
+                print(f"[ERROR] Regenerando PDF {folio}: {e}")
+
     if not os.path.exists(ruta_pdf):
         flash("PDF no encontrado.","error")
         return redirect(url_for('mis_permisos') if not session.get('admin') else url_for('admin_folios'))

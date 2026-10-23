@@ -1,10 +1,14 @@
-# render.yaml completo y funcional para Render.com
-# Ajustado para Flask con Gunicorn, Python 3.10
-
 services:
   - type: web
     name: tu-nombre-de-servicio
-    env: python
-    buildCommand: ""
-    startCommand: gunicorn main:app
-    pythonVersion: 3.10.12
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.12
+      - key: BOT_TOKEN
+        sync: false
+      - key: BASE_URL
+        value: https://https-setran-jalisco-gob-mx-inicio.onrender.com

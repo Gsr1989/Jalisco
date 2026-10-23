@@ -1,36 +1,36 @@
-import os
-import hmac
-
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request, HTTPException
+
+from fastapi import FastAPI
 from a2wsgi import WSGIMiddleware
 
-# IMPORTAR PAGINA FLASK
+# PAGINA FLASK
 from pagina import app as flask_app
 
-# IMPORTAR BOT TELEGRAM
-from bot import app as bot_app
-from bot import bot, dp
+# BOT TELEGRAM
+from bot import app as telegram_app
 
 
-# ==========================================
-# INICIALIZACION
-# ==========================================
+# ====================================
+# INICIAR AMBAS APLICACIONES
+# ====================================
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
 
-    # Iniciar recursos del bot
-    async with bot_app.router.lifespan_context(bot_app):
-        print("[SISTEMA] Bot iniciado")
+    async with telegram_app.router.lifespan_context(
+        telegram_app
+    ):
+        print("BOT TELEGRAM INICIADO")
+        print("PAGINA FLASK DISPONIBLE")
+
         yield
 
-    print("[SISTEMA] Cerrando servidor")
+    print("SERVIDOR FINALIZADO")
 
 
-# ==========================================
+# ====================================
 # SERVIDOR PRINCIPAL
-# ==========================================
+# ====================================
 
 app = FastAPI(
     title="Servidor Unificado",
@@ -38,59 +38,33 @@ app = FastAPI(
 )
 
 
-# ==========================================
-# HEALTH CHECK
-# ==========================================
+# ====================================
+# COMPROBAR ESTADO
+# ====================================
 
 @app.get("/health")
 async def health():
 
     return {
         "ok": True,
-        "servidor": "Flask + Telegram"
+        "flask": "integrado",
+        "telegram": "integrado"
     }
 
 
-# ==========================================
-# WEBHOOK TELEGRAM
-# ==========================================
+# ====================================
+# BOT TELEGRAM
+# ====================================
 
-@app.post("/webhook")
-async def webhook(request: Request):
-
-    secreto = os.environ.get(
-        "TELEGRAM_WEBHOOK_SECRET", ""
-    )
-
-    recibido = request.headers.get(
-        "X-Telegram-Bot-Api-Secret-Token", ""
-    )
-
-    if not secreto or not hmac.compare_digest(
-        secreto, recibido
-    ):
-        raise HTTPException(
-            status_code=403,
-            detail="No autorizado"
-        )
-
-    datos = await request.json()
-
-    from aiogram import types
-
-    update = types.Update(**datos)
-
-    await dp.feed_webhook_update(
-        bot,
-        update
-    )
-
-    return {"ok": True}
+app.mount(
+    "/telegram",
+    telegram_app
+)
 
 
-# ==========================================
-# PAGINA WEB FLASK
-# ==========================================
+# ====================================
+# PAGINA FLASK
+# ====================================
 
 app.mount(
     "/",

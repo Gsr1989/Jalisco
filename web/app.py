@@ -10,9 +10,10 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from config import BASE_DIR
 
 # ===================== FLASK CONFIG =====================
-# templates/ y static/ siguen en la raíz del proyecto, igual que antes
+# root_path = raíz del proyecto (igual que cuando Flask vivía en app.py de la raíz)
 app = Flask(
     __name__,
+    root_path=BASE_DIR,
     template_folder=os.path.join(BASE_DIR, "templates"),
     static_folder=os.path.join(BASE_DIR, "static"),
 )

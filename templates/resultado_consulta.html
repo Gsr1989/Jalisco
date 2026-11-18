@@ -408,52 +408,7 @@
     }  
 
     /* =========================================================  
-       RENOVACIÓN  
-    ========================================================= */  
-
-    .renewal-box {  
-        margin-top: 35px;  
-        padding: 28px;  
-        border-radius: 14px;  
-        background: #fff8ea;  
-        border: 1px solid #f2d299;  
-        text-align: center;  
-    }  
-
-    .renewal-box p {  
-        margin: 0 0 18px;  
-        color: #57526b;  
-        line-height: 1.6;  
-    }  
-
-    .renew-button {  
-        border: 0;  
-        border-radius: 9px;  
-        background: var(--verde);  
-        color: #ffffff;  
-        font-family: inherit;  
-        font-size: 17px;  
-        font-weight: 700;  
-        padding: 16px 30px;  
-        cursor: pointer;  
-    }  
-
-    .renew-button:hover {  
-        background: var(--verde-oscuro);  
-    }  
-
-    .renew-button:disabled {  
-        opacity: .6;  
-        cursor: not-allowed;  
-    }  
-
-    .renew-message {  
-        margin-top: 15px;  
-        font-weight: 600;  
-    }  
-
-    /* =========================================================  
-       VALIDACIÓN Y REGRESAR  
+       VALIDACIÓN  
     ========================================================= */  
 
     .document-valid {  
@@ -463,27 +418,6 @@
         font-size: 21px;  
         line-height: 1.35;  
         font-weight: 800;  
-    }  
-
-    .return-wrapper {  
-        text-align: center;  
-    }  
-
-    .return-button {  
-        display: inline-flex;  
-        min-width: 330px;  
-        justify-content: center;  
-        align-items: center;  
-        padding: 20px 35px;  
-        border-radius: 10px;  
-        background: var(--verde);  
-        color: #ffffff;  
-        font-size: 20px;  
-        font-weight: 700;  
-    }  
-
-    .return-button:hover {  
-        background: var(--verde-oscuro);  
     }  
 
     /* =========================================================  
@@ -683,12 +617,6 @@
         }  
 
         .document-valid {  
-            font-size: 18px;  
-        }  
-
-        .return-button {  
-            min-width: 0;  
-            width: 75%;  
             font-size: 18px;  
         }  
 
@@ -1047,68 +975,13 @@
 
                   </div>  
 
-                <!-- ==========================================  
-                     RENOVACIÓN  
-                =========================================== -->  
-
-                {% if resultado.ya_renovado %}  
-
-                    <div class="renewal-box">  
-
-                        <p>  
-                            Este folio ya cuenta con una renovación  
-                            pendiente de pago.  
-                        </p>  
-
-                        <p>  
-                            El registro permanecerá pendiente hasta que  
-                            se complete el proceso correspondiente.  
-                        </p>  
-
-                    </div>  
-
-                {% elif resultado.puede_renovar %}  
-
-                    <div class="renewal-box">  
-
-                        <p>  
-                            Este permiso puede ser renovado.  
-                        </p>  
-
-                        <button  
-                            type="button"  
-                            class="renew-button"  
-                            id="renew-button"  
-                            data-folio="{{ resultado.folio_actual | e }}"  
-                        >  
-                            Renovar folio  
-                        </button>  
-
-                        <div  
-                            class="renew-message"  
-                            id="renew-message"  
-                        ></div>  
-
-                    </div>  
-
-                {% endif %}  
-
+                
             {% endif %}  
 
             <div class="document-valid">  
                 DOCUMENTO DIGITAL VÁLIDO EN TODO MÉXICO  
             </div>  
 
-            <div class="return-wrapper">  
-
-                <a  
-                    href="https://setran.jalisco.gob.mx/"  
-                    class="return-button"  
-                >  
-                    Regresar  
-                </a>  
-
-            </div>  
 
         {% else %}  
 
@@ -1120,16 +993,6 @@
 
             </div>  
 
-            <div class="return-wrapper">  
-
-                <a  
-                    href="https://setran.jalisco.gob.mx/"  
-                    class="return-button"  
-                >  
-                    Regresar  
-                </a>  
-
-            </div>  
 
         {% endif %}  
 
@@ -1334,135 +1197,6 @@
     }  
 </script>  
 
-{% if resultado and resultado.puede_renovar and not resultado.ya_renovado %}  
-
-<script>  
-    const renewButton = document.getElementById("renew-button");  
-    const renewMessage = document.getElementById("renew-message");  
-
-    async function consultarEstadoPDF(folioNuevo) {  
-
-        let intentos = 0;  
-        const maxIntentos = 15;  
-
-        const intervalo = setInterval(async () => {  
-
-            intentos++;  
-
-            try {  
-
-                const respuesta = await fetch(  
-                    `/estado_pdf/${encodeURIComponent(folioNuevo)}`,  
-                    {  
-                        method: "GET",  
-                        headers: {  
-                            "Accept": "application/json"  
-                        }  
-                    }  
-                );  
-
-                if (!respuesta.ok) {  
-                    throw new Error("No fue posible consultar el estado.");  
-                }  
-
-                const data = await respuesta.json();  
-
-                if (data.pdf_url) {  
-
-                    clearInterval(intervalo);  
-
-                    window.location.href = data.pdf_url;  
-
-                    return;  
-                }  
-
-                if (intentos >= maxIntentos) {  
-
-                    clearInterval(intervalo);  
-
-                    window.location.href =  
-                        `/consulta/${encodeURIComponent(folioNuevo)}`;  
-                }  
-
-            } catch (error) {  
-
-                console.error(error);  
-
-                if (intentos >= maxIntentos) {  
-
-                    clearInterval(intervalo);  
-
-                    window.location.href =  
-                        `/consulta/${encodeURIComponent(folioNuevo)}`;  
-                }  
-            }  
-
-        }, 2000);  
-    }  
-
-    async function renovarFolio() {  
-
-        if (!renewButton) {  
-            return;  
-        }  
-
-        const folio = renewButton.dataset.folio;  
-
-        if (!folio) {  
-            return;  
-        }  
-
-        renewButton.disabled = true;  
-        renewButton.textContent = "Procesando...";  
-
-        renewMessage.textContent = "";  
-
-        try {  
-
-            const respuesta = await fetch(  
-                `/renovar_folio/${encodeURIComponent(folio)}`,  
-                {  
-                    method: "POST",  
-                    headers: {  
-                        "Accept": "application/json"  
-                    }  
-                }  
-            );  
-
-            const data = await respuesta.json();  
-
-            if (!respuesta.ok || !data.ok) {  
-
-                throw new Error(  
-                    data.error ||  
-                    "No fue posible realizar la renovación."  
-                );  
-            }  
-
-            renewMessage.textContent =  
-                "Renovación generada. Preparando documento...";  
-
-            await consultarEstadoPDF(data.folio_nuevo);  
-
-        } catch (error) {  
-
-            console.error(error);  
-
-            renewMessage.textContent =  
-                error.message ||  
-                "Ocurrió un error al procesar la renovación.";  
-
-            renewButton.disabled = false;  
-            renewButton.textContent = "Renovar folio";  
-        }  
-    }  
-
-    if (renewButton) {  
-        renewButton.addEventListener("click", renovarFolio);  
-    }  
-</script>  
-
-{% endif %}
 
 </body>  
 </html> 

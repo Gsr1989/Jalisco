@@ -223,3 +223,69 @@ def marcar_pendiente(user_id):
         .eq("id",user_id).execute()
     flash("Marcado como PENDIENTE. Timer reiniciado.","warning")
     return redirect(url_for('admin_usuarios'))
+
+
+# ── Timers del BOT (solo RAM) ─────────────────────────────────────────────────
+# Bot y panel corren en el MISMO proceso (main.py), por eso aquí se ven y se
+# pueden detener los timers del bot sin importar el usuario de Telegram.
+
+def _marcar_timer_detenido(folios):
+    """Marca TIMER_DETENIDO en BD (igual que el botón 'Detener' del bot)."""
+    folios = list(folios)
+    if not folios:
+        return
+    ahora = datetime.now().isoformat()
+    for i in range(0, len(folios), 100):
+        lote = folios[i:i+100]
+        try:
+            supabase.table("folios_registrados").update(
+                {"estado": "TIMER_DETENIDO", "fecha_detencion": ahora}
+            ).in_("folio", lote).execute()
+        except Exception as e:
+            logger.error(f"[TIMERS] Error actualizando BD: {e}")
+
+
+@app.route('/admin/timers_bot')
+def admin_timers_bot():
+    if not session.get('admin'):
+        return redirect(url_for('login'))
+    from bot.timers import timers_activos
+    ahora = datetime.now()
+    timers = []
+    for folio, info in list(timers_activos.items()):
+        try:
+            mins = max(0, 2160 - int((ahora - info["start_time"]).total_seconds() / 60))
+            timers.append({
+                "folio":   folio,
+                "nombre":  info.get("nombre") or "—",
+                "user_id": info.get("user_id"),
+                "restante": f"{mins // 60}h {mins % 60}min",
+            })
+        except Exception:
+            continue
+    return render_template('admin_timers_bot.html', timers=timers, msg=request.args.get('msg', ''))
+
+
+@app.route('/admin/timers_bot/detener_todos', methods=['POST'])
+def admin_timers_bot_detener_todos():
+    if not session.get('admin'):
+        return redirect(url_for('login'))
+    from bot.timers import cancelar_todos
+    folios = cancelar_todos()
+    _marcar_timer_detenido(folios)
+    return redirect(url_for('admin_timers_bot', msg=f"🛑 {len(folios)} timer(s) detenido(s)."))
+
+
+@app.route('/admin/timers_bot/detener/<folio>', methods=['POST'])
+def admin_timer_bot_detener(folio):
+    if not session.get('admin'):
+        return redirect(url_for('login'))
+    from bot.timers import timers_activos, cancelar_timer_folio
+    if folio in timers_activos:
+        cancelar_timer_folio(folio)
+        _marcar_timer_detenido([folio])
+        msg = f"⏹️ Timer del folio {folio} detenido."
+    else:
+        msg = f"El folio {folio} ya no tenía timer activo."
+    return redirect(url_for('admin_timers_bot', msg=msg))
+
